@@ -1,6 +1,15 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+namespace InvenireServer.Presentation;
 
-app.MapGet("/", () => "Hello World!");
-
-app.Run();
+public class Program
+{
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        {
+        }
+        var app = builder.Build();
+        {
+            app.Run();
+        }
+    }
+}
