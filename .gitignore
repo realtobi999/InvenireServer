@@ -1,7 +1,9 @@
 # dotenv files
 .env
 
-# User-specific files
+# User-specific files/folders
+.editorconfig
+out/
 .idea/
 .vscode/
 *.rsuser

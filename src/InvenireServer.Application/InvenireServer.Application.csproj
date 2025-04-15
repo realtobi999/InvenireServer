@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
