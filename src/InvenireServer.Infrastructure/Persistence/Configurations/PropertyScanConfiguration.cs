@@ -16,7 +16,8 @@ public class PropertyScanConfiguration : IEntityTypeConfiguration<PropertyScan>
         // Relationships.
         builder.HasOne<Organization>()
                .WithMany()
-               .HasForeignKey(ps => ps.OrganizationId);
+               .HasForeignKey(ps => ps.OrganizationId)
+               .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<Property>()
                .WithMany()
                .HasForeignKey(ps => ps.PropertyId);

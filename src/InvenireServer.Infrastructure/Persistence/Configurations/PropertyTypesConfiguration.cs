@@ -16,7 +16,8 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
         // Relationships.
         builder.HasMany(p => p.Groups)
                .WithOne()
-               .HasForeignKey(pg => pg.PropertyId);
+               .HasForeignKey(pg => pg.PropertyId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

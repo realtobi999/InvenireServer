@@ -17,14 +17,17 @@ public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organizati
               builder.HasOne<Admin>()
                      .WithOne()
                      .HasForeignKey<Admin>(a => a.OrganizationId)
-                     .IsRequired();
+                     .IsRequired()
+                     .OnDelete(DeleteBehavior.Cascade);
               builder.HasOne<Property>()
                      .WithOne()
                      .HasForeignKey<Property>(p => p.OrganizationId)
-                     .IsRequired();
+                     .IsRequired()
+                     .OnDelete(DeleteBehavior.Cascade);
               builder.HasMany<Employee>()
                      .WithOne()
                      .HasForeignKey(e => e.OrganizationId)
-                     .IsRequired();
+                     .IsRequired()
+                     .OnDelete(DeleteBehavior.Cascade);
        }
 }
