@@ -4,22 +4,22 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-      <UserSecretsId>5f44ed90-a468-49b0-bb9d-7a10725cc2ff</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>5f44ed90-a468-49b0-bb9d-7a10725cc2ff</UserSecretsId>
+    </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="../InvenireServer.Application/InvenireServer.Application.csproj" />
-      <ProjectReference Include="../InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj" />
+        <ProjectReference Include="../InvenireServer.Application/InvenireServer.Application.csproj"/>
+        <ProjectReference Include="../InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        <PrivateAssets>all</PrivateAssets>
-      </PackageReference>
-      <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-      <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
-      <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0"/>
+        <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0"/>
     </ItemGroup>
 
 </Project>

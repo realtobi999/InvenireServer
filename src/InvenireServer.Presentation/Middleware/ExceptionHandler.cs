@@ -10,13 +10,6 @@ namespace InvenireServer.Presentation.Middleware;
 /// </summary>
 public class ExceptionHandler : IExceptionHandler
 {
-    private readonly ILogger<ExceptionHandler> _logger;
-
-    public ExceptionHandler(ILogger<ExceptionHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken token)
     {
         if (exception is IHttpException httpException)

@@ -93,6 +93,7 @@ public sealed class Jwt
             case 0: break;
             default: throw new FormatException("Invalid Base64URL string.");
         }
+
         var bytes = Convert.FromBase64String(input);
         return Encoding.UTF8.GetString(bytes);
     }

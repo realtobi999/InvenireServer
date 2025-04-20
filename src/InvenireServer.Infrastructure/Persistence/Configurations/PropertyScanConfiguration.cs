@@ -10,17 +10,17 @@ public class PropertyScanConfiguration : IEntityTypeConfiguration<PropertyScan>
     {
         // Properties
         builder.Property(ps => ps.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
 
         // Relationships.
         builder.HasOne<Organization>()
-               .WithMany()
-               .HasForeignKey(ps => ps.OrganizationId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithMany()
+            .HasForeignKey(ps => ps.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne<Property>()
-               .WithMany()
-               .HasForeignKey(ps => ps.PropertyId);
+            .WithMany()
+            .HasForeignKey(ps => ps.PropertyId);
         builder.OwnsMany(ps => ps.ScannedItems, ob =>
         {
             // Configure the PropertyItem entity using a builder extension method.

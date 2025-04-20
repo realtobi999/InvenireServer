@@ -10,7 +10,7 @@ public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
     {
         // Properties.
         builder.Property(a => a.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
     }
 }

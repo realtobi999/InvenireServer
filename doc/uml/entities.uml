@@ -1,0 +1,84 @@
+@startuml Invenire Entities Relationships
+class Admin {
+	+ Guid Id
+	+ Guid OrganizationId
+
+	/'Entity Framework Navigation Properties'/
+	+ Organization Organization
+}
+
+class Employee {
+	+ Guid Id
+	+ Guid OrganizationId
+
+	+ List<PropertyItem> AssignedItems
+
+	/'Entity Framework Navigation Properties'/
+	+ Organization Organization
+}
+
+class Organization {
+	+ Guid Id
+	+ Guid AdminId
+
+	/'Entity Framework Navigation Properties'/
+	+ Admin Admin
+	+ Property Property
+	+ ICollection<Employee> Employees
+}
+
+class Property {
+	+ Guid Id
+	+ Guid OrganizationId
+
+	+ List<PropertyGroup> Groups
+
+	/'Entity Framework Navigation Properties'/
+	+ Organization Organization
+}
+
+class PropertyCheck {
+	+ Guid Id
+	+ Guid? OrganizationId
+	+ Guid? PropertyId
+
+	+ List<PropertyItem> ScannedItems
+
+	/'Entity Framework Navigation Properties'/
+	+ Property Property
+	+ Organization Organization
+}
+
+class PropertyGroup {
+	+ Guid Id
+	+ Guid PropertyId
+	+ Guid? ParentGroupId
+
+	+ List<PropertyItem> Items
+	+ List<PropertyGroup> Subs
+
+	/'Entity Framework Navigation Properties'/
+	+ Property Property
+	+ PropertyGroup ParentGroup
+}
+
+class PropertyItem {
+	+ Guid Id
+	+ Guid PropertyGroupId
+
+	/'Entity Framework Navigation Properties'/
+	+ PropertyGroup Group
+}
+
+/'Mapping'/
+Organization "1" *-- "1" Admin
+Organization "1" *-- "*" Employee
+Organization "1" *-- "1" Property
+PropertyCheck "1" o-- "1" Organization
+PropertyCheck "1" o-- "1" Property
+Property "1" o-- "*" PropertyGroup
+PropertyGroup "1" o-- "*" PropertyItem
+PropertyGroup "1" o-- "*" PropertyGroup
+PropertyGroup "1" o-- "1" PropertyGroup
+PropertyItem "1" o-- "1" PropertyGroup
+@enduml

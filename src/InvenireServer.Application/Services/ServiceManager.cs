@@ -4,5 +4,4 @@ namespace InvenireServer.Application.Services;
 
 public class ServiceManager : IServiceManager
 {
-
 }

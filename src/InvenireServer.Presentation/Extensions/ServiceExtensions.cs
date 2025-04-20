@@ -20,10 +20,7 @@ public static class ServiceExtensions
         {
             opt.UseNpgsql(
                 connectionString,
-                builder =>
-                {
-                    builder.EnableRetryOnFailure(maxRetryCount: 3);
-                }
+                builder => { builder.EnableRetryOnFailure(maxRetryCount: 3); }
             );
         });
     }
@@ -37,18 +34,18 @@ public static class ServiceExtensions
         var factory = new JwtFactory(configuration);
         services.AddSingleton<IJwtFactory>(factory);
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = factory.Issuer,
-                        ValidAudience = factory.Issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = factory.Issuer,
+                    ValidAudience = factory.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
+                };
+            });
     }
 }

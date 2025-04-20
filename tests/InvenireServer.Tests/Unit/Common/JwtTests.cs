@@ -12,11 +12,13 @@ public class JwtTests
     public void Write_ReturnsCorrectString()
     {
         // Prepare.
-        var header = new List<Claim> {
+        var header = new List<Claim>
+        {
             new("alg", "HS256"),
             new("typ", "JWT")
         };
-        var payload = new List<Claim> {
+        var payload = new List<Claim>
+        {
             new("sub", "1234567890"),
             new("name", "test_name"),
             new("admin", "true")
@@ -38,11 +40,13 @@ public class JwtTests
     public void Parse_ReturnsCorrectInstance()
     {
         // Prepare.
-        var header = new List<Claim> {
+        var header = new List<Claim>
+        {
             new("alg", "HS256"),
             new("typ", "JWT")
         };
-        var payload = new List<Claim> {
+        var payload = new List<Claim>
+        {
             new("sub", "1234567890"),
             new("name", "test_name"),
             new("admin", "true")
@@ -63,11 +67,13 @@ public class JwtTests
     public void Parse_ThrowsExceptionWhenIncorrectJwtFormat()
     {
         // Prepare.
-        var header = new List<Claim> {
+        var header = new List<Claim>
+        {
             new("alg", "HS256"),
             new("typ", "JWT")
         };
-        var payload = new List<Claim> {
+        var payload = new List<Claim>
+        {
             new("sub", "1234567890"),
             new("name", "test_name"),
             new("admin", "true")

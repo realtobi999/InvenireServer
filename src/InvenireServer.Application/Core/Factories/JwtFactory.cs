@@ -82,10 +82,12 @@ public class JwtFactory : IJwtFactory
         {
             claims.Add(new Claim("iss", Issuer));
         }
+
         if (claims.All(c => c.Type != "aud"))
         {
             claims.Add(new Claim("aud", Issuer));
         }
+
         if (claims.All(c => c.Type != "exp"))
         {
             claims.Add(new Claim("exp", DateTimeOffset.UtcNow.Add(ExpirationTime).ToUnixTimeSeconds().ToString()));

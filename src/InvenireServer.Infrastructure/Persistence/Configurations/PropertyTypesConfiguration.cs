@@ -10,14 +10,14 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
     {
         // Properties.
         builder.Property(p => p.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
 
         // Relationships.
         builder.HasMany(p => p.Groups)
-               .WithOne()
-               .HasForeignKey(pg => pg.PropertyId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithOne()
+            .HasForeignKey(pg => pg.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -27,13 +27,13 @@ public class PropertyGroupTypeConfiguration : IEntityTypeConfiguration<PropertyG
     {
         // Properties.
         builder.Property(pg => pg.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
 
         // Relationships.
         builder.HasMany(pg => pg.Subs)
-               .WithOne()
-               .HasForeignKey(pg => pg.ParentGroupId);
+            .WithOne()
+            .HasForeignKey(pg => pg.ParentGroupId);
         builder.OwnsMany(pg => pg.Items, ob =>
         {
             // Configure the PropertyItem entity using a builder extension method.
@@ -51,8 +51,7 @@ public static class OwnedNavigationBuilderExtensions
     {
         // Properties.
         builder.Property(pi => pi.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
     }
 }
-

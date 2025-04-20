@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 
 namespace InvenireServer.Domain.Core.Interfaces.Repositories;
 
-
 public interface IBaseRepository<T> where T : class
 {
     /// <summary>

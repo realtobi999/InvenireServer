@@ -10,8 +10,8 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
     {
         // Properties.
         builder.Property(e => e.Id)
-               .HasColumnName("id")
-               .IsRequired();
+            .HasColumnName("id")
+            .IsRequired();
 
         // Relationships.
         builder.OwnsMany(e => e.AssignedItems, ob =>

@@ -14,8 +14,8 @@ public static class HostExtensions
             var env = context.HostingEnvironment;
 
             config.SetBasePath(Directory.GetCurrentDirectory())
-                  .AddJsonFile("appsettings.json")
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json");
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json");
 
             if (env.IsDevelopment())
             {
