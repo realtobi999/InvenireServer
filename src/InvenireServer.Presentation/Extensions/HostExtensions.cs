@@ -26,6 +26,10 @@ public static class HostExtensions
         });
     }
 
+    /// <summary>
+    /// Configures Serilog as the logging provider using the supplied configuration.
+    /// </summary>
+    /// <param name="configuration">The application configuration used to initialize Serilog.</param>
     public static void ConfigureSerilog(this IHostBuilder builder, IConfiguration configuration)
     {
         Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();

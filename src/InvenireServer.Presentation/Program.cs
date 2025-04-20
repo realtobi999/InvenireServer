@@ -1,8 +1,8 @@
-using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Infrastructure.Persistence.Managers;
+using Serilog;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Presentation.Middleware;
-using Serilog;
+using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Infrastructure.Persistence.Managers;
 
 namespace InvenireServer.Presentation;
 
@@ -18,6 +18,7 @@ public class Program
                 builder.Host.ConfigureConfiguration();
 
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+                builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.AddControllers();
                 builder.Services.AddExceptionHandler<ExceptionHandler>();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
@@ -32,6 +33,8 @@ public class Program
                     app.UseExceptionHandler(_ => { });
                 }
 
+                app.ConfigureStatusCodePages();
+                app.UseAuthorization();
                 app.MapControllers();
                 app.Run();
             }

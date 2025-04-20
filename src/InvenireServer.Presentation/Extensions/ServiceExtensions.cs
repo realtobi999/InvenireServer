@@ -1,13 +1,19 @@
+using System.Text;
+using InvenireServer.Application.Core.Factories;
+using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Presentation.Extensions;
 
 public static class ServiceExtensions
 {
     /// <summary>
-    /// Registers the database context with PostgreSQL configuration.
+    /// Registers the database context.
     /// </summary>
+    /// <param name="connectionString">The connection string for the PostgresSQL database.</param>
     public static void ConfigureDatabaseContext(this IServiceCollection services, string connectionString)
     {
         services.AddDbContext<InvenireServerContext>(opt =>
@@ -20,5 +26,29 @@ public static class ServiceExtensions
                 }
             );
         });
+    }
+
+    /// <summary>
+    /// Configures JWT-based authentication and authorization using the provided configuration.
+    /// </summary>
+    /// <param name="configuration">The application's configuration used to initialize the JWT settings.</param>
+    public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
+    {
+        var factory = new JwtFactory(configuration);
+        services.AddSingleton<IJwtFactory>(factory);
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = factory.Issuer,
+                        ValidAudience = factory.Issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
+                    };
+                });
     }
 }
