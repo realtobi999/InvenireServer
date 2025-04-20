@@ -6,7 +6,7 @@ using InvenireServer.Domain.Core.Exceptions.Http;
 namespace InvenireServer.Presentation.Middleware;
 
 /// <summary>
-/// Handles and logs exceptions, then returns a standardized JSON error response to the client.
+/// Handles exceptions and returns a standardized JSON error response to the client.
 /// </summary>
 public class ExceptionHandler : IExceptionHandler
 {
@@ -27,12 +27,6 @@ public class ExceptionHandler : IExceptionHandler
         {
             await HandleException(context, exception, token);
         }
-
-        _logger.LogError("An error occurred at {Timestamp} while processing the request: {Method} {Path} - {Message}",
-            DateTime.UtcNow,
-            context.Request.Method,
-            context.Request.Path,
-            exception.Message);
 
         return await ValueTask.FromResult(false);
     }
