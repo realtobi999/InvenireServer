@@ -14,7 +14,7 @@ public class ServerController : ControllerBase
 
     [Authorize]
     [HttpGet("/api/server/auth-check")]
-    public IActionResult AuthorizationCheck()
+    public IActionResult AuthCheck()
     {
         return Ok();
     }
