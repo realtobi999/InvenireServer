@@ -12,12 +12,5 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Id)
             .HasColumnName("id")
             .IsRequired();
-
-        // Relationships.
-        builder.OwnsMany(e => e.AssignedItems, ob =>
-        {
-            // Configure the PropertyItem entity using a builder extension method.
-            ob.ConfigurePropertyItem();
-        });
     }
 }

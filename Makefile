@@ -1,6 +1,9 @@
 run:
 	clear && cd ./src/InvenireServer.Presentation && dotnet run
 
+build:
+	clear && cd ./tests/InvenireServer.Tests && dotnet build
+
 test:
 	clear && cd ./tests/InvenireServer.Tests && dotnet test
 
