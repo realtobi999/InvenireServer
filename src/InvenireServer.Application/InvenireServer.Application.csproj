@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj"/>
+        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj" />
     </ItemGroup>
 
 </Project>

@@ -34,9 +34,6 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrganizationId")
-                        .IsUnique();
-
                     b.ToTable("Admins");
                 });
 
@@ -47,213 +44,70 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("email_address");
+
+                    b.Property<int>("LoginAttempts")
+                        .HasMaxLength(5)
+                        .HasColumnType("integer")
+                        .HasColumnName("login_attempts");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("organization_id");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Organization", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Organizations");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Property", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId")
-                        .IsUnique();
-
-                    b.ToTable("Properties");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.PropertyGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid?>("ParentGroupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PropertyId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentGroupId");
-
-                    b.HasIndex("PropertyId");
-
-                    b.ToTable("PropertyGroups");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.PropertyScan", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PropertyId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("PropertyId");
-
-                    b.ToTable("PropertyScans");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Admin", b =>
-                {
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Organization", null)
-                        .WithOne()
-                        .HasForeignKey("InvenireServer.Domain.Core.Entities.Admin", "OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Employee", b =>
                 {
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("InvenireServer.Domain.Core.Entities.PropertyItem", "AssignedItems", b1 =>
+                    b.OwnsOne("InvenireServer.Domain.Core.Entities.Common.LoginLock", "LoginLock", b1 =>
                         {
                             b1.Property<Guid>("EmployeeId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
+                            b1.Property<DateTimeOffset?>("ExpirationDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("login_lock_expiration_date");
 
-                            b1.HasKey("EmployeeId", "Id");
+                            b1.Property<bool>("IsSet")
+                                .HasColumnType("boolean")
+                                .HasColumnName("login_lock_is_set");
 
-                            b1.ToTable("Employees_AssignedItems");
+                            b1.HasKey("EmployeeId");
+
+                            b1.ToTable("Employees");
 
                             b1.WithOwner()
                                 .HasForeignKey("EmployeeId");
                         });
 
-                    b.Navigation("AssignedItems");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Property", b =>
-                {
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Organization", null)
-                        .WithOne()
-                        .HasForeignKey("InvenireServer.Domain.Core.Entities.Property", "OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("LoginLock")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.PropertyGroup", b =>
-                {
-                    b.HasOne("InvenireServer.Domain.Core.Entities.PropertyGroup", null)
-                        .WithMany("Subs")
-                        .HasForeignKey("ParentGroupId");
-
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Property", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("InvenireServer.Domain.Core.Entities.PropertyItem", "Items", b1 =>
-                        {
-                            b1.Property<Guid>("PropertyGroupId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
-
-                            b1.HasKey("PropertyGroupId", "Id");
-
-                            b1.ToTable("PropertyGroups_Items");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PropertyGroupId");
-                        });
-
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.PropertyScan", b =>
-                {
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InvenireServer.Domain.Core.Entities.Property", null)
-                        .WithMany()
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsMany("InvenireServer.Domain.Core.Entities.PropertyItem", "ScannedItems", b1 =>
-                        {
-                            b1.Property<Guid>("PropertyScanId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid")
-                                .HasColumnName("id");
-
-                            b1.HasKey("PropertyScanId", "Id");
-
-                            b1.ToTable("PropertyScans_ScannedItems");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PropertyScanId");
-                        });
-
-                    b.Navigation("ScannedItems");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Property", b =>
-                {
-                    b.Navigation("Groups");
-                });
-
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.PropertyGroup", b =>
-                {
-                    b.Navigation("Subs");
                 });
 #pragma warning restore 612, 618
         }

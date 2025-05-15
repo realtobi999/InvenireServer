@@ -18,9 +18,11 @@ public class Program
                 builder.Host.ConfigureConfiguration();
 
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-                builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.AddControllers();
                 builder.Services.AddExceptionHandler<ExceptionHandler>();
+
+                builder.Services.ConfigureJwt(builder.Configuration);
+                builder.Services.ConfigureMappers();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
             }
             var app = builder.Build();

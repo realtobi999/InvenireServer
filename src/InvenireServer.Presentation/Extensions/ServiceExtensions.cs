@@ -1,5 +1,9 @@
 using System.Text;
 using InvenireServer.Application.Core.Factories;
+using InvenireServer.Application.Core.Mappers;
+using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,5 +51,16 @@ public static class ServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
                 };
             });
+    }
+
+    /// <summary>
+    /// Registers mapping services, including the mapper factory and entity-to-dto mappers.
+    /// </summary>
+    public static void ConfigureMappers(this IServiceCollection services)
+    {
+        // Register the factory.
+        services.AddScoped<IMapperFactory, MapperFactory>();
+        // Register the mappers themselves.
+        services.AddScoped<IMapper<Employee, RegisterEmployeeDto>, EmployeeMapper>();
     }
 }
