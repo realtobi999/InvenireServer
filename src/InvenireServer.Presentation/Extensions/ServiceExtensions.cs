@@ -7,6 +7,7 @@ using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -58,9 +59,15 @@ public static class ServiceExtensions
     /// </summary>
     public static void ConfigureMappers(this IServiceCollection services)
     {
-        // Register the factory.
         services.AddScoped<IMapperFactory, MapperFactory>();
-        // Register the mappers themselves.
         services.AddScoped<IMapper<Employee, RegisterEmployeeDto>, EmployeeMapper>();
+    }
+
+    /// <summary>
+    /// Configures and registers hashing related classes.
+    /// </summary>
+    public static void ConfigureHashing(this IServiceCollection services)
+    {
+        services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
     }
 }

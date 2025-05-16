@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvenireServer.Tests.Integration.Server;
@@ -28,7 +29,7 @@ public static class ServerFactoryExtensions
     /// <param name="dbName">The name of the in-memory database.</param>
     public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services, string dbName) where TContext : DbContext
     {
-        services.RemoveService<DbContextOptions<TContext>>();
+        services.RemoveService<IDbContextOptionsConfiguration<TContext>>();
 
         services.AddDbContext<TContext>(options => { options.UseInMemoryDatabase(dbName); });
     }

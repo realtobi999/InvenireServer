@@ -3,6 +3,7 @@ using InvenireServer.Presentation.Extensions;
 using InvenireServer.Presentation.Middleware;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
+using InvenireServer.Application.Services;
 
 namespace InvenireServer.Presentation;
 
@@ -18,11 +19,13 @@ public class Program
                 builder.Host.ConfigureConfiguration();
 
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+                builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddControllers();
                 builder.Services.AddExceptionHandler<ExceptionHandler>();
 
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureMappers();
+                builder.Services.ConfigureHashing();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
             }
             var app = builder.Build();

@@ -16,7 +16,7 @@ public record RegisterEmployeeDto
     [Required, JsonPropertyName("email_address"), MaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)]
     public required string EmailAddress { get; set; }
 
-    [Required, JsonPropertyName("password"), Range(Employee.MIN_PASSWORD_LENGTH, Employee.MAX_PASSWORD_LENGTH)]
+    [Required, JsonPropertyName("password"), MinLength(Employee.MIN_PASSWORD_LENGTH), MaxLength(Employee.MAX_PASSWORD_LENGTH)]
     public required string Password { get; set; }
 
     [Required, JsonPropertyName("password_confirm"), SameAs(nameof(Password))]
