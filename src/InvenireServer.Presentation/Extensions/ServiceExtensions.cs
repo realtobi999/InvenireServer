@@ -3,11 +3,14 @@ using InvenireServer.Application.Core.Factories;
 using InvenireServer.Application.Core.Mappers;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Core.Exceptions.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Presentation.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -69,5 +72,35 @@ public static class ServiceExtensions
     public static void ConfigureHashing(this IServiceCollection services)
     {
         services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
+    }
+
+    /// <summary>
+    /// Configures centralized error handling for the application.
+    /// </summary>
+    public static void ConfigureErrorHandling(this IServiceCollection services)
+    {
+        // Configure the validation performed by validation attributes.
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                       .Where(e => e.Value?.Errors.Count > 0)
+                       .SelectMany(e => e.Value!.Errors)
+                       .Select(e => e.ErrorMessage)
+                       .ToList();
+
+                    // Filter out default error message for empty  request  body which reveals internal information.
+                    var predicate = (string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
+                    if (errors.Any(predicate))
+                    {
+                        errors = [.. errors.Where(err => !predicate(err))];
+                        errors.Add("Request body is empty or missing fields.");
+                    }
+
+                    throw new ValidationException(errors);
+                };
+        });
+        services.AddExceptionHandler<ExceptionHandler>();
     }
 }

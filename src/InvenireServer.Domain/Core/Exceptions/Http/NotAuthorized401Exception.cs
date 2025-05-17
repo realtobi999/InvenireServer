@@ -1,4 +1,5 @@
 using System.Net;
+using InvenireServer.Domain.Core.Interfaces.Common;
 
 namespace InvenireServer.Domain.Core.Exceptions.Http;
 

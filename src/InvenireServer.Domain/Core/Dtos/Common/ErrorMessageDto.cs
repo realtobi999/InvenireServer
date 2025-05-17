@@ -8,7 +8,7 @@ public record ErrorMessageDto
     /// <summary>
     /// Gets or sets the HTTP status code associated with the error.
     /// </summary>
-    public required int StatusCode { get; init; }
+    public required int Status { get; init; }
 
     /// <summary>
     /// Gets or sets the type of the error, which can provide additional context.
@@ -24,6 +24,11 @@ public record ErrorMessageDto
     /// Gets or sets the detailed description of the error.
     /// </summary>
     public required string Detail { get; init; }
+
+    /// <summary>
+    /// Gets or sets additional errors, for example messages during a validation error.
+    /// </summary>
+    public List<string>? Errors { get; init; }
 
     /// <summary>
     /// Gets or sets a URI reference that identifies the specific occurrence of the error.

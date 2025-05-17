@@ -21,11 +21,11 @@ public class Program
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
                 builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddControllers();
-                builder.Services.AddExceptionHandler<ExceptionHandler>();
 
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureMappers();
                 builder.Services.ConfigureHashing();
+                builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
             }
             var app = builder.Build();
