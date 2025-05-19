@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 
-namespace InvenireServer.Application.Core.Mappers;
+namespace InvenireServer.Application.Core.Factories;
 
 public class MapperFactory : IMapperFactory
 {
@@ -15,7 +15,7 @@ public class MapperFactory : IMapperFactory
 
     public IMapper<TEntity, TDto> Initiate<TEntity, TDto>()
     {
-        var mapper = _services.GetService<IMapper<TEntity, TDto>>() ?? throw new Exception($"Mapper for types {typeof(TEntity)} and {typeof(TDto)} not found.");
+        var mapper = _services.GetService<IMapper<TEntity, TDto>>() ?? throw new Exception($"Mapper for types {typeof(TEntity)} and {typeof(TDto)} was not found.");
 
         return mapper;
     }

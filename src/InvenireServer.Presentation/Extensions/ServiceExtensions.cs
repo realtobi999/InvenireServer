@@ -1,6 +1,7 @@
 using System.Text;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Application.Core.Mappers;
+using InvenireServer.Application.Core.Validators;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Domain.Core.Exceptions.Common;
@@ -67,6 +68,15 @@ public static class ServiceExtensions
     }
 
     /// <summary>
+    /// Registers validator services, including the validator factory and entity validators.
+    /// </summary>
+    public static void ConfigureValidators(this IServiceCollection services)
+    {
+        services.AddScoped<IValidatorFactory, ValidatorFactory>();
+        services.AddScoped<IValidator<Employee>, EmployeeValidator>();
+    }
+
+    /// <summary>
     /// Configures and registers hashing related classes.
     /// </summary>
     public static void ConfigureHashing(this IServiceCollection services)
@@ -90,7 +100,7 @@ public static class ServiceExtensions
                        .Select(e => e.ErrorMessage)
                        .ToList();
 
-                    // Filter out default error message for empty  request  body which reveals internal information.
+                    // Filter out default error message for empty request body which reveals internal information.
                     var predicate = (string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
                     if (errors.Any(predicate))
                     {

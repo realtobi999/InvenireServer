@@ -13,10 +13,10 @@ public record RegisterEmployeeDto
     [Required, JsonPropertyName("name"), MaxLength(Employee.MAX_NAME_LENGTH)]
     public required string Name { get; set; }
 
-    [Required, JsonPropertyName("email_address"), MaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)]
+    [Required, JsonPropertyName("email_address"), MaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH), EmailAddress]
     public required string EmailAddress { get; set; }
 
-    [Required, JsonPropertyName("password"), MinLength(Employee.MIN_PASSWORD_LENGTH), MaxLength(Employee.MAX_PASSWORD_LENGTH)]
+    [Required, JsonPropertyName("password"), MinLength(Employee.MIN_PASSWORD_LENGTH), MaxLength(Employee.MAX_PASSWORD_LENGTH), RegularExpression(@"^(?=.*[A-Z])(?=.*\d).+$")]
     public required string Password { get; set; }
 
     [Required, JsonPropertyName("password_confirm"), SameAs(nameof(Password))]

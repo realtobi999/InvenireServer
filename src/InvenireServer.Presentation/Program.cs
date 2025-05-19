@@ -25,6 +25,7 @@ public class Program
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureMappers();
                 builder.Services.ConfigureHashing();
+                builder.Services.ConfigureValidators();
                 builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
             }

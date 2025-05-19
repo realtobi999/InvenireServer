@@ -6,6 +6,10 @@ namespace InvenireServer.Domain.Core.Exceptions.Http;
 
 public class BadRequest400Exception : Exception, IHttpException
 {
+    public BadRequest400Exception()
+    {
+    }
+
     public BadRequest400Exception(string message) : base(message)
     {
     }
