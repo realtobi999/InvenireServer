@@ -26,6 +26,7 @@ public class Program
                 builder.Services.ConfigureMappers();
                 builder.Services.ConfigureHashing();
                 builder.Services.ConfigureValidators();
+                builder.Services.ConfigureRareLimiters();
                 builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
             }
@@ -41,6 +42,7 @@ public class Program
 
                 app.ConfigureStatusCodePages();
                 app.UseAuthorization();
+                app.UseRateLimiter();
                 app.MapControllers();
                 app.Run();
             }

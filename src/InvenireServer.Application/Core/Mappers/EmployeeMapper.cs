@@ -24,12 +24,6 @@ public class EmployeeMapper : IMapper<Employee, RegisterEmployeeDto>
             Name = dto.Name,
             EmailAddress = dto.EmailAddress,
             Password = dto.Password,
-            LoginAttempts = 0,
-            LoginLock = new LoginLockDto
-            {
-                IsSet = false,
-                ExpirationDate = null,
-            },
             UpdatedAt = null,
             CreatedAt = DateTimeOffset.Now,
         };

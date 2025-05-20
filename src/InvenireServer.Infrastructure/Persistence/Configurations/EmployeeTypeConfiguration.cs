@@ -25,23 +25,10 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.Password)
             .HasColumnName("password_hash")
             .IsRequired();
-        builder.Property(e => e.LoginAttempts)
-            .HasColumnName("login_attempts")
-            .HasMaxLength(Employee.MAX_LOGIN_ATTEMPTS)
-            .IsRequired();
         builder.Property(e => e.UpdatedAt)
             .HasColumnName("updated_at");
         builder.Property(e => e.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
-        // Owned Properties.
-        builder.OwnsOne(e => e.LoginLock, builder =>
-        {
-            builder.Property(l => l.IsSet)
-                .HasColumnName("login_lock_is_set")
-                .IsRequired();
-            builder.Property(l => l.ExpirationDate)
-                .HasColumnName("login_lock_expiration_date");
-        });
     }
 }

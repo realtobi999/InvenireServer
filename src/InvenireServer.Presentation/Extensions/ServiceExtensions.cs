@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Application.Core.Mappers;
 using InvenireServer.Application.Core.Validators;
@@ -112,5 +113,29 @@ public static class ServiceExtensions
                 };
         });
         services.AddExceptionHandler<ExceptionHandler>();
+    }
+
+    /// <summary>
+    /// Configures rare limiters for the application. 
+    /// </summary>
+    public static void ConfigureRareLimiters(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            // Policy for login attempts per IP: allow 5 immediate attempts, then 1 new attempt every 15 minutes.
+            options.AddPolicy("LoginPolicy", context =>
+            {
+                var address = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+                return RateLimitPartition.GetTokenBucketLimiter(address, _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = 5,
+                    QueueLimit = 0,
+                    TokensPerPeriod = 1,
+                    AutoReplenishment = true,
+                    ReplenishmentPeriod = TimeSpan.FromMinutes(15),
+                });
+            });
+        });
     }
 }

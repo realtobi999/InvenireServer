@@ -4,26 +4,67 @@ using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
+using Microsoft.AspNetCore.Identity;
+using InvenireServer.Domain.Core.Exceptions.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using InvenireServer.Application.Core.Factories;
+using System.Security.Claims;
+using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Presentation.Controllers;
 
 [ApiController]
 public class EmployeeController : ControllerBase
 {
+    private readonly IJwtFactory _jwtFactory;
     private readonly IServiceManager _services;
+    private readonly IPasswordHasher<Employee> _hasher;
     private readonly IMapper<Employee, RegisterEmployeeDto> _mapper;
 
-    public EmployeeController(IServiceManager services, IMapperFactory factory)
+    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IMapperFactory mapperFactory, IJwtFactory jwtFactory)
     {
-        _mapper = factory.Initiate<Employee, RegisterEmployeeDto>();
+        _mapper = mapperFactory.Initiate<Employee, RegisterEmployeeDto>();
+        _hasher = hasher;
         _services = services;
+        _jwtFactory = jwtFactory;
     }
 
     [HttpPost("/api/auth/employee/register")]
     public async Task<IActionResult> RegisterEmployee(RegisterEmployeeDto dto)
     {
         var employee = _mapper.Map(dto);
+
         await _services.Employee.CreateAsync(employee);
+
         return Created($"/api/employee/{employee.Id}", null);
+    }
+
+    [EnableRateLimiting("LoginPolicy")]
+    [HttpPost("/api/auth/employee/login")]
+    public async Task<IActionResult> LoginEmployee(LoginEmployeeDto dto)
+    {
+        try
+        {
+            var employee = await _services.Employee.GetAsync(e => e.EmailAddress == dto.EmailAddress);
+
+            if (_hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
+            {
+                throw new NotAuthorized401Exception("Invalid email or password.");
+            }
+
+            var jwt = _jwtFactory.Create([
+                new("role", nameof(Employee).ToUpper()),
+                new("employee_id", employee.Id.ToString()),
+            ]);
+
+            return Ok(new LoginEmployeeResponseDto
+            {
+                Token = jwt.Write(),
+            });
+        }
+        catch (NotFound404Exception)
+        {
+            throw new NotAuthorized401Exception("Invalid email or password.");
+        }
     }
 }

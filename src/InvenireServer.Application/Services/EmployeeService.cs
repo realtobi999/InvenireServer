@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Core.Exceptions.Http;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
@@ -15,6 +17,18 @@ public class EmployeeService : IEmployeeService
     {
         _validator = factory.Initiate<Employee>();
         _repositories = repositories;
+    }
+
+    public async Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate)
+    {
+        var employee = await _repositories.Employee.GetAsync(predicate);
+
+        if (employee is null)
+        {
+            throw new NotFound404Exception(nameof(employee));
+        }
+
+        return employee;
     }
 
     public async Task CreateAsync(Employee employee)

@@ -9,6 +9,10 @@ public class NotAuthorized401Exception : Exception, IHttpException
     {
     }
 
+    public NotAuthorized401Exception(string message) : base(message)
+    {
+    }
+
     public string Title => "Unauthorized Access";
     public int StatusCode => (int)HttpStatusCode.Unauthorized;
 }
