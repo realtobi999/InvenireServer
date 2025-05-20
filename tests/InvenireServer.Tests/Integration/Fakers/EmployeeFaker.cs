@@ -1,5 +1,6 @@
-using InvenireServer.Domain.Core.Dtos.Common;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Core.Dtos.Common;
+using InvenireServer.Tests.Integration.Extensions;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 
@@ -10,7 +11,7 @@ public class EmployeeFaker : Faker<Employee>
         RuleFor(e => e.Id, f => f.Random.Guid());
         RuleFor(e => e.Name, f => f.Name.FullName());
         RuleFor(e => e.EmailAddress, f => f.Internet.Email());
-        RuleFor(e => e.Password, _ => "Afajfbdasjfsad42314I231"); // TODO: Find a way to better generate fake passwords
+        RuleFor(e => e.Password, f => f.Internet.SecurePassword());
         RuleFor(e => e.LoginAttempts, f => 0);
         RuleFor(e => e.LoginLock, f => new LoginLockDto
         {
