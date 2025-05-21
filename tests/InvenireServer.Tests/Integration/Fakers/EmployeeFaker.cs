@@ -1,5 +1,4 @@
 using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Dtos.Common;
 using InvenireServer.Tests.Integration.Extensions;
 
 namespace InvenireServer.Tests.Integration.Fakers;

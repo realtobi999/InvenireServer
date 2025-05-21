@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Domain.Core.Exceptions.Http;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
-using Microsoft.AspNetCore.Identity;
-using InvenireServer.Domain.Core.Exceptions.Http;
-using Microsoft.AspNetCore.RateLimiting;
-using InvenireServer.Application.Core.Factories;
-using System.Security.Claims;
-using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Presentation.Controllers;
 

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Dtos.Common;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Interfaces.Common;
 

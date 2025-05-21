@@ -1,9 +1,8 @@
 using Serilog;
+using InvenireServer.Application.Services;
 using InvenireServer.Presentation.Extensions;
-using InvenireServer.Presentation.Middleware;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
-using InvenireServer.Application.Services;
 
 namespace InvenireServer.Presentation;
 
