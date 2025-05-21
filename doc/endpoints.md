@@ -24,8 +24,6 @@ Checks if the server is running properly.
 
 - `200` - Success.
 
----
-
 ### `GET - /api/server/auth-check`
 
 Checks if the server's authentication system is working correctly.

@@ -1,84 +1,78 @@
 @startuml Invenire Entities Relationships
 class Admin {
 	+ Guid Id
-	+ Guid OrganizationId
+	+ string EmailAddress
+	+ string Password
+	+ LoginLock LoginLock
+	+ Datetime LastLoginAt
+	+ Datetime UpdatedAt
+	+ Datetime CreatedAt
 
 	/'Entity Framework Navigation Properties'/
-	+ Organization Organization
+	+ Guid OrganizationId
 }
 
 class Employee {
 	+ Guid Id
-	+ Guid OrganizationId
-
 	+ List<PropertyItem> AssignedItems
 
 	/'Entity Framework Navigation Properties'/
-	+ Organization Organization
+	+ Guid OrganizationId
 }
 
 class Organization {
 	+ Guid Id
-	+ Guid AdminId
-
-	/'Entity Framework Navigation Properties'/
-	+ Admin Admin
-	+ Property Property
-	+ ICollection<Employee> Employees
+	+ string Name
+	+ Datetime UpdatedAt
+	+ Datetime CreatedAt
 }
 
 class Property {
 	+ Guid Id
-	+ Guid OrganizationId
-
 	+ List<PropertyGroup> Groups
 
 	/'Entity Framework Navigation Properties'/
-	+ Organization Organization
+	+ Guid OrganizationId
 }
 
 class PropertyCheck {
 	+ Guid Id
-	+ Guid? OrganizationId
-	+ Guid? PropertyId
-
 	+ List<PropertyItem> ScannedItems
 
 	/'Entity Framework Navigation Properties'/
-	+ Property Property
-	+ Organization Organization
+	+ Guid? PropertyId
+	+ Guid? OrganizationId
 }
 
 class PropertyGroup {
 	+ Guid Id
-	+ Guid PropertyId
-	+ Guid? ParentGroupId
-
 	+ List<PropertyItem> Items
 	+ List<PropertyGroup> Subs
 
 	/'Entity Framework Navigation Properties'/
-	+ Property Property
-	+ PropertyGroup ParentGroup
+	+ Guid PropertyId
+	+ Guid? ParentGroupId
 }
 
 class PropertyItem {
 	+ Guid Id
-	+ Guid PropertyGroupId
 
 	/'Entity Framework Navigation Properties'/
-	+ PropertyGroup Group
+	+ Guid PropertyGroupId
 }
 
-/'Mapping'/
-Organization "1" *-- "1" Admin
-Organization "1" *-- "*" Employee
-Organization "1" *-- "1" Property
-PropertyCheck "1" o-- "1" Organization
-PropertyCheck "1" o-- "1" Property
-Property "1" o-- "*" PropertyGroup
-PropertyGroup "1" o-- "*" PropertyItem
-PropertyGroup "1" o-- "*" PropertyGroup
-PropertyGroup "1" o-- "1" PropertyGroup
-PropertyItem "1" o-- "1" PropertyGroup
+/'Relationships'/
+Organization --> Admin : has >
+Organization --> Employee : employs >
+Organization --> Property : manages >
+Organization --> PropertyCheck : audits >
+
+Property --> PropertyGroup : has >
+Property --> PropertyCheck : checked in >
+
+PropertyCheck --> PropertyItem : scans >
+
+PropertyGroup --> PropertyItem : contains >
+PropertyGroup --> PropertyGroup : sub-group >
+PropertyGroup --> Property : belongs to >
 @enduml
