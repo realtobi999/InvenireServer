@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using FluentAssertions;
 using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Tests.Unit.Common;
