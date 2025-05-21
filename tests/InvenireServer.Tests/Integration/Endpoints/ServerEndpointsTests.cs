@@ -1,4 +1,3 @@
-using FluentAssertions;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;

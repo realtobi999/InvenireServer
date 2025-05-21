@@ -1,16 +1,22 @@
 using InvenireServer.Domain.Core.Exceptions.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Domain.Core.Interfaces.Repositories;
+using InvenireServer.Infrastructure.Persistence.Repositories;
 
 namespace InvenireServer.Infrastructure.Persistence.Managers;
 
 public class RepositoryManager : IRepositoryManager
 {
+    private readonly Lazy<IEmployeeRepository> _employee;
     private readonly InvenireServerContext _context;
 
     public RepositoryManager(InvenireServerContext context)
     {
+        _employee = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
         _context = context;
     }
+
+    public IEmployeeRepository Employee => _employee.Value;
 
     public async Task<int> SaveAsync()
     {

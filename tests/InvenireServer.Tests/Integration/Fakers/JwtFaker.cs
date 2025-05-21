@@ -1,9 +1,8 @@
 using System.Security.Claims;
+using InvenireServer.Presentation;
+using Microsoft.Extensions.Configuration;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Entities.Common;
-using InvenireServer.Presentation;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 

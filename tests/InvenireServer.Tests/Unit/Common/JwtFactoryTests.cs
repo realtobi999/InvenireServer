@@ -1,4 +1,3 @@
-using FluentAssertions;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using InvenireServer.Application.Core.Factories;

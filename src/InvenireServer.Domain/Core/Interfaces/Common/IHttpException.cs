@@ -1,4 +1,4 @@
-namespace InvenireServer.Domain.Core.Exceptions.Http;
+namespace InvenireServer.Domain.Core.Interfaces.Common;
 
 /// <summary>
 /// Represents an HTTP exception with status code, title, and message details.

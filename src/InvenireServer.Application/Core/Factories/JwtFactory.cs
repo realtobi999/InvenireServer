@@ -54,6 +54,12 @@ public class JwtFactory : IJwtFactory
         ExpirationTime = TimeSpan.FromMinutes(minutes);
     }
 
+    /// <summary>
+    /// Generates a JWT with the provided claims.
+    /// </summary>
+    /// <param name="claims">The claims to include in the payload.</param>
+    /// <returns>A JWT instance containing the header, payload, and computed signature.</returns>
+
     public Jwt Create(IEnumerable<Claim> claims)
     {
         var header = new List<Claim>
