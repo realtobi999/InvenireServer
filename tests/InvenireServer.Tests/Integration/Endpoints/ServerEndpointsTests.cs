@@ -6,15 +6,20 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class ServerEndpointsTests
 {
+    private readonly HttpClient _client;
+    private readonly ServerFactory<Program> _app;
+
+    public ServerEndpointsTests()
+    {
+        _app = new ServerFactory<Program>();
+        _client = _app.CreateDefaultClient();
+    }
+
     [Fact]
     public async Task HealthCheck_ReturnsStatusCode200()
     {
-        // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = app.CreateDefaultClient();
-
         // Act & Assert.
-        var response = await client.GetAsync("/api/server/health-check");
+        var response = await _client.GetAsync("/api/server/health-check");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -22,20 +27,17 @@ public class ServerEndpointsTests
     public async Task AuthCheck_ReturnsCorrectStatusCodes()
     {
         // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = app.CreateDefaultClient();
-
         var jwt = JwtFaker.Create([]);
-        client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
 
         // Act & Assert.
-        var response1 = await client.GetAsync("/api/server/auth-check");
+        var response1 = await _client.GetAsync("/api/server/auth-check");
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Remove the authorization header and assume the authorization is handled.
-        client.DefaultRequestHeaders.Remove("Authorization");
+        _client.DefaultRequestHeaders.Remove("Authorization");
 
-        var response2 = await client.GetAsync("/api/server/auth-check");
+        var response2 = await _client.GetAsync("/api/server/auth-check");
         response2.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

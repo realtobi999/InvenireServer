@@ -11,19 +11,26 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
+    private readonly HttpClient _client;
+    private readonly ServerFactory<Program> _app;
+
+    public EmployeeEndpointsTests()
+    {
+        _app = new ServerFactory<Program>();
+        _client = _app.CreateDefaultClient();
+    }
+
     [Fact]
     public async Task RegisterEmployee_Returns201AndEmployeeIsCreated()
     {
         // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.
-        var response = await client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        using var context = app.GetDatabaseContext();
+        using var context = _app.GetDatabaseContext();
         var createdEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
 
         // Assert that the employee is created in the database.
@@ -36,11 +43,9 @@ public class EmployeeEndpointsTests
     public async Task LoginEmployee_Returns200AndJwtIsReturned()
     {
         // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
-        var create1 = await client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
+        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
         create1.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
@@ -50,7 +55,7 @@ public class EmployeeEndpointsTests
             Password = employee.Password,
         };
 
-        var response = await client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var body = await response.Content.ReadFromJsonAsync<LoginEmployeeResponseDto>();
@@ -65,11 +70,9 @@ public class EmployeeEndpointsTests
     public async Task LoginEmployee_Returns401WhenBadCredentials()
     {
         // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
-        var create1 = await client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
+        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
         create1.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
@@ -79,7 +82,7 @@ public class EmployeeEndpointsTests
             Password = new Faker().Internet.SecurePassword(), // Generate a random password.
         };
 
-        var response = await client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

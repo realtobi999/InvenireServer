@@ -15,8 +15,7 @@ public class JwtFactoryTests
                 { "Jwt:Issuer", "test_issuer" },
                 { "Jwt:Key", "test_key" },
                 { "Jwt:ExpirationTime", "45" }
-            })
-            .Build();
+            }).Build();
 
         // Act & Assert.
         var factory = new JwtFactory(config);

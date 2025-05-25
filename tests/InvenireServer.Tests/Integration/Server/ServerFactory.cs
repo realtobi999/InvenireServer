@@ -10,6 +10,7 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
 {
     private readonly string _dbName = Guid.NewGuid().ToString();
 
+    /// <inheritdoc/>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services => { services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName); });
