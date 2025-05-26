@@ -23,7 +23,7 @@ public static class FakerTestExtensions
 
         var upper = faker.Random.Char('A', 'Z').ToString();
         var digit = faker.Random.Number(0, 9).ToString();
-        var rest = faker.Random.String2(length - 2, "abcdefghijklmnopqrstuvwxyz");
+        var rest = faker.Random.String2(length - 2);
 
         var combined = upper + digit + rest;
 

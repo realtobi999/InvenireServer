@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace InvenireServer.Domain.Core.Dtos.Employees;
 
-public record class LoginEmployeeDto
+public record LoginEmployeeDto
 {
 
     [Required, JsonPropertyName("email_address"), EmailAddress]

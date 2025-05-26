@@ -24,7 +24,7 @@ public class EmployeeMapper : IMapper<Employee, RegisterEmployeeDto>
             EmailAddress = dto.EmailAddress,
             Password = dto.Password,
             UpdatedAt = null,
-            CreatedAt = DateTimeOffset.Now,
+            CreatedAt = DateTimeOffset.Now
         };
 
         // Hash the password.

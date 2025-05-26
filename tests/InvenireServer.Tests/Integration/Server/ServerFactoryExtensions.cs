@@ -12,7 +12,7 @@ public static class ServerFactoryExtensions
     /// </summary>
     /// <typeparam name="TService">The type of service to remove.</typeparam>
     /// <param name="services">The service collection from which to remove the service.</param>
-    public static void RemoveService<TService>(this IServiceCollection services)
+    private static void RemoveService<TService>(this IServiceCollection services)
     {
         var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(TService));
         if (descriptor != null)

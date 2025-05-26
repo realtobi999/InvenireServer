@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using InvenireServer.Infrastructure.Persistence;
-using InvenireServer.Email;
 using InvenireServer.Tests.Integration.Fakers;
 
 namespace InvenireServer.Tests.Integration.Server;

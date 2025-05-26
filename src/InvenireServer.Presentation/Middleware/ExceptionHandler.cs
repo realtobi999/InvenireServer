@@ -82,7 +82,7 @@ public class ExceptionHandler : IExceptionHandler
         await context.Response.WriteAsJsonAsync(error, new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
         }, token);
     }
 }

@@ -12,6 +12,6 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
 
     public async Task<bool> IsEmailAddressUnique(string email)
     {
-        return !await _context.Employees.AnyAsync(e => e.EmailAddress == email);
+        return !await Context.Employees.AnyAsync(e => e.EmailAddress == email);
     }
 }

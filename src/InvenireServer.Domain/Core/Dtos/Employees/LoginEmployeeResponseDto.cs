@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace InvenireServer.Domain.Core.Dtos.Employees;
 
-public record class LoginEmployeeResponseDto
+public record LoginEmployeeResponseDto
 {
     [Required, JsonPropertyName("token")]
-    public required string Token { get; set; }
+    public required string Token { get; init; }
 }

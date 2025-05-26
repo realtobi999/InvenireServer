@@ -24,15 +24,14 @@ public class EmployeeEndpointsTests
     public async Task RegisterEmployee_Returns201AndEmployeeIsCreated()
     {
         // Prepare.
-        var app = new ServerFactory<Program>();
-        var client = _app.CreateDefaultClient();
+        _app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        using var context = _app.GetDatabaseContext();
+        await using var context = _app.GetDatabaseContext();
         var createdEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
 
         // Assert that the employee is created in the database.
@@ -54,7 +53,7 @@ public class EmployeeEndpointsTests
         var dto = new LoginEmployeeDto
         {
             EmailAddress = employee.EmailAddress,
-            Password = employee.Password,
+            Password = employee.Password
         };
 
         var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
@@ -81,7 +80,7 @@ public class EmployeeEndpointsTests
         var dto = new LoginEmployeeDto
         {
             EmailAddress = employee.EmailAddress,
-            Password = new Faker().Internet.SecurePassword(), // Generate a random password.
+            Password = new Faker().Internet.SecurePassword() // Generate a random password.
         };
 
         var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);

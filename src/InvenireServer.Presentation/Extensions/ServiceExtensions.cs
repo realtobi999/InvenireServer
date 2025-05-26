@@ -106,8 +106,11 @@ public static class ServiceExtensions
                     var predicate = (string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
                     if (errors.Any(predicate))
                     {
-                        errors = [.. errors.Where(err => !predicate(err))];
-                        errors.Add("Request body is empty or missing fields.");
+                        errors =
+                        [
+                            .. errors.Where(err => !predicate(err)),
+                            "Request body is empty or missing fields."
+                        ];
                     }
 
                     throw new ValidationException(errors);
@@ -134,7 +137,7 @@ public static class ServiceExtensions
                     QueueLimit = 0,
                     TokensPerPeriod = 1,
                     AutoReplenishment = true,
-                    ReplenishmentPeriod = TimeSpan.FromMinutes(15),
+                    ReplenishmentPeriod = TimeSpan.FromMinutes(15)
                 });
             });
         });

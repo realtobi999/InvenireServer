@@ -51,12 +51,12 @@ public class EmployeeController : ControllerBase
 
             var jwt = _jwt.Create([
                 new("role", nameof(Employee).ToUpper()),
-                new("employee_id", employee.Id.ToString()),
+                new("employee_id", employee.Id.ToString())
             ]);
 
             return Ok(new LoginEmployeeResponseDto
             {
-                Token = jwt.Write(),
+                Token = jwt.Write()
             });
         }
         catch (NotFound404Exception)
