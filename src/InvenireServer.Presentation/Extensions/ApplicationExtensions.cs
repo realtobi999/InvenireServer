@@ -3,7 +3,7 @@ using InvenireServer.Domain.Core.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 
-public static class WebApplicationExtensions
+public static class ApplicationExtensions
 {
     /// <summary>
     /// Configures custom behavior for specific HTTP status codes.

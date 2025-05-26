@@ -1,20 +1,21 @@
 using System.Text;
-using System.Threading.RateLimiting;
-using InvenireServer.Application.Core.Factories;
-using InvenireServer.Application.Core.Mappers;
-using InvenireServer.Application.Core.Validators;
-using InvenireServer.Domain.Core.Dtos.Employees;
-using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Exceptions.Common;
-using InvenireServer.Domain.Core.Interfaces.Common;
-using InvenireServer.Domain.Core.Interfaces.Factories;
-using InvenireServer.Infrastructure.Persistence;
-using InvenireServer.Presentation.Middleware;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+using InvenireServer.Email;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Presentation.Middleware;
+using InvenireServer.Application.Core.Mappers;
+using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Application.Core.Factories;
+using InvenireServer.Application.Core.Validators;
+using InvenireServer.Domain.Core.Exceptions.Common;
+using InvenireServer.Domain.Core.Interfaces.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using InvenireServer.Domain.Core.Interfaces.Factories;
 
 namespace InvenireServer.Presentation.Extensions;
 
@@ -137,5 +138,14 @@ public static class ServiceExtensions
                 });
             });
         });
+    }
+
+    /// <summary>
+    /// Configures email service for the application.
+    /// </summary>
+    /// <param name="configuration">The application's configuration used to configure the SMTP settings.</param>
+    public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IEmailSender, EmailSender>(_ => EmailSenderFactory.Initiate(configuration));
     }
 }

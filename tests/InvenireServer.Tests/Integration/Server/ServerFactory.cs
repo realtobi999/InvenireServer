@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Email;
+using InvenireServer.Tests.Integration.Fakers;
 
 namespace InvenireServer.Tests.Integration.Server;
 
@@ -13,7 +15,11 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
     /// <inheritdoc/>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services => { services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName); });
+        builder.ConfigureServices(services =>
+        {
+            services.ReplaceEmailSender<EmailSenderFaker>();
+            services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName);
+        });
 
         // Set the environment to Production.
         builder.ConfigureAppConfiguration((context, _) =>

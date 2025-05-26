@@ -23,6 +23,7 @@ public class Program
                 builder.Services.ConfigureHashing();
                 builder.Services.ConfigureValidators();
                 builder.Services.ConfigureRareLimiters();
+                builder.Services.ConfigureEmailService(builder.Configuration);
                 builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
 
