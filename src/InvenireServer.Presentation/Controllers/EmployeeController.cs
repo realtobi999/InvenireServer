@@ -13,17 +13,17 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class EmployeeController : ControllerBase
 {
-    private readonly IJwtFactory _jwtFactory;
+    private readonly IJwtFactory _jwt;
     private readonly IServiceManager _services;
     private readonly IPasswordHasher<Employee> _hasher;
     private readonly IMapper<Employee, RegisterEmployeeDto> _mapper;
 
-    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IMapperFactory mapperFactory, IJwtFactory jwtFactory)
+    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IFactoryManager factories)
     {
-        _mapper = mapperFactory.Initiate<Employee, RegisterEmployeeDto>();
+        _jwt = factories.Jwt;
+        _mapper = factories.Mappers.Initiate<Employee, RegisterEmployeeDto>();
         _hasher = hasher;
         _services = services;
-        _jwtFactory = jwtFactory;
     }
 
     [HttpPost("/api/auth/employee/register")]
@@ -31,7 +31,7 @@ public class EmployeeController : ControllerBase
     {
         var employee = _mapper.Map(dto);
 
-        await _services.Employee.CreateAsync(employee);
+        await _services.Employees.CreateAsync(employee);
 
         return Created($"/api/employee/{employee.Id}", null);
     }
@@ -42,14 +42,14 @@ public class EmployeeController : ControllerBase
     {
         try
         {
-            var employee = await _services.Employee.GetAsync(e => e.EmailAddress == dto.EmailAddress);
+            var employee = await _services.Employees.GetAsync(e => e.EmailAddress == dto.EmailAddress);
 
             if (_hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
             {
                 throw new NotAuthorized401Exception("Invalid email or password.");
             }
 
-            var jwt = _jwtFactory.Create([
+            var jwt = _jwt.Create([
                 new("role", nameof(Employee).ToUpper()),
                 new("employee_id", employee.Id.ToString()),
             ]);

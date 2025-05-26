@@ -7,16 +7,16 @@ namespace InvenireServer.Infrastructure.Persistence.Managers;
 
 public class RepositoryManager : IRepositoryManager
 {
-    private readonly Lazy<IEmployeeRepository> _employee;
     private readonly InvenireServerContext _context;
+    private readonly Lazy<IEmployeeRepository> _employees;
 
     public RepositoryManager(InvenireServerContext context)
     {
-        _employee = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
         _context = context;
+        _employees = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
     }
 
-    public IEmployeeRepository Employee => _employee.Value;
+    public IEmployeeRepository Employees => _employees.Value;
 
     public async Task<int> SaveAsync()
     {

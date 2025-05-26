@@ -24,7 +24,7 @@ public class EmployeeValidatorTests
         var employee = new EmployeeFaker().Generate();
 
         // Mock the repository to return that the email address is not unique.
-        _repository.Setup(r => r.Employee.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(false);
+        _repository.Setup(r => r.Employees.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(false);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -43,7 +43,7 @@ public class EmployeeValidatorTests
         // Set the updated at time to be before the created at time.
         employee.UpdatedAt = employee.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Employee.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(true);
+        _repository.Setup(r => r.Employees.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(true);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -63,7 +63,7 @@ public class EmployeeValidatorTests
         employee.CreatedAt = DateTimeOffset.UtcNow.AddMonths(1);
         employee.UpdatedAt = null;
 
-        _repository.Setup(r => r.Employee.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(true);
+        _repository.Setup(r => r.Employees.IsEmailAddressUnique(employee.EmailAddress)).ReturnsAsync(true);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);

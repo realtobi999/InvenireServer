@@ -3,6 +3,7 @@ using InvenireServer.Application.Services;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
+using InvenireServer.Application.Core.Factories;
 
 namespace InvenireServer.Presentation;
 
@@ -17,10 +18,6 @@ public class Program
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
-                builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-                builder.Services.AddScoped<IServiceManager, ServiceManager>();
-                builder.Services.AddControllers();
-
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureMappers();
                 builder.Services.ConfigureHashing();
@@ -28,6 +25,11 @@ public class Program
                 builder.Services.ConfigureRareLimiters();
                 builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
+
+                builder.Services.AddScoped<IServiceManager, ServiceManager>();
+                builder.Services.AddScoped<IFactoryManager, FactoryManager>();
+                builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+                builder.Services.AddControllers();
             }
             var app = builder.Build();
             {

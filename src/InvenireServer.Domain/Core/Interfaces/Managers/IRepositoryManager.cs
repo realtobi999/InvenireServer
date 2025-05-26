@@ -4,7 +4,7 @@ namespace InvenireServer.Domain.Core.Interfaces.Managers;
 
 public interface IRepositoryManager
 {
-    IEmployeeRepository Employee { get; }
+    IEmployeeRepository Employees { get; }
 
     /// <summary>
     /// Saves all changes to the database and returns the number of affected entries.

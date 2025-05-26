@@ -1,4 +1,3 @@
-using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Services;
 
@@ -6,12 +5,12 @@ namespace InvenireServer.Application.Services;
 
 public class ServiceManager : IServiceManager
 {
-    private readonly Lazy<IEmployeeService> _employee;
+    private readonly Lazy<IEmployeeService> _employees;
 
-    public ServiceManager(IRepositoryManager repositories, IValidatorFactory factory)
+    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories)
     {
-        _employee = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factory));
+        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories));
     }
 
-    public IEmployeeService Employee => _employee.Value;
+    public IEmployeeService Employees => _employees.Value;
 }

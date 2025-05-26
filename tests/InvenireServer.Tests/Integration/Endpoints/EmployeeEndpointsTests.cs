@@ -24,6 +24,8 @@ public class EmployeeEndpointsTests
     public async Task RegisterEmployee_Returns201AndEmployeeIsCreated()
     {
         // Prepare.
+        var app = new ServerFactory<Program>();
+        var client = _app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.

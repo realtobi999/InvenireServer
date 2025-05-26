@@ -17,7 +17,7 @@ public class EmployeeValidator : IValidator<Employee>
     public async Task<(bool isValid, Exception? exception)> ValidateAsync(Employee employee)
     {
         // Ensure that the EmailAddress is unique.
-        if (!await _repositories.Employee.IsEmailAddressUnique(employee.EmailAddress))
+        if (!await _repositories.Employees.IsEmailAddressUnique(employee.EmailAddress))
         {
             return (false, new BadRequest400Exception("Invalid value for EmailAddress: the address is already in use."));
         }
