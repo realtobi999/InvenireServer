@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 
-namespace InvenireServer.Email;
+namespace InvenireServer.Infrastructure.Email;
 
 public class EmailSenderFactory
 {
@@ -22,6 +22,6 @@ public class EmailSenderFactory
 
         client.Credentials = new NetworkCredential(username, password);
 
-        return new EmailSender(client);
+        return new EmailSender(client, username);
     }
 }

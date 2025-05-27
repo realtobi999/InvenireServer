@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Exceptions.Http;
+using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
@@ -50,7 +53,7 @@ public class EmployeeController : ControllerBase
             }
 
             var jwt = _jwt.Create([
-                new("role", nameof(Employee).ToUpper()),
+                new("role", JwtFactory.Policies.Employee),
                 new("employee_id", employee.Id.ToString())
             ]);
 
@@ -63,5 +66,17 @@ public class EmployeeController : ControllerBase
         {
             throw new NotAuthorized401Exception("Invalid email or password.");
         }
+    }
+
+    [Authorize(Policy = JwtFactory.Policies.Employee)]
+    [HttpPost("/api/auth/employee/send-email-verification")]
+    public async Task<IActionResult> SendVerificationEmail()
+    {
+        var jwt = Jwt.Parse(HttpContext.Request.Headers.Authorization!);
+
+        var employee = await _services.Employees.GetAsync(e => e.Id.ToString() == jwt.Payload.First(c => c.Type == "employee_id").Value);
+        await _services.Employees.SendVerificationEmailAsync(employee, HttpContext.Request);
+
+        return NoContent();
     }
 }

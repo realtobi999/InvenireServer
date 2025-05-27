@@ -1,10 +1,10 @@
 using System.Text;
-using InvenireServer.Email;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using InvenireServer.Infrastructure.Email;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Presentation.Middleware;
 using InvenireServer.Application.Core.Mappers;
@@ -12,9 +12,11 @@ using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Application.Core.Validators;
+using InvenireServer.Domain.Core.Interfaces.Email;
 using InvenireServer.Domain.Core.Exceptions.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 
 namespace InvenireServer.Presentation.Extensions;
@@ -58,6 +60,8 @@ public static class ServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
                 };
             });
+        services.AddAuthorizationBuilder()
+            .AddPolicy(JwtFactory.Policies.Employee, policy => policy.RequireRole(JwtFactory.Policies.Employee));
     }
 
     /// <summary>
@@ -150,5 +154,6 @@ public static class ServiceExtensions
     public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IEmailSender, EmailSender>(_ => EmailSenderFactory.Initiate(configuration));
+        services.AddScoped<IEmailManager, EmailManager>();
     }
 }

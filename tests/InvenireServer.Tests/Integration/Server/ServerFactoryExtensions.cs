@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Core.Interfaces.Common;
+using InvenireServer.Domain.Core.Interfaces.Email;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;

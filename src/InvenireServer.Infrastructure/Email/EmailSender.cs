@@ -1,16 +1,19 @@
 using System.Net.Mail;
-using InvenireServer.Domain.Core.Interfaces.Common;
+using InvenireServer.Domain.Core.Interfaces.Email;
 
-namespace InvenireServer.Email;
+namespace InvenireServer.Infrastructure.Email;
 
 public class EmailSender : IEmailSender
 {
     private readonly SmtpClient _client;
 
-    public EmailSender(SmtpClient client)
+    public EmailSender(SmtpClient client, string address)
     {
         _client = client;
+        SourceAddress = address;
     }
+
+    public string SourceAddress { get; }
 
     public async Task SendEmailAsync(MailMessage message)
     {

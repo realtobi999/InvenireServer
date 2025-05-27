@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvenireServer.Presentation
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvenireServer.Tests", "tests\InvenireServer.Tests\InvenireServer.Tests.csproj", "{FC617820-46BF-4508-9EEE-3D98DD5CB133}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvenireServer.Email", "src\InvenireServer.Email\InvenireServer.Email.csproj", "{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,23 +80,8 @@ Global
 		{FC617820-46BF-4508-9EEE-3D98DD5CB133}.Release|x64.Build.0 = Release|Any CPU
 		{FC617820-46BF-4508-9EEE-3D98DD5CB133}.Release|x86.ActiveCfg = Release|Any CPU
 		{FC617820-46BF-4508-9EEE-3D98DD5CB133}.Release|x86.Build.0 = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|x64.Build.0 = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Debug|x86.Build.0 = Debug|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|x64.ActiveCfg = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|x64.Build.0 = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|x86.ActiveCfg = Release|Any CPU
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{B423B916-C0BE-435D-8AD6-77DFDD1BCD4F} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
