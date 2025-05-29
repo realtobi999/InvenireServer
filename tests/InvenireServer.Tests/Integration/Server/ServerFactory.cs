@@ -16,7 +16,7 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
     {
         builder.ConfigureServices(services =>
         {
-            services.ReplaceEmailSender<EmailSenderFaker>();
+            services.ReplaceWithFakeEmailSender();
             services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName);
         });
 

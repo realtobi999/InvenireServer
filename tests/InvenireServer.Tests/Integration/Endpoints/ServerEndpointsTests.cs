@@ -26,7 +26,7 @@ public class ServerEndpointsTests
     public async Task AuthCheck_ReturnsCorrectStatusCodes()
     {
         // Prepare.
-        var jwt = JwtFaker.Create([]);
+        var jwt = new JwtFaker().Create([]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
 
         // Act & Assert.

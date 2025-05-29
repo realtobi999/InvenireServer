@@ -7,6 +7,8 @@ using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Domain.Core.Interfaces.Services;
 using InvenireServer.Domain.Core.Dtos.Employees.Emails;
+using InvenireServer.Domain.Core.Entities.Common;
+using System.Security.Claims;
 
 namespace InvenireServer.Application.Services;
 
@@ -24,6 +26,23 @@ public class EmployeeService : IEmployeeService
         _validator = factories.Validators.Initiate<Employee>();
         _repositories = repositories;
     }
+
+    public async Task<Employee> GetAsync(Jwt jwt)
+    {
+        var claim = jwt.Payload.FirstOrDefault(c => c.Type == "employee_id" && !string.IsNullOrWhiteSpace(c.Value));
+        if (claim is null)
+        {
+            throw new BadRequest400Exception("Missing or invalid 'employee_id' claim.");
+        }
+
+        if (!Guid.TryParse(claim.Value, out var id))
+        {
+            throw new BadRequest400Exception("Invalid format for 'employee_id' claim.");
+        }
+
+        return await GetAsync(e => e.Id == id);
+    }
+
 
     public async Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate)
     {

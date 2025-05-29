@@ -1,4 +1,5 @@
 using InvenireServer.Domain.Core.Interfaces.Email;
+using InvenireServer.Tests.Integration.Fakers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,10 @@ public static class ServerFactoryExtensions
         }
     }
 
-    /// <summary>
-    /// Replaces the existing <see cref="IEmailSender"/> service registration with the specified implementation.
-    /// </summary>
-    /// <typeparam name="TEmailSender">The implementation type of <see cref="IEmailSender"/> to register.</typeparam>
-    public static void ReplaceEmailSender<TEmailSender>(this IServiceCollection services) where TEmailSender : class, IEmailSender
+    public static void ReplaceWithFakeEmailSender(this IServiceCollection services)
     {
         services.RemoveService<IEmailSender>();
-        services.AddScoped<IEmailSender, TEmailSender>();
+        services.AddSingleton<IEmailSender, EmailSenderFaker>();
     }
 
 

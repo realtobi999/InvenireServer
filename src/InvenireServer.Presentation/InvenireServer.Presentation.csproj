@@ -9,7 +9,6 @@
 
     <ItemGroup>
         <ProjectReference Include="../InvenireServer.Application/InvenireServer.Application.csproj" />
-        <ProjectReference Include="../InvenireServer.Email/InvenireServer.Email.csproj" />
         <ProjectReference Include="../InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj" />
     </ItemGroup>
 

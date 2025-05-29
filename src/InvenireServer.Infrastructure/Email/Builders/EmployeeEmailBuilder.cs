@@ -18,7 +18,7 @@ public class EmployeeEmailBuilder : BaseEmailBuilder, IEmployeeEmailBuilder
         };
 
         message.Subject = "Please verify your email to complete your registration";
-        message.Body = this.ParseHtmlTemplate($"{AppContext.BaseDirectory}\\Email\\Builders\\Templates\\employee_verification_email_template.html", dto);
+        message.Body = this.ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "employee_verification_email_template.html"), dto);
 
         return message;
     }

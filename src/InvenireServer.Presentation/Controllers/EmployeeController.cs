@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Presentation.Extensions;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Exceptions.Http;
@@ -72,9 +73,9 @@ public class EmployeeController : ControllerBase
     [HttpPost("/api/auth/employee/send-email-verification")]
     public async Task<IActionResult> SendVerificationEmail()
     {
-        var jwt = Jwt.Parse(HttpContext.Request.Headers.Authorization!);
+        var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
-        var employee = await _services.Employees.GetAsync(e => e.Id.ToString() == jwt.Payload.First(c => c.Type == "employee_id").Value);
+        var employee = await _services.Employees.GetAsync(jwt);
         await _services.Employees.SendVerificationEmailAsync(employee, HttpContext.Request);
 
         return NoContent();

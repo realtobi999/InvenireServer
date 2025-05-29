@@ -1,11 +1,16 @@
 using System.Net.Http.Json;
 using InvenireServer.Presentation;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;
+using Microsoft.Extensions.DependencyInjection;
+using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Tests.Integration.Extensions;
+using InvenireServer.Domain.Core.Interfaces.Email;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
@@ -62,6 +67,7 @@ public class EmployeeEndpointsTests
         var body = await response.Content.ReadFromJsonAsync<LoginEmployeeResponseDto>();
         body.Should().NotBeNull();
 
+        // Assert that the JWT has all the necessary claims.
         var jwt = Jwt.Parse(body!.Token);
         jwt.Payload.Should().Contain(c => c.Type == "role");
         jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
@@ -85,5 +91,41 @@ public class EmployeeEndpointsTests
 
         var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task SendVerificationEmail_Returns200AndEmailIsSentWithTheACorrectLink()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+        var jwt = new JwtFaker().Create([
+            new("role", JwtFactory.Policies.Employee),
+            new("employee_id", employee.Id.ToString())
+        ]);
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+
+        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
+        create1.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/send-email-verification", new object());
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
+        email.CapturedMessages.Count.Should().Be(1);
+
+        // Assert that the email message is properly constructed.
+        var message = email.CapturedMessages[0];
+        message.To.Should().ContainSingle(t => t.Address == employee.EmailAddress);
+        message.Subject.Should().Contain("verify your email");
+        message.Body.Should().NotBeNull();
+        // Assert that the email body contains a verification link with a valid JWT that includes all required claims.
+        message.Body.Should().MatchRegex(@"https?:\/\/[^\/]+\/api\/auth\/employee\/verify-email-verification\?token=([\w\-_.]+)");
+        var match = Regex.Match(message.Body, @"https?:\/\/[^\/]+\/api\/auth\/employee\/verify-email-verification\?token=([\w\-_.]+)");
+        var token = Jwt.Parse(match.Groups[1].Value);
+        token.Payload.Should().Contain(c => c.Type == "role" && c.Value == nameof(Employee).ToUpper());
+        token.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
+        token.Payload.Should().Contain(c => c.Type == "email_verification" && c.Value == bool.TrueString);
     }
 }
