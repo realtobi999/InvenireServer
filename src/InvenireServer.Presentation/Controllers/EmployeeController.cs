@@ -11,6 +11,7 @@ using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -70,13 +71,24 @@ public class EmployeeController : ControllerBase
     }
 
     [Authorize(Policy = JwtFactory.Policies.Employee)]
-    [HttpPost("/api/auth/employee/send-email-verification")]
-    public async Task<IActionResult> SendVerificationEmail()
+    [HttpPost("/api/auth/employee/email-verification/send")]
+    public async Task<IActionResult> SendEmailVerification()
     {
         var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
         var employee = await _services.Employees.GetAsync(jwt);
-        await _services.Employees.SendVerificationEmailAsync(employee, HttpContext.Request);
+        await _services.Employees.SendEmailVerificationAsync(employee, HttpContext.Request);
+
+        return NoContent();
+    }
+
+    [HttpGet("/api/auth/employee/email-verification/confirm")]
+    public async Task<IActionResult> ConfirmEmailVerification(string token)
+    {
+        var jwt = Jwt.Parse(token);
+
+        var employee = await _services.Employees.GetAsync(jwt);
+        await _services.Employees.ConfirmEmailVerificationAsync(employee);
 
         return NoContent();
     }

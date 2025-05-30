@@ -10,8 +10,8 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
     }
 
-    public async Task<bool> IsEmailAddressUnique(string email)
+    public async Task<bool> HasUniqueEmailAddressAsync(Employee employee)
     {
-        return !await Context.Employees.AnyAsync(e => e.EmailAddress == email);
+        return !await Context.Employees.AnyAsync(e => e.Id != employee.Id && e.EmailAddress == employee.EmailAddress);
     }
 }

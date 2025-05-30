@@ -10,6 +10,7 @@ public interface IEmployeeService
     Task<Employee> GetAsync(Jwt jwt);
     Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate);
     Task CreateAsync(Employee employee);
-    Task SendVerificationEmailAsync(Employee employee, HttpRequest request);
-    Task AcceptVerificationTokenAsync();
+    Task UpdateAsync(Employee employee);
+    Task SendEmailVerificationAsync(Employee employee, HttpRequest request);
+    Task ConfirmEmailVerificationAsync(Employee employee);
 }

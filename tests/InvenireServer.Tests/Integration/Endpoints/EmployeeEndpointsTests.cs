@@ -11,6 +11,7 @@ using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Domain.Core.Interfaces.Email;
+using System.Security.Principal;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
@@ -29,7 +30,6 @@ public class EmployeeEndpointsTests
     public async Task RegisterEmployee_Returns201AndEmployeeIsCreated()
     {
         // Prepare.
-        _app.CreateDefaultClient();
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.
@@ -51,8 +51,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
-        create1.StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var dto = new LoginEmployeeDto
@@ -79,8 +78,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
-        create1.StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var dto = new LoginEmployeeDto
@@ -94,7 +92,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task SendVerificationEmail_Returns200AndEmailIsSentWithTheACorrectLink()
+    public async Task SendEmailVerification_Returns204AndEmailIsSentWithTheACorrectLink()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -105,11 +103,10 @@ public class EmployeeEndpointsTests
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
 
-        var create1 = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
-        create1.StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/send-email-verification", new object());
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
@@ -121,11 +118,43 @@ public class EmployeeEndpointsTests
         message.Subject.Should().Contain("verify your email");
         message.Body.Should().NotBeNull();
         // Assert that the email body contains a verification link with a valid JWT that includes all required claims.
-        message.Body.Should().MatchRegex(@"https?:\/\/[^\/]+\/api\/auth\/employee\/verify-email-verification\?token=([\w\-_.]+)");
-        var match = Regex.Match(message.Body, @"https?:\/\/[^\/]+\/api\/auth\/employee\/verify-email-verification\?token=([\w\-_.]+)");
+        message.Body.Should().MatchRegex(@"https?:\/\/[^\/]+\/api\/auth\/employee\/email-verification\/confirm\?token=([\w\-_.]+)");
+        var match = Regex.Match(message.Body, @"https?:\/\/[^\/]+\/api\/auth\/employee\/email-verification\/confirm\?token=([\w\-_.]+)");
         var token = Jwt.Parse(match.Groups[1].Value);
         token.Payload.Should().Contain(c => c.Type == "role" && c.Value == nameof(Employee).ToUpper());
         token.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
         token.Payload.Should().Contain(c => c.Type == "email_verification" && c.Value == bool.TrueString);
+    }
+
+    [Fact]
+    public async Task ConfirmEmailVerification_Returns204AndEmailIsVerified()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+        var jwt = new JwtFaker().Create([
+            new("role", JwtFactory.Policies.Employee),
+            new("employee_id", employee.Id.ToString())
+        ]);
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Get the verification link.
+        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
+        email.CapturedMessages.Count.Should().Be(1);
+        var match = Regex.Match(email.CapturedMessages[0].Body, @"https?:\/\/[^\/]+\/api\/auth\/employee\/email-verification\/confirm\?token=([\w\-_.]+)");
+        var token = Jwt.Parse(match.Groups[1].Value);
+
+        // Act & Assert.
+        var response = await _client.GetAsync($"/api/auth/employee/email-verification/confirm?token={token.Write()}");
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        using var context = _app.GetDatabaseContext();
+        var updatedEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
+
+        // Assert that the employee has a verified email.
+        updatedEmployee!.IsEmailAddressVerified.Should().Be(true);
     }
 }
