@@ -6,7 +6,6 @@ namespace InvenireServer.Infrastructure.Persistence;
 
 public class InvenireServerContext : DbContext
 {
-    public DbSet<Admin> Admins { get; set; }
     public DbSet<Employee> Employees { get; set; }
 
     public InvenireServerContext(DbContextOptions options) : base(options)
@@ -16,7 +15,6 @@ public class InvenireServerContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.
-        new AdminTypeConfiguration().Configure(builder.Entity<Admin>());
         new EmployeeTypeConfiguration().Configure(builder.Entity<Employee>());
     }
 }

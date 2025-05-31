@@ -1,5 +1,8 @@
 namespace InvenireServer.Domain.Core.Interfaces.Common;
 
+/// <summary>
+/// Represents an HTTP exception containing one or more validation error messages.
+/// </summary>
 public interface IValidationException : IHttpException
 {
     /// <summary>

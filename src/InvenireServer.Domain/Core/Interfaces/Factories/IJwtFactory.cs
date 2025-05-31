@@ -3,6 +3,9 @@ using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Domain.Core.Interfaces.Factories;
 
+/// <summary>
+/// Defines a contract for creating JWT tokens with configurable issuer, signing key, and expiration.
+/// </summary>
 public interface IJwtFactory
 {
     /// <summary>
