@@ -1,16 +1,19 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Exceptions.Http;
 using InvenireServer.Domain.Core.Interfaces.Common;
+using InvenireServer.Domain.Core.Interfaces.Services;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
-using InvenireServer.Domain.Core.Interfaces.Services;
 using InvenireServer.Domain.Core.Dtos.Employees.Emails;
-using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Application.Services;
 
+/// <summary>
+/// Provides operations related to employee account management.
+/// </summary>
 public class EmployeeService : IEmployeeService
 {
     private readonly IJwtFactory _jwt;
@@ -18,6 +21,12 @@ public class EmployeeService : IEmployeeService
     private readonly IValidator<Employee> _validator;
     private readonly IRepositoryManager _repositories;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmployeeService"/> class.
+    /// </summary>
+    /// <param name="repositories">Repository access manager for employee data.</param>
+    /// <param name="factories">Factory manager for resolving validators and JWT utilities.</param>
+    /// <param name="email">Email manager used for sending verification emails.</param>
     public EmployeeService(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email)
     {
         _jwt = factories.Jwt;
@@ -26,6 +35,14 @@ public class EmployeeService : IEmployeeService
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Retrieves an employee based on the 'employee_id' claim in the provided JWT.
+    /// </summary>
+    /// <param name="jwt">The JWT containing the employee claim.</param>
+    /// <returns>The matching <see cref="Employee"/> entity.</returns>
+    /// <exception cref="BadRequest400Exception">
+    /// Thrown if the claim is missing or improperly formatted.
+    /// </exception>
     public async Task<Employee> GetAsync(Jwt jwt)
     {
         var claim = jwt.Payload.FirstOrDefault(c => c.Type == "employee_id" && !string.IsNullOrWhiteSpace(c.Value));
@@ -42,7 +59,12 @@ public class EmployeeService : IEmployeeService
         return await GetAsync(e => e.Id == id);
     }
 
-
+    /// <summary>
+    /// Retrieves an employee entity matching the specified predicate.
+    /// </summary>
+    /// <param name="predicate">Condition used to locate the employee.</param>
+    /// <returns>The matching <see cref="Employee"/> entity.</returns>
+    /// <exception cref="NotFound404Exception">Thrown if no matching employee is found.</exception>
     public async Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate)
     {
         var employee = await _repositories.Employees.GetAsync(predicate);
@@ -55,9 +77,13 @@ public class EmployeeService : IEmployeeService
         return employee;
     }
 
+    /// <summary>
+    /// Validates and creates a new employee in the database.
+    /// </summary>
+    /// <param name="employee">The employee entity to be created.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task CreateAsync(Employee employee)
     {
-        // Validate.
         var (valid, exception) = await _validator.ValidateAsync(employee);
         if (!valid && exception is not null) throw exception;
 
@@ -65,9 +91,13 @@ public class EmployeeService : IEmployeeService
         await _repositories.SaveOrThrowAsync();
     }
 
+    /// <summary>
+    /// Validates and updates an existing employee in the database.
+    /// </summary>
+    /// <param name="employee">The employee entity with updated data.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task UpdateAsync(Employee employee)
     {
-        // Validate.
         var (valid, exception) = await _validator.ValidateAsync(employee);
         if (!valid && exception is not null) throw exception;
 
@@ -75,6 +105,12 @@ public class EmployeeService : IEmployeeService
         await _repositories.SaveOrThrowAsync();
     }
 
+    /// <summary>
+    /// Sends an email verification link to the specified employee.
+    /// </summary>
+    /// <param name="employee">The employee to whom the email should be sent.</param>
+    /// <param name="request">The current HTTP request, used to build the callback URL.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task SendEmailVerificationAsync(Employee employee, HttpRequest request)
     {
         var jwt = _jwt.Create([
@@ -94,6 +130,11 @@ public class EmployeeService : IEmployeeService
         await _email.Sender.SendEmailAsync(message);
     }
 
+    /// <summary>
+    /// Marks the employee's email address as verified.
+    /// </summary>
+    /// <param name="employee">The employee whose email verification status will be updated.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task ConfirmEmailVerificationAsync(Employee employee)
     {
         employee.IsEmailAddressVerified = true;
