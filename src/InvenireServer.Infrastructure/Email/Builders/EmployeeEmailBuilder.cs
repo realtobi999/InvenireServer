@@ -22,9 +22,4 @@ public class EmployeeEmailBuilder : BaseEmailBuilder, IEmployeeEmailBuilder
 
         return message;
     }
-
-    public MailMessage BuildVerificationSuccessEmail(EmployeeVerificationSuccessEmailDto dto)
-    {
-        throw new NotImplementedException();
-    }
 }

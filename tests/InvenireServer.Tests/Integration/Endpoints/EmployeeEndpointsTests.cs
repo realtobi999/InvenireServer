@@ -11,7 +11,6 @@ using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Domain.Core.Interfaces.Email;
-using System.Security.Principal;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
@@ -97,7 +96,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
         var jwt = new JwtFaker().Create([
-            new("role", JwtFactory.Policies.Employee),
+            new("role", JwtFactory.Policies.EMPLOYEE),
             new("employee_id", employee.Id.ToString())
         ]);
 
@@ -132,7 +131,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
         var jwt = new JwtFaker().Create([
-            new("role", JwtFactory.Policies.Employee),
+            new("role", JwtFactory.Policies.EMPLOYEE),
             new("employee_id", employee.Id.ToString())
         ]);
 
@@ -151,7 +150,7 @@ public class EmployeeEndpointsTests
         var response = await _client.GetAsync($"/api/auth/employee/email-verification/confirm?token={token.Write()}");
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        using var context = _app.GetDatabaseContext();
+        await using var context = _app.GetDatabaseContext();
         var updatedEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
 
         // Assert that the employee has a verified email.

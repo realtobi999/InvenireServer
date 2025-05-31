@@ -6,5 +6,4 @@ namespace InvenireServer.Domain.Core.Interfaces.Email.Builders;
 public interface IEmployeeEmailBuilder
 {
     MailMessage BuildVerificationEmail(EmployeeVerificationEmailDto dto);
-    MailMessage BuildVerificationSuccessEmail(EmployeeVerificationSuccessEmailDto dto);
 }

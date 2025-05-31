@@ -14,9 +14,9 @@ public class JwtFactory : IJwtFactory
     public string SigningKey { get; set; }
     public TimeSpan ExpirationTime { get; set; }
 
-    public class Policies
+    public static class Policies
     {
-        public const string Employee = "EMPLOYEE";
+        public const string EMPLOYEE = "EMPLOYEE";
     }
 
     private const int DefaultExpirationTime = 30;

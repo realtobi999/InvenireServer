@@ -7,8 +7,8 @@ public record LoginEmployeeDto
 {
 
     [Required, JsonPropertyName("email_address"), EmailAddress]
-    public required string EmailAddress { get; set; }
+    public required string EmailAddress { get; init; }
 
     [Required, JsonPropertyName("password")]
-    public required string Password { get; set; }
+    public required string Password { get; init; }
 }

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Infrastructure.Email;
 
-public class EmailSenderFactory
+public static class EmailSenderFactory
 {
     public static EmailSender Initiate(IConfiguration configuration)
     {

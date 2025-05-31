@@ -61,7 +61,7 @@ public static class ServiceExtensions
                 };
             });
         services.AddAuthorizationBuilder()
-            .AddPolicy(JwtFactory.Policies.Employee, policy => policy.RequireRole(JwtFactory.Policies.Employee));
+            .AddPolicy(JwtFactory.Policies.EMPLOYEE, policy => policy.RequireRole(JwtFactory.Policies.EMPLOYEE));
     }
 
     /// <summary>
@@ -106,18 +106,19 @@ public static class ServiceExtensions
                        .Select(e => e.ErrorMessage)
                        .ToList();
 
-                    // Filter out default error message for empty request body which reveals internal information.
-                    var predicate = (string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
-                    if (errors.Any(predicate))
+                    if (errors.Any(HasDefaultErrorMessages))
                     {
                         errors =
                         [
-                            .. errors.Where(err => !predicate(err)),
+                            .. errors.Where(err => !HasDefaultErrorMessages(err)),
                             "Request body is empty or missing fields."
                         ];
                     }
 
                     throw new ValidationException(errors);
+
+                    // Filter out default error message for empty request body which reveals internal information.
+                    bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
                 };
         });
         services.AddExceptionHandler<ExceptionHandler>();

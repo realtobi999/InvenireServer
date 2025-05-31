@@ -11,7 +11,6 @@ using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -55,7 +54,7 @@ public class EmployeeController : ControllerBase
             }
 
             var jwt = _jwt.Create([
-                new("role", JwtFactory.Policies.Employee),
+                new("role", JwtFactory.Policies.EMPLOYEE),
                 new("employee_id", employee.Id.ToString())
             ]);
 
@@ -70,7 +69,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
-    [Authorize(Policy = JwtFactory.Policies.Employee)]
+    [Authorize(Policy = JwtFactory.Policies.EMPLOYEE)]
     [HttpPost("/api/auth/employee/email-verification/send")]
     public async Task<IActionResult> SendEmailVerification()
     {
