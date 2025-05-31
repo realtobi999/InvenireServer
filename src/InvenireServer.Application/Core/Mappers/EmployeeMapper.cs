@@ -22,9 +22,10 @@ public class EmployeeMapper : IMapper<Employee, RegisterEmployeeDto>
             Id = dto.Id ?? Guid.NewGuid(),
             Name = dto.Name,
             EmailAddress = dto.EmailAddress,
+            IsEmailAddressVerified = false,
             Password = dto.Password,
             UpdatedAt = null,
-            CreatedAt = DateTimeOffset.Now,
+            CreatedAt = DateTimeOffset.Now
         };
 
         // Hash the password.

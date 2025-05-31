@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../InvenireServer.Application/InvenireServer.Application.csproj"/>
-        <ProjectReference Include="../InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj"/>
+        <ProjectReference Include="../InvenireServer.Application/InvenireServer.Application.csproj" />
+        <ProjectReference Include="../InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -17,9 +17,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0"/>
-        <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     </ItemGroup>
 
 </Project>

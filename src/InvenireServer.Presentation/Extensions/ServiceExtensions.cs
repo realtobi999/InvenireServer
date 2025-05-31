@@ -1,20 +1,23 @@
 using System.Text;
-using System.Threading.RateLimiting;
-using InvenireServer.Application.Core.Factories;
-using InvenireServer.Application.Core.Mappers;
-using InvenireServer.Application.Core.Validators;
-using InvenireServer.Domain.Core.Dtos.Employees;
-using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Exceptions.Common;
-using InvenireServer.Domain.Core.Interfaces.Common;
-using InvenireServer.Domain.Core.Interfaces.Factories;
-using InvenireServer.Infrastructure.Persistence;
-using InvenireServer.Presentation.Middleware;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using InvenireServer.Infrastructure.Email;
+using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Presentation.Middleware;
+using InvenireServer.Application.Core.Mappers;
+using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Application.Core.Factories;
+using InvenireServer.Application.Core.Validators;
+using InvenireServer.Domain.Core.Interfaces.Email;
+using InvenireServer.Domain.Core.Exceptions.Common;
+using InvenireServer.Domain.Core.Interfaces.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Domain.Core.Interfaces.Factories;
 
 namespace InvenireServer.Presentation.Extensions;
 
@@ -57,6 +60,8 @@ public static class ServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
                 };
             });
+        services.AddAuthorizationBuilder()
+            .AddPolicy(JwtFactory.Policies.EMPLOYEE, policy => policy.RequireRole(JwtFactory.Policies.EMPLOYEE));
     }
 
     /// <summary>
@@ -101,15 +106,19 @@ public static class ServiceExtensions
                        .Select(e => e.ErrorMessage)
                        .ToList();
 
-                    // Filter out default error message for empty request body which reveals internal information.
-                    var predicate = (string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
-                    if (errors.Any(predicate))
+                    if (errors.Any(HasDefaultErrorMessages))
                     {
-                        errors = [.. errors.Where(err => !predicate(err))];
-                        errors.Add("Request body is empty or missing fields.");
+                        errors =
+                        [
+                            .. errors.Where(err => !HasDefaultErrorMessages(err)),
+                            "Request body is empty or missing fields."
+                        ];
                     }
 
                     throw new ValidationException(errors);
+
+                    // Filter out default error message for empty request body which reveals internal information.
+                    bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
                 };
         });
         services.AddExceptionHandler<ExceptionHandler>();
@@ -133,9 +142,19 @@ public static class ServiceExtensions
                     QueueLimit = 0,
                     TokensPerPeriod = 1,
                     AutoReplenishment = true,
-                    ReplenishmentPeriod = TimeSpan.FromMinutes(15),
+                    ReplenishmentPeriod = TimeSpan.FromMinutes(15)
                 });
             });
         });
+    }
+
+    /// <summary>
+    /// Configures email service for the application.
+    /// </summary>
+    /// <param name="configuration">The application's configuration used to configure the SMTP settings.</param>
+    public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IEmailSender, EmailSender>(_ => EmailSenderFactory.Initiate(configuration));
+        services.AddScoped<IEmailManager, EmailManager>();
     }
 }

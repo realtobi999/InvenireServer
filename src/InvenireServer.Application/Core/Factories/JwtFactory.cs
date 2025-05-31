@@ -2,9 +2,9 @@ using System.Text;
 using System.Text.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Configuration;
 using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Factories;
-using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Core.Factories;
 
@@ -13,6 +13,11 @@ public class JwtFactory : IJwtFactory
     public string Issuer { get; set; }
     public string SigningKey { get; set; }
     public TimeSpan ExpirationTime { get; set; }
+
+    public static class Policies
+    {
+        public const string EMPLOYEE = "EMPLOYEE";
+    }
 
     private const int DefaultExpirationTime = 30;
 

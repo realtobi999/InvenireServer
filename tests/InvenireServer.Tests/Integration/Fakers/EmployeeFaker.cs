@@ -3,7 +3,7 @@ using InvenireServer.Tests.Integration.Extensions;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 
-public class EmployeeFaker : Faker<Employee>
+public sealed class EmployeeFaker : Faker<Employee>
 {
     public EmployeeFaker()
     {

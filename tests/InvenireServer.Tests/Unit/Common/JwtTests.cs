@@ -66,11 +66,6 @@ public class JwtTests
     public void Parse_ThrowsExceptionWhenIncorrectJwtFormat()
     {
         // Prepare.
-        var header = new List<Claim>
-        {
-            new("alg", "HS256"),
-            new("typ", "JWT")
-        };
         var payload = new List<Claim>
         {
             new("sub", "1234567890"),

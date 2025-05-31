@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Exceptions.Http;
+using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
@@ -50,18 +54,41 @@ public class EmployeeController : ControllerBase
             }
 
             var jwt = _jwt.Create([
-                new("role", nameof(Employee).ToUpper()),
-                new("employee_id", employee.Id.ToString()),
+                new("role", JwtFactory.Policies.EMPLOYEE),
+                new("employee_id", employee.Id.ToString())
             ]);
 
             return Ok(new LoginEmployeeResponseDto
             {
-                Token = jwt.Write(),
+                Token = jwt.Write()
             });
         }
         catch (NotFound404Exception)
         {
             throw new NotAuthorized401Exception("Invalid email or password.");
         }
+    }
+
+    [Authorize(Policy = JwtFactory.Policies.EMPLOYEE)]
+    [HttpPost("/api/auth/employee/email-verification/send")]
+    public async Task<IActionResult> SendEmailVerification()
+    {
+        var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
+
+        var employee = await _services.Employees.GetAsync(jwt);
+        await _services.Employees.SendEmailVerificationAsync(employee, HttpContext.Request);
+
+        return NoContent();
+    }
+
+    [HttpGet("/api/auth/employee/email-verification/confirm")]
+    public async Task<IActionResult> ConfirmEmailVerification(string token)
+    {
+        var jwt = Jwt.Parse(token);
+
+        var employee = await _services.Employees.GetAsync(jwt);
+        await _services.Employees.ConfirmEmailVerificationAsync(employee);
+
+        return NoContent();
     }
 }

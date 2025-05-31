@@ -13,7 +13,7 @@ public static class EmployeeTestExtensions
             Name = employee.Name,
             EmailAddress = employee.EmailAddress,
             Password = employee.Password,
-            PasswordConfirm = employee.Password,
+            PasswordConfirm = employee.Password
         };
 
         return dto;

@@ -13,7 +13,11 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
     /// <inheritdoc/>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services => { services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName); });
+        builder.ConfigureServices(services =>
+        {
+            services.ReplaceWithFakeEmailSender();
+            services.ReplaceWithInMemoryDatabase<InvenireServerContext>(_dbName);
+        });
 
         // Set the environment to Production.
         builder.ConfigureAppConfiguration((context, _) =>

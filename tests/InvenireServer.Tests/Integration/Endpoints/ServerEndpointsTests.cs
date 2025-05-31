@@ -7,12 +7,11 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 public class ServerEndpointsTests
 {
     private readonly HttpClient _client;
-    private readonly ServerFactory<Program> _app;
 
     public ServerEndpointsTests()
     {
-        _app = new ServerFactory<Program>();
-        _client = _app.CreateDefaultClient();
+        var app = new ServerFactory<Program>();
+        _client = app.CreateDefaultClient();
     }
 
     [Fact]
@@ -27,7 +26,7 @@ public class ServerEndpointsTests
     public async Task AuthCheck_ReturnsCorrectStatusCodes()
     {
         // Prepare.
-        var jwt = JwtFaker.Create([]);
+        var jwt = new JwtFaker().Create([]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
 
         // Act & Assert.
