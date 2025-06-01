@@ -2,16 +2,18 @@ using Bogus.DataSets;
 
 namespace InvenireServer.Tests.Integration.Extensions;
 
+/// <summary>
+/// Provides extension methods for the <see cref="Internet"/> faker to generate secure test data.
+/// </summary>
 public static class FakerTestExtensions
 {
-
     /// <summary>
-    /// Generates a randomized, secure-looking password that includes at least one uppercase letter,
-    /// one digit, and a mix of lowercase letters.
+    /// Generates a secure random password containing at least one uppercase letter, one digit, and the remaining characters as lowercase letters.
     /// </summary>
-    /// <param name="length">The desired length of the password. Must be at least 3.</param>
-    /// <returns>A randomized password string satisfying the constraints.</returns>
-    /// <exception cref="ArgumentException">Thrown if the specified length is less than 3.</exception>
+    /// <param name="_">The <see cref="Internet"/> faker instance (ignored).</param>
+    /// <param name="length">The desired length of the generated password. Must be at least 3.</param>
+    /// <returns>A randomly generated secure password string.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="length"/> is less than 3.</exception>
     public static string SecurePassword(this Internet _, int length = 8)
     {
         var faker = new Faker();

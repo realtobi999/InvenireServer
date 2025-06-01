@@ -3,8 +3,14 @@ using InvenireServer.Tests.Integration.Extensions;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 
+/// <summary>
+/// Generates realistic fake <see cref="Employee"/> instances for testing purposes using Bogus.
+/// </summary>
 public sealed class EmployeeFaker : Faker<Employee>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmployeeFaker"/> class, configuring rules to generate fake employee data for all relevant properties.
+    /// </summary>
     public EmployeeFaker()
     {
         RuleFor(e => e.Id, f => f.Random.Guid());

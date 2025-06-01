@@ -8,18 +8,12 @@ using InvenireServer.Domain.Core.Interfaces.Factories;
 
 namespace InvenireServer.Application.Core.Factories;
 
+/// <summary>
+/// Factory for generating JWT tokens with customizable claims and configuration-based settings.
+/// </summary>
 public class JwtFactory : IJwtFactory
 {
-    public string Issuer { get; set; }
-    public string SigningKey { get; set; }
-    public TimeSpan ExpirationTime { get; set; }
-
-    public static class Policies
-    {
-        public const string EMPLOYEE = "EMPLOYEE";
-    }
-
-    private const int DefaultExpirationTime = 30;
+    private const int DEFAULT_EXPIRATION_TIME = 30;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JwtFactory"/> class with the specified key, issuer, and optional expiration time.
@@ -27,11 +21,37 @@ public class JwtFactory : IJwtFactory
     /// <param name="key">The signing key used to sign the JWT token.</param>
     /// <param name="issuer">The issuer of the JWT token.</param>
     /// <param name="expiration">The expiration time in minutes (default is 30 minutes).</param>
-    public JwtFactory(string key, string issuer, int expiration = DefaultExpirationTime)
+    public JwtFactory(string key, string issuer, int expiration = DEFAULT_EXPIRATION_TIME)
     {
         Issuer = issuer;
         SigningKey = key;
         ExpirationTime = TimeSpan.FromMinutes(expiration);
+    }
+
+    /// <summary>
+    /// The issuer claim for the JWT token.
+    /// </summary>
+    public string Issuer { get; set; }
+
+    /// <summary>
+    /// The secret key used to sign the JWT token.
+    /// </summary>
+    public string SigningKey { get; set; }
+
+    /// <summary>
+    /// The duration for which the token remains valid after being issued.
+    /// </summary>
+    public TimeSpan ExpirationTime { get; set; }
+
+    /// <summary>
+    /// Contains constants representing supported authorization policies.
+    /// </summary>
+    public static class Policies
+    {
+        /// <summary>
+        /// Authorization policy required for employee access.
+        /// </summary>
+        public const string EMPLOYEE = "EMPLOYEE";
     }
 
     /// <summary>
@@ -48,7 +68,7 @@ public class JwtFactory : IJwtFactory
         var expiration = configuration.GetValue<string>("Jwt:ExpirationTime");
         if (string.IsNullOrWhiteSpace(expiration))
         {
-            ExpirationTime = TimeSpan.FromMinutes(DefaultExpirationTime);
+            ExpirationTime = TimeSpan.FromMinutes(DEFAULT_EXPIRATION_TIME);
         }
 
         if (!int.TryParse(expiration, out var minutes))

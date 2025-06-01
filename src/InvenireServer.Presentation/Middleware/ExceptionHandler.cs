@@ -12,6 +12,7 @@ namespace InvenireServer.Presentation.Middleware;
 /// </summary>
 public class ExceptionHandler : IExceptionHandler
 {
+    /// <inheritdoc/>
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken token)
     {
         switch (exception)

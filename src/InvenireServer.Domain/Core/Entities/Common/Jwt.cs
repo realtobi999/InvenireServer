@@ -5,7 +5,7 @@ using System.Security.Claims;
 namespace InvenireServer.Domain.Core.Entities.Common;
 
 /// <summary>
-/// Represents a JSON Web Token (JWT) consisting of a header, payload, and signature.
+/// Represents a JSON Web Token (JWT).
 /// </summary>
 public sealed class Jwt
 {

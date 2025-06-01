@@ -6,12 +6,13 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class ServerEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
 
     public ServerEndpointsTests()
     {
-        var app = new ServerFactory<Program>();
-        _client = app.CreateDefaultClient();
+        _app = new ServerFactory<Program>();
+        _client = _app.CreateDefaultClient();
     }
 
     [Fact]

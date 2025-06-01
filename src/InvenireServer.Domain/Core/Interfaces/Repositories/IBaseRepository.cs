@@ -2,6 +2,10 @@ using System.Linq.Expressions;
 
 namespace InvenireServer.Domain.Core.Interfaces.Repositories;
 
+/// <summary>
+/// Defines a contract for generic repository for basic CRUD operations on entities of type <typeparamref name="T"/>.
+/// </summary>
+/// <typeparam name="T">The entity type.</typeparam>
 public interface IBaseRepository<T> where T : class
 {
     /// <summary>
