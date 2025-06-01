@@ -55,7 +55,7 @@ public class EmployeeController : ControllerBase
     }
 
     /// <summary>
-    /// Authenticates an employee and returns a JWT token on successful login.
+    /// Authenticates an employee and returns a JWT on successful login.
     /// </summary>
     /// <param name="dto">Login data transfer object containing email and password.</param>
     /// <returns>Returns an OK response with a JWT token if authentication is successful.</returns>
