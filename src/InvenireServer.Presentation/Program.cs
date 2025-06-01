@@ -1,14 +1,21 @@
 using Serilog;
 using InvenireServer.Application.Services;
 using InvenireServer.Presentation.Extensions;
+using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
-using InvenireServer.Application.Core.Factories;
 
 namespace InvenireServer.Presentation;
 
+/// <summary>
+/// The application entry point class responsible for configuring and running the web application.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// The main entry point method which configures services, middleware, and runs the web application.
+    /// </summary>
+    /// <param name="args">The command-line arguments passed to the application.</param>
     private static void Main(string[] args)
     {
         try
@@ -36,7 +43,6 @@ public class Program
             {
                 app.UseSerilogRequestLogging();
 
-                // Production environment configuration.
                 if (app.Environment.IsProduction())
                 {
                     app.UseExceptionHandler(_ => { });
@@ -51,7 +57,7 @@ public class Program
         }
         catch (Exception exception)
         {
-            Log.Fatal(exception, "Unhandled exception while starting the application,");
+            Log.Fatal(exception, "Unhandled exception while starting the application.");
         }
         finally
         {

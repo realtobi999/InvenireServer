@@ -3,8 +3,16 @@ using InvenireServer.Domain.Core.Dtos.Employees;
 
 namespace InvenireServer.Tests.Integration.Extensions;
 
+/// <summary>
+/// Provides extension methods for the <see cref="Employee"/> class to support test scenarios.
+/// </summary>
 public static class EmployeeTestExtensions
 {
+    /// <summary>
+    /// Converts an <see cref="Employee"/> instance to a <see cref="RegisterEmployeeDto"/> with matching property values.
+    /// </summary>
+    /// <param name="employee">The employee entity to convert.</param>
+    /// <returns>A new <see cref="RegisterEmployeeDto"/> instance populated with the employee's data.</returns>
     public static RegisterEmployeeDto ToRegisterEmployeeDto(this Employee employee)
     {
         var dto = new RegisterEmployeeDto

@@ -2,8 +2,19 @@ using InvenireServer.Domain.Core.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 
+/// <summary>
+/// Provides extension methods for working with HTTP context headers.
+/// </summary>
 public static class HttpContextExtensions
 {
+    /// <summary>
+    /// Extracts the Bearer token from the Authorization header.
+    /// </summary>
+    /// <param name="headers">The collection of HTTP request headers.</param>
+    /// <returns>The Bearer token string if found and valid.</returns>
+    /// <exception cref="BadRequest400Exception">
+    /// Thrown when the Authorization header is missing, not in the expected format, or the token part is empty or missing.
+    /// </exception>
     public static string ParseBearerToken(this IHeaderDictionary headers)
     {
         var header = headers.Authorization.ToString();
