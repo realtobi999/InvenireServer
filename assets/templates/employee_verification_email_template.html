@@ -54,27 +54,32 @@
             text-align: center;
             clear: both;
         }
+
+        .content a {
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h2>Email Verification</h2>
+    <div class="container">
+        <div class="header">
+            <h2>Email Verification</h2>
+        </div>
+        <div class="content">
+            <p>Dear @Model.EmployeeName,</p>
+            <p>Thank you for registering. Please confirm your email address to complete your account setup.</p>
+            <p style="text-align: center;">
+                <a href="@Model.VerificationLink" target="_blank" class="button">Verify Email Address</a>
+            </p>
+            <p>If the button above doesn't work, you can also copy and paste the following link into your browser:</p>
+            <p><a href="@Model.VerificationLink">@Model.VerificationLink</a></p>
+            <p>Best regards,</p>
+            <p>Invenire.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; Invenire</p>
+        </div>
     </div>
-    <div class="content">
-        <p>Dear @Model.EmployeeName,</p>
-        <p>Thank you for registering. Please confirm your email address to complete your account setup.</p>
-        <p style="text-align: center;">
-            <a href="@Model.VerificationLink" target="_blank" class="button">Verify Email Address</a>
-        </p>
-        <p>If the button above doesn't work, you can also copy and paste the following link into your browser:</p>
-        <p><a href="@Model.VerificationLink">@Model.VerificationLink</a></p>
-        <p>Best regards,</p>
-        <p>Invenire.</p>
-    </div>
-    <div class="footer">
-        <p>&copy; Invenire</p>
-    </div>
-</div>
 </body>
 </html>
