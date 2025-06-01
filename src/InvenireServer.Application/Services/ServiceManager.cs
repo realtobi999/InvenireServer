@@ -1,5 +1,6 @@
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Services;
 
@@ -13,12 +14,13 @@ public class ServiceManager : IServiceManager
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceManager"/> class.
     /// </summary>
-    /// <param name="repositories">Provides access to repository operations.</param>
-    /// <param name="factories">Provides access to factory-created services like validators and JWT tools.</param>
-    /// <param name="email">Handles email-related functionality for services.</param>
-    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email)
+    /// <param name="repositories">The repository manager for data access dependencies.</param>
+    /// <param name="factories">The factory manager used to resolve validators and JWT utilities.</param>
+    /// <param name="email">The email manager used for building and sending messages.</param>
+    /// <param name="configuration">The application configuration provider.</param>
+    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration)
     {
-        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email));
+        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, configuration));
     }
 
     /// <inheritdoc/>

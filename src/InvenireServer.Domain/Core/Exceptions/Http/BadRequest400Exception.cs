@@ -8,13 +8,6 @@ namespace InvenireServer.Domain.Core.Exceptions.Http;
 /// </summary>
 public class BadRequest400Exception : Exception, IHttpException
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BadRequest400Exception"/> class with no message.
-    /// </summary>
-    public BadRequest400Exception()
-    {
-    }
-
     /// <inheritdoc/>
     public BadRequest400Exception(string message) : base(message)
     {

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using InvenireServer.Domain.Core.Dtos.Employees.Emails;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Domain.Core.Entities.Common;
 using Microsoft.AspNetCore.Http;
@@ -40,8 +41,7 @@ public interface IEmployeeService
     /// Sends an email verification message to the specified employee.
     /// </summary>
     /// <param name="employee">The employee to send verification to.</param>
-    /// <param name="request">The HTTP request context for generating URLs.</param>
-    Task SendEmailVerificationAsync(Employee employee, HttpRequest request);
+    Task SendEmailVerificationAsync(Employee employee);
 
     /// <summary>
     /// Confirms the employee's email verification status.

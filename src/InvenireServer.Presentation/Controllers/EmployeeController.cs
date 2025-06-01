@@ -22,6 +22,7 @@ public class EmployeeController : ControllerBase
 {
     private readonly IJwtFactory _jwt;
     private readonly IServiceManager _services;
+    private readonly IConfiguration _configuration;
     private readonly IPasswordHasher<Employee> _hasher;
     private readonly IMapper<Employee, RegisterEmployeeDto> _mapper;
 
@@ -31,12 +32,14 @@ public class EmployeeController : ControllerBase
     /// <param name="services">Service manager providing business logic operations.</param>
     /// <param name="hasher">Password hasher for employee password verification.</param>
     /// <param name="factories">Factory manager providing JWT and mapping factories.</param>
-    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IFactoryManager factories)
+    /// <param name="configuration">The application configuration provider.</param>
+    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IFactoryManager factories, IConfiguration configuration)
     {
         _jwt = factories.Jwt;
         _mapper = factories.Mappers.Initiate<Employee, RegisterEmployeeDto>();
         _hasher = hasher;
         _services = services;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -59,7 +62,6 @@ public class EmployeeController : ControllerBase
     /// </summary>
     /// <param name="dto">Login data transfer object containing email and password.</param>
     /// <returns>Returns an OK response with a JWT token if authentication is successful.</returns>
-    /// <exception cref="NotAuthorized401Exception">Thrown when login credentials are invalid.</exception>
     [EnableRateLimiting("LoginPolicy")]
     [HttpPost("/api/auth/employee/login")]
     public async Task<IActionResult> LoginEmployee(LoginEmployeeDto dto)
@@ -100,20 +102,24 @@ public class EmployeeController : ControllerBase
         var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
         var employee = await _services.Employees.GetAsync(jwt);
-        await _services.Employees.SendEmailVerificationAsync(employee, HttpContext.Request);
+        await _services.Employees.SendEmailVerificationAsync(employee);
 
         return NoContent();
     }
 
     /// <summary>
-    /// Confirms the employee's email verification using the provided token.
+    /// Confirms the email verification for the authenticated employee based on the JWT.
     /// </summary>
-    /// <param name="token">The JWT token containing email verification data.</param>
-    /// <returns>Returns a NoContent response after successful verification.</returns>
-    [HttpGet("/api/auth/employee/email-verification/confirm")]
-    public async Task<IActionResult> ConfirmEmailVerification(string token)
+    /// <returns>Returns a NoContent response after the email verification status is updated.</returns>
+    [Authorize(Policy = JwtFactory.Policies.EMPLOYEE)]
+    [HttpPost("/api/auth/employee/email-verification/confirm")]
+    public async Task<IActionResult> ConfirmEmailVerification()
     {
-        var jwt = Jwt.Parse(token);
+        var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
+        if (!jwt.Payload.Any(c => c.Type == "email_verification" && c.Value == bool.TrueString))
+        {
+            throw new NotAuthorized401Exception("Email verification claim missing or invalid.");
+        }
 
         var employee = await _services.Employees.GetAsync(jwt);
         await _services.Employees.ConfirmEmailVerificationAsync(employee);
