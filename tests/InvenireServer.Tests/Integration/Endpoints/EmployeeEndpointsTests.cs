@@ -47,51 +47,6 @@ public class EmployeeEndpointsTests
         createdEmployee!.Password.Should().NotBe(employee.Password);
     }
 
-    [Fact]
-    public async Task LoginEmployee_Returns200AndJwtIsReturned()
-    {
-        // Prepare.
-        var employee = new EmployeeFaker().Generate();
-
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Act & Assert.
-        var dto = new LoginEmployeeDto
-        {
-            EmailAddress = employee.EmailAddress,
-            Password = employee.Password
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var body = await response.Content.ReadFromJsonAsync<LoginEmployeeResponseDto>();
-        body.Should().NotBeNull();
-
-        // Assert that the JWT has all the necessary claims.
-        var jwt = JwtBuilder.Parse(body!.Token);
-        jwt.Payload.Should().Contain(c => c.Type == "role");
-        jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
-    }
-
-    [Fact]
-    public async Task LoginEmployee_Returns401WhenBadCredentials()
-    {
-        // Prepare.
-        var employee = new EmployeeFaker().Generate();
-
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Act & Assert.
-        var dto = new LoginEmployeeDto
-        {
-            EmailAddress = employee.EmailAddress,
-            Password = new Faker().Internet.SecurePassword() // Generate a random password.
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
 
     [Fact]
     public async Task SendEmailVerification_Returns204AndEmailIsSentWithTheACorrectLink()
@@ -164,5 +119,65 @@ public class EmployeeEndpointsTests
 
         // Assert that the employee has a verified email.
         updatedEmployee!.IsVerified.Should().Be(true);
+    }
+
+    [Fact]
+    public async Task LoginEmployee_Returns200AndJwtIsReturned()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString),
+            new("purpose", "email_verification")
+        ]))}");
+        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Act & Assert.
+        var dto = new LoginEmployeeDto
+        {
+            EmailAddress = employee.EmailAddress,
+            Password = employee.Password
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var body = await response.Content.ReadFromJsonAsync<LoginEmployeeResponseDto>();
+        body.Should().NotBeNull();
+
+        // Assert that the JWT has all the necessary claims.
+        var jwt = JwtBuilder.Parse(body!.Token);
+        jwt.Payload.Should().Contain(c => c.Type == "role");
+        jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
+    }
+
+    [Fact]
+    public async Task LoginEmployee_Returns401WhenBadCredentials()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString),
+            new("purpose", "email_verification")
+        ]))}");
+        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Act & Assert.
+        var dto = new LoginEmployeeDto
+        {
+            EmailAddress = employee.EmailAddress,
+            Password = new Faker().Internet.SecurePassword() // Generate a random password.
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

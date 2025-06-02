@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Exceptions.Http;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Application.Core.Authentication;
 
 namespace InvenireServer.Presentation.Controllers;
@@ -52,31 +52,6 @@ public class EmployeeController : ControllerBase
     }
 
     /// <summary>
-    /// Authenticates an employee and returns a JWT on successful login.
-    /// </summary>
-    /// <param name="dto">Login data transfer object containing email and password.</param>
-    /// <returns>Returns an OK response with a JWT token if authentication is successful.</returns>
-    [EnableRateLimiting("LoginPolicy")]
-    [HttpPost("/api/auth/employee/login")]
-    public async Task<IActionResult> LoginEmployee(LoginEmployeeDto dto)
-    {
-        var employee = await _services.Employees.GetAsync(e => e.EmailAddress == dto.EmailAddress);
-
-        var hasher = new PasswordHasher<Employee>();
-        if (hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
-        {
-            throw new NotAuthorized401Exception();
-        }
-
-        var jwt = _services.Employees.CreateJwt(employee);
-
-        return Ok(new LoginEmployeeResponseDto
-        {
-            Token = _jwt.Writer.Write(jwt)
-        });
-    }
-
-    /// <summary>
     /// Sends an email verification link to the authenticated employee.
     /// </summary>
     /// <returns>Returns a NoContent response after the email has been sent.</returns>
@@ -103,12 +78,56 @@ public class EmployeeController : ControllerBase
         var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
         if (!jwt.Payload.Any(c => c.Type == "purpose" && c.Value == "email_verification"))
         {
-            throw new NotAuthorized401Exception("Indication that the token is used for email verification is missing.");
+            throw new Unauthorized401Exception("Indication that the token is used for email verification is missing.");
         }
 
         var employee = await _services.Employees.GetAsync(jwt);
         await _services.Employees.ConfirmEmailVerificationAsync(employee);
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Authenticates an employee and returns a JWT on successful login.
+    /// </summary>
+    /// <param name="dto">Login data transfer object containing email and password.</param>
+    /// <returns>Returns an OK response with a JWT token if authentication is successful.</returns>
+    [EnableRateLimiting("LoginPolicy")]
+    [HttpPost("/api/auth/employee/login")]
+    public async Task<IActionResult> LoginEmployee(LoginEmployeeDto dto)
+    {
+        // Retrieves the employee and returns 401 unauthorized if the user is not found.
+        Employee employee;
+        try
+        {
+            employee = await _services.Employees.GetAsync(e => e.EmailAddress == dto.EmailAddress);
+        }
+        catch (NotFound404Exception)
+        {
+            throw new Unauthorized401Exception("Invalid credentials.");
+        }
+
+        // Make sure that the employee is verified before logging in.
+        if (!employee.IsVerified)
+        {
+            throw new Unauthorized401Exception("Email verification required to proceed.");
+        }
+
+        // Validate the provided credentials.
+        var hasher = new PasswordHasher<Employee>();
+        if (hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
+        {
+            throw new Unauthorized401Exception("Invalid credentials.");
+        }
+
+        // Updates the timestamp of the user's last login.
+        employee.LastLoginAt = DateTimeOffset.Now;
+        await _services.Employees.UpdateAsync(employee);
+
+        var jwt = _services.Employees.CreateJwt(employee);
+        return Ok(new LoginEmployeeResponseDto
+        {
+            Token = _jwt.Writer.Write(jwt)
+        });
     }
 }

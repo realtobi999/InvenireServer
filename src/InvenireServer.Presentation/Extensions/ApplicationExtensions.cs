@@ -9,10 +9,10 @@ namespace InvenireServer.Presentation.Extensions;
 public static class ApplicationExtensions
 {
     /// <summary>
-    /// Configures the application to throw a <see cref="NotAuthorized401Exception"/> when a response with status code 401 (Unauthorized) is generated.
+    /// Configures the application to throw a <see cref="Unauthorized401Exception"/> when a response with status code 401 (Unauthorized) is generated.
     /// </summary>
     /// <param name="app">The <see cref="WebApplication"/> to configure.</param>
-    /// <exception cref="NotAuthorized401Exception">Thrown when the response status code is 401.</exception>
+    /// <exception cref="Unauthorized401Exception">Thrown when the response status code is 401.</exception>
     public static void ConfigureStatusCodePages(this WebApplication app)
     {
         app.UseStatusCodePages(context =>
@@ -22,7 +22,7 @@ public static class ApplicationExtensions
             switch (response.StatusCode)
             {
                 case (int)HttpStatusCode.Unauthorized:
-                    throw new NotAuthorized401Exception();
+                    throw new Unauthorized401Exception();
                 case (int)HttpStatusCode.Forbidden:
                     throw new Forbidden403Exception();
             }

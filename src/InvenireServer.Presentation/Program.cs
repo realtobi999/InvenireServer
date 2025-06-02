@@ -5,6 +5,7 @@ using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
 using InvenireServer.Application.Core.Authentication;
+using InvenireServer.Domain.Core.Interfaces.Services;
 
 namespace InvenireServer.Presentation;
 
@@ -21,6 +22,8 @@ public class Program
     {
         try
         {
+            Log.Information("-----------------------------------------------------------");
+
             var builder = WebApplication.CreateBuilder(args);
             {
                 builder.Host.ConfigureSerilog(builder.Configuration);
@@ -40,6 +43,7 @@ public class Program
                 builder.Services.AddScoped<IFactoryManager, FactoryManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
                 builder.Services.AddControllers();
+                builder.Services.AddHostedService<EmployeeCleanupService>();
             }
             var app = builder.Build();
             {

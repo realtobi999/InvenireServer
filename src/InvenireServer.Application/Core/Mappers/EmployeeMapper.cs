@@ -37,7 +37,8 @@ public class EmployeeMapper : IMapper<Employee, RegisterEmployeeDto>
             IsVerified = false,
             Password = dto.Password,
             UpdatedAt = null,
-            CreatedAt = DateTimeOffset.Now
+            CreatedAt = DateTimeOffset.Now,
+            LastLoginAt = null,
         };
 
         // Hash the password.

@@ -43,6 +43,11 @@ public class Employee
     /// </summary>
     public required DateTimeOffset CreatedAt { get; set; }
 
+    /// <summary>
+    /// Date and time of the employee's last successful login. Null if never logged in.
+    /// </summary>
+    public required DateTimeOffset? LastLoginAt { get; set; }
+
     // Navigational Properties.
 
     /// <summary>
