@@ -6,22 +6,25 @@ using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;
 using Microsoft.Extensions.DependencyInjection;
-using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Domain.Core.Interfaces.Email;
+using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Application.Core.Authentication;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
+    private readonly IJwtManager _jwt;
     private readonly HttpClient _client;
     private readonly ServerFactory<Program> _app;
 
     public EmployeeEndpointsTests()
     {
         _app = new ServerFactory<Program>();
+        _jwt = new JwtManagerFaker().Initiate();
         _client = _app.CreateDefaultClient();
     }
 
@@ -66,7 +69,7 @@ public class EmployeeEndpointsTests
         body.Should().NotBeNull();
 
         // Assert that the JWT has all the necessary claims.
-        var jwt = Jwt.Parse(body!.Token);
+        var jwt = JwtBuilder.Parse(body!.Token);
         jwt.Payload.Should().Contain(c => c.Type == "role");
         jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
     }
@@ -95,12 +98,13 @@ public class EmployeeEndpointsTests
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
-        var jwt = new JwtFaker().Create([
-            new("role", JwtFactory.Policies.EMPLOYEE),
-            new("employee_id", employee.Id.ToString())
-        ]);
 
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+        var jwt = _jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString)
+        ]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
         (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 
@@ -111,18 +115,21 @@ public class EmployeeEndpointsTests
         var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
         email.CapturedMessages.Count.Should().Be(1);
 
-        // Assert that the email message is properly constructed.
         var message = email.CapturedMessages[0];
+
+        // Assert that the email message is properly constructed and contains a verification link.
         message.To.Should().ContainSingle(t => t.Address == employee.EmailAddress);
         message.Subject.Should().Contain("verify your email");
         message.Body.Should().NotBeNull();
-        // Assert that the email body contains a verification link with a valid JWT that includes all required claims.
         message.Body.Should().MatchRegex(@"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
+
         var match = Regex.Match(message.Body, @"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
-        var token = Jwt.Parse(match.Groups[1].Value);
+        var token = JwtBuilder.Parse(match.Groups[1].Value);
+
+        // Assert that the token in the verification link contains all important claims.
         token.Payload.Should().Contain(c => c.Type == "role" && c.Value == nameof(Employee).ToUpper());
         token.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
-        token.Payload.Should().Contain(c => c.Type == "email_verification" && c.Value == bool.TrueString);
+        token.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }
 
     [Fact]
@@ -130,23 +137,23 @@ public class EmployeeEndpointsTests
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
-        var jwt = new JwtFaker().Create([
-            new("role", JwtFactory.Policies.EMPLOYEE),
-            new("employee_id", employee.Id.ToString())
-        ]);
 
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+        var jwt = _jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString)
+        ]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
         (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        // Extract the token from the verification link and call the backend endpoint directly.
         var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
-        email.CapturedMessages.Count.Should().Be(1);
+
+        // Extract the token from the verification link and call the backend endpoint directly.
         var match = Regex.Match(email.CapturedMessages[0].Body, @"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
-        var token = Jwt.Parse(match.Groups[1].Value);
         _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {token.Write()}");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(JwtBuilder.Parse(match.Groups[1].Value))}");
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync($"/api/auth/employee/email-verification/confirm", new object());
@@ -156,6 +163,6 @@ public class EmployeeEndpointsTests
         var updatedEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
 
         // Assert that the employee has a verified email.
-        updatedEmployee!.IsEmailAddressVerified.Should().Be(true);
+        updatedEmployee!.IsVerified.Should().Be(true);
     }
 }

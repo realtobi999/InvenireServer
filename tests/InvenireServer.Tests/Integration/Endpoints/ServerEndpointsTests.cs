@@ -1,20 +1,22 @@
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;
+using InvenireServer.Domain.Core.Interfaces.Managers;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class ServerEndpointsTests
 {
-    private readonly ServerFactory<Program> _app;
+    private readonly IJwtManager _jwt;
     private readonly HttpClient _client;
+    private readonly ServerFactory<Program> _app;
 
     public ServerEndpointsTests()
     {
         _app = new ServerFactory<Program>();
+        _jwt = new JwtManagerFaker().Initiate();
         _client = _app.CreateDefaultClient();
     }
-
     [Fact]
     public async Task HealthCheck_ReturnsStatusCode200()
     {
@@ -27,8 +29,8 @@ public class ServerEndpointsTests
     public async Task AuthCheck_ReturnsCorrectStatusCodes()
     {
         // Prepare.
-        var jwt = new JwtFaker().Create([]);
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {jwt.Write()}");
+        var jwt = _jwt.Builder.Build([]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
         // Act & Assert.
         var response1 = await _client.GetAsync("/api/server/auth-check");

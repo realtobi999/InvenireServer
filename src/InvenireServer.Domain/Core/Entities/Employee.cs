@@ -30,7 +30,7 @@ public class Employee
     /// <summary>
     /// Indicates whether the employee's email address has been verified.
     /// </summary>
-    public required bool IsEmailAddressVerified { get; set; }
+    public required bool IsVerified { get; set; }
 
     /// <summary>
     /// Date and time of the most recent update to the employee record.

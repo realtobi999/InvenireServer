@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Core.Dtos.Employees.Emails;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Domain.Core.Entities.Common;
-using Microsoft.AspNetCore.Http;
 
 namespace InvenireServer.Domain.Core.Interfaces.Services;
 
@@ -30,6 +28,13 @@ public interface IEmployeeService
     /// </summary>
     /// <param name="employee">The employee entity to create.</param>
     Task CreateAsync(Employee employee);
+
+    /// <summary>
+    /// Creates a new JWT for the specified employee.
+    /// </summary>
+    /// <param name="employee">The employee to generate a token for.</param>
+    /// <returns>A JWT containing the employee's claims.</returns>
+    Jwt CreateJwt(Employee employee);
 
     /// <summary>
     /// Updates an existing employee record.

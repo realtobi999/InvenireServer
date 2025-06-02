@@ -4,6 +4,7 @@ using InvenireServer.Presentation.Extensions;
 using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Infrastructure.Persistence.Managers;
+using InvenireServer.Application.Core.Authentication;
 
 namespace InvenireServer.Presentation;
 
@@ -34,6 +35,7 @@ public class Program
                 builder.Services.ConfigureErrorHandling();
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
 
+                builder.Services.AddScoped<IJwtManager, JwtManager>();
                 builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddScoped<IFactoryManager, FactoryManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();

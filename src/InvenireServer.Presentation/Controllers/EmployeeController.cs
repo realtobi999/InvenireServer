@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Presentation.Extensions;
-using InvenireServer.Application.Core.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees;
 using InvenireServer.Domain.Core.Exceptions.Http;
-using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Domain.Core.Interfaces.Factories;
+using InvenireServer.Domain.Core.Entities.Common;
+using InvenireServer.Application.Core.Authentication;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -20,26 +19,21 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class EmployeeController : ControllerBase
 {
-    private readonly IJwtFactory _jwt;
+    private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IConfiguration _configuration;
-    private readonly IPasswordHasher<Employee> _hasher;
     private readonly IMapper<Employee, RegisterEmployeeDto> _mapper;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EmployeeController"/> class.
     /// </summary>
-    /// <param name="services">Service manager providing business logic operations.</param>
-    /// <param name="hasher">Password hasher for employee password verification.</param>
-    /// <param name="factories">Factory manager providing JWT and mapping factories.</param>
-    /// <param name="configuration">The application configuration provider.</param>
-    public EmployeeController(IServiceManager services, IPasswordHasher<Employee> hasher, IFactoryManager factories, IConfiguration configuration)
+    /// <param name="services">Service manager providing business logic access.</param>
+    /// <param name="jwt">JWT manager for token handling.</param>
+    /// <param name="factories">Factory manager for creating mappers and other dependencies.</param>
+    public EmployeeController(IServiceManager services, IJwtManager jwt, IFactoryManager factories)
     {
-        _jwt = factories.Jwt;
+        _jwt = jwt;
         _mapper = factories.Mappers.Initiate<Employee, RegisterEmployeeDto>();
-        _hasher = hasher;
         _services = services;
-        _configuration = configuration;
     }
 
     /// <summary>
@@ -66,40 +60,31 @@ public class EmployeeController : ControllerBase
     [HttpPost("/api/auth/employee/login")]
     public async Task<IActionResult> LoginEmployee(LoginEmployeeDto dto)
     {
-        try
+        var employee = await _services.Employees.GetAsync(e => e.EmailAddress == dto.EmailAddress);
+
+        var hasher = new PasswordHasher<Employee>();
+        if (hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
         {
-            var employee = await _services.Employees.GetAsync(e => e.EmailAddress == dto.EmailAddress);
-
-            if (_hasher.VerifyHashedPassword(employee, employee.Password, dto.Password) == PasswordVerificationResult.Failed)
-            {
-                throw new NotAuthorized401Exception("Invalid email or password.");
-            }
-
-            var jwt = _jwt.Create([
-                new("role", JwtFactory.Policies.EMPLOYEE),
-                new("employee_id", employee.Id.ToString())
-            ]);
-
-            return Ok(new LoginEmployeeResponseDto
-            {
-                Token = jwt.Write()
-            });
+            throw new NotAuthorized401Exception();
         }
-        catch (NotFound404Exception)
+
+        var jwt = _services.Employees.CreateJwt(employee);
+
+        return Ok(new LoginEmployeeResponseDto
         {
-            throw new NotAuthorized401Exception("Invalid email or password.");
-        }
+            Token = _jwt.Writer.Write(jwt)
+        });
     }
 
     /// <summary>
     /// Sends an email verification link to the authenticated employee.
     /// </summary>
     /// <returns>Returns a NoContent response after the email has been sent.</returns>
-    [Authorize(Policy = JwtFactory.Policies.EMPLOYEE)]
+    [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/auth/employee/email-verification/send")]
     public async Task<IActionResult> SendEmailVerification()
     {
-        var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
+        var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
         var employee = await _services.Employees.GetAsync(jwt);
         await _services.Employees.SendEmailVerificationAsync(employee);
@@ -111,14 +96,14 @@ public class EmployeeController : ControllerBase
     /// Confirms the email verification for the authenticated employee based on the JWT.
     /// </summary>
     /// <returns>Returns a NoContent response after the email verification status is updated.</returns>
-    [Authorize(Policy = JwtFactory.Policies.EMPLOYEE)]
+    [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/auth/employee/email-verification/confirm")]
     public async Task<IActionResult> ConfirmEmailVerification()
     {
-        var jwt = Jwt.Parse(HttpContext.Request.Headers.ParseBearerToken());
-        if (!jwt.Payload.Any(c => c.Type == "email_verification" && c.Value == bool.TrueString))
+        var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
+        if (!jwt.Payload.Any(c => c.Type == "purpose" && c.Value == "email_verification"))
         {
-            throw new NotAuthorized401Exception("Email verification claim missing or invalid.");
+            throw new NotAuthorized401Exception("Indication that the token is used for email verification is missing.");
         }
 
         var employee = await _services.Employees.GetAsync(jwt);

@@ -6,7 +6,6 @@ using InvenireServer.Domain.Core.Exceptions.Http;
 using InvenireServer.Domain.Core.Interfaces.Common;
 using InvenireServer.Domain.Core.Interfaces.Services;
 using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Domain.Core.Dtos.Employees.Emails;
 
 namespace InvenireServer.Application.Services;
@@ -16,7 +15,7 @@ namespace InvenireServer.Application.Services;
 /// </summary>
 public class EmployeeService : IEmployeeService
 {
-    private readonly IJwtFactory _jwt;
+    private readonly IJwtManager _jwt;
     private readonly IEmailManager _email;
     private readonly IConfiguration _configuration;
     private readonly IValidator<Employee> _validator;
@@ -25,13 +24,19 @@ public class EmployeeService : IEmployeeService
     /// <summary>
     /// Initializes a new instance of the <see cref="EmployeeService"/> class.
     /// </summary>
-    /// <param name="repositories">Repository access manager for employee data.</param>
-    /// <param name="factories">Factory manager for resolving validators and JWT utilities.</param>
-    /// <param name="email">Email manager used for sending verification emails.</param>
+    /// <param name="repositories">The repository manager for data access operations.</param>
+    /// <param name="factories">The factory manager for creating validators and other services.</param>
+    /// <param name="email">The email manager for sending emails.</param>
+    /// <param name="jwt">The JWT manager for token operations.</param>
     /// <param name="configuration">The application configuration provider.</param>
-    public EmployeeService(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration)
+    public EmployeeService(
+        IRepositoryManager repositories,
+        IFactoryManager factories,
+        IEmailManager email,
+        IJwtManager jwt,
+        IConfiguration configuration)
     {
-        _jwt = factories.Jwt;
+        _jwt = jwt;
         _email = email;
         _validator = factories.Validators.Initiate<Employee>();
         _repositories = repositories;
@@ -95,12 +100,28 @@ public class EmployeeService : IEmployeeService
     }
 
     /// <summary>
+    /// Creates a JWT containing claims for the specified employee.
+    /// </summary>
+    /// <param name="employee">The employee to generate a token for.</param>
+    /// <returns>A JWT containing the employee's claims.</returns>
+    public Jwt CreateJwt(Employee employee)
+    {
+        return _jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", employee.IsVerified ? bool.TrueString : bool.FalseString)
+        ]);
+    }
+
+    /// <summary>
     /// Validates and updates an existing employee in the database.
     /// </summary>
     /// <param name="employee">The employee entity with updated data.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task UpdateAsync(Employee employee)
     {
+        employee.UpdatedAt = DateTimeOffset.UtcNow;
+
         var (valid, exception) = await _validator.ValidateAsync(employee);
         if (!valid && exception is not null) throw exception;
 
@@ -115,16 +136,16 @@ public class EmployeeService : IEmployeeService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task SendEmailVerificationAsync(Employee employee)
     {
-        var jwt = _jwt.Create([
-            new("role", nameof(Employee).ToUpper()),
-            new("employee_id", employee.Id.ToString()),
-            new("email_verification", bool.TrueString)
-        ]);
+        var jwt = CreateJwt(employee);
+
+        // Add a claim to indicate that this token is intended for email verification.
+        jwt.Payload.Add(new("purpose", "email_verification"));
+
         var dto = new EmployeeVerificationEmailDto
         {
             EmployeeName = employee.Name,
             EmployeeAddress = employee.EmailAddress,
-            VerificationLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/verify-email?token={jwt.Write()}"
+            VerificationLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
 
         var message = _email.EmployeeBuilder.BuildVerificationEmail(dto);
@@ -136,15 +157,16 @@ public class EmployeeService : IEmployeeService
     /// Confirms the employee's email verification status.
     /// </summary>
     /// <param name="employee">The employee whose email verification is to be confirmed.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="BadRequest400Exception">Thrown if the email is already verified.</exception>
     public async Task ConfirmEmailVerificationAsync(Employee employee)
     {
-        if (employee.IsEmailAddressVerified)
+        if (employee.IsVerified)
         {
             throw new BadRequest400Exception("Email is already verified.");
         }
 
-        employee.IsEmailAddressVerified = true;
+        employee.IsVerified = true;
         await UpdateAsync(employee);
     }
 }

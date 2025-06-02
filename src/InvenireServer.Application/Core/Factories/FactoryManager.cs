@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Core.Interfaces.Factories;
 using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Domain.Core.Interfaces.Factories;
 
 namespace InvenireServer.Application.Core.Factories;
 
@@ -8,7 +8,6 @@ namespace InvenireServer.Application.Core.Factories;
 /// </summary>
 public class FactoryManager : IFactoryManager
 {
-    private readonly Lazy<IJwtFactory> _jwt;
     private readonly Lazy<IMapperFactory> _mappers;
     private readonly Lazy<IValidatorFactory> _validators;
 
@@ -17,16 +16,11 @@ public class FactoryManager : IFactoryManager
     /// </summary>
     /// <param name="mappers">The factory responsible for creating mappers.</param>
     /// <param name="validators">The factory responsible for creating validators.</param>
-    /// <param name="jwt">The factory responsible for creating JWT tokens.</param>
-    public FactoryManager(IMapperFactory mappers, IValidatorFactory validators, IJwtFactory jwt)
+    public FactoryManager(IMapperFactory mappers, IValidatorFactory validators)
     {
-        _jwt = new Lazy<IJwtFactory>(jwt);
         _mappers = new Lazy<IMapperFactory>(mappers);
         _validators = new Lazy<IValidatorFactory>(validators);
     }
-
-    /// <inheritdoc/>
-    public IJwtFactory Jwt => _jwt.Value;
 
     /// <inheritdoc/>
     public IMapperFactory Mappers => _mappers.Value;

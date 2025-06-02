@@ -12,15 +12,16 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IEmployeeService> _employees;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ServiceManager"/> class.
+    /// Initializes a new instance of the <see cref="ServiceManager"/> class with the required dependencies.
     /// </summary>
-    /// <param name="repositories">The repository manager for data access dependencies.</param>
-    /// <param name="factories">The factory manager used to resolve validators and JWT utilities.</param>
-    /// <param name="email">The email manager used for building and sending messages.</param>
-    /// <param name="configuration">The application configuration provider.</param>
-    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration)
+    /// <param name="repositories">Repository manager for data access operations.</param>
+    /// <param name="factories">Factory manager used to initiate validators and other factory-bound logic.</param>
+    /// <param name="email">Email manager for sending emails.</param>
+    /// <param name="configuration">Application configuration provider.</param>
+    /// <param name="jwt">JWT manager for handling token creation and parsing.</param>
+    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration, IJwtManager jwt)
     {
-        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, configuration));
+        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, jwt, configuration));
     }
 
     /// <inheritdoc/>

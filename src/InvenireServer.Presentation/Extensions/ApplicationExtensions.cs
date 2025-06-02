@@ -19,9 +19,12 @@ public static class ApplicationExtensions
         {
             var response = context.HttpContext.Response;
 
-            if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+            switch (response.StatusCode)
             {
-                throw new NotAuthorized401Exception();
+                case (int)HttpStatusCode.Unauthorized:
+                    throw new NotAuthorized401Exception();
+                case (int)HttpStatusCode.Forbidden:
+                    throw new Forbidden403Exception();
             }
 
             return Task.CompletedTask;

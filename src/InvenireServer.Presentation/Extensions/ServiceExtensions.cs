@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using InvenireServer.Domain.Core.Options;
 using InvenireServer.Infrastructure.Email;
 using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Presentation.Middleware;
@@ -18,6 +19,7 @@ using InvenireServer.Domain.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InvenireServer.Domain.Core.Interfaces.Managers;
 using InvenireServer.Domain.Core.Interfaces.Factories;
+using InvenireServer.Domain.Core.Entities.Common;
 
 namespace InvenireServer.Presentation.Extensions;
 
@@ -49,24 +51,33 @@ public static class ServiceExtensions
     /// <param name="configuration">The application configuration used to initialize JWT settings.</param>
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
     {
-        var factory = new JwtFactory(configuration);
-        services.AddSingleton<IJwtFactory>(factory);
+        var options = configuration.GetSection("Jwt").Get<JwtOptions>() ?? throw new NullReferenceException("JWT Configuration is missing or incomplete.");
+        services.AddSingleton(options);
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+            .AddJwtBearer(opts =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                opts.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
                     ValidateLifetime = true,
+                    ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = factory.Issuer,
-                    ValidAudience = factory.Issuer,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(factory.SigningKey))
+                    ValidIssuer = options.Issuer,
+                    ValidAudience = options.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey))
                 };
             });
         services.AddAuthorizationBuilder()
-            .AddPolicy(JwtFactory.Policies.EMPLOYEE, policy => policy.RequireRole(JwtFactory.Policies.EMPLOYEE));
+            .AddPolicy(Jwt.Policies.EMPLOYEE, policy =>
+            {
+                policy.RequireRole(Jwt.Roles.EMPLOYEE);
+                policy.RequireClaim("is_verified", bool.TrueString);
+            })
+            .AddPolicy(Jwt.Policies.UNVERIFIED_EMPLOYEE, policy =>
+            {
+                policy.RequireRole(Jwt.Roles.EMPLOYEE);
+                policy.RequireClaim("is_verified", bool.FalseString);
+            });
     }
 
     /// <summary>
@@ -128,7 +139,7 @@ public static class ServiceExtensions
                     throw new ValidationException(errors);
 
                     // Filter out default error messages revealing internal info about JSON deserialization or missing DTO fields.
-                    bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
+                    static bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
                 };
         });
         services.AddExceptionHandler<ExceptionHandler>();

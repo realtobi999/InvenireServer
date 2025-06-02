@@ -8,7 +8,17 @@ namespace InvenireServer.Domain.Core.Exceptions.Http;
 /// </summary>
 public class BadRequest400Exception : Exception, IHttpException
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BadRequest400Exception"/> class with a default message.
+    /// </summary>
+    public BadRequest400Exception() : base("The request could not be understood or was missing required parameters.")
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BadRequest400Exception"/> class with a custom message.
+    /// </summary>
+    /// <param name="message">The error message.</param>
     public BadRequest400Exception(string message) : base(message)
     {
     }

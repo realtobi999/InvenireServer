@@ -8,11 +8,6 @@ namespace InvenireServer.Domain.Core.Interfaces.Managers;
 public interface IFactoryManager
 {
     /// <summary>
-    /// Gets the factory responsible for creating JWT token instances.
-    /// </summary>
-    IJwtFactory Jwt { get; }
-
-    /// <summary>
     /// Gets the factory responsible for creating mapper instances.
     /// </summary>
     IMapperFactory Mappers { get; }

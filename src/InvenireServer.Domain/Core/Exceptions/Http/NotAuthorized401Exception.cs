@@ -15,7 +15,10 @@ public class NotAuthorized401Exception : Exception, IHttpException
     {
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Initializes a new instance of <see cref="NotAuthorized401Exception"/> with a custom message.
+    /// </summary>
+    /// <param name="message">The error message.</param>
     public NotAuthorized401Exception(string message) : base(message)
     {
     }
