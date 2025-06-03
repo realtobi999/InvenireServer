@@ -2,16 +2,16 @@ using System.Net.Http.Json;
 using InvenireServer.Presentation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Application.Interfaces.Email;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;
 using Microsoft.Extensions.DependencyInjection;
-using InvenireServer.Domain.Core.Dtos.Employees;
-using InvenireServer.Domain.Core.Entities.Common;
 using InvenireServer.Tests.Integration.Extensions;
-using InvenireServer.Domain.Core.Interfaces.Email;
-using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Application.Core.Authentication;
+using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Infrastructure.Authentication;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 

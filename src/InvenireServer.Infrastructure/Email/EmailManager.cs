@@ -1,6 +1,6 @@
-using InvenireServer.Domain.Core.Interfaces.Email;
-using InvenireServer.Domain.Core.Interfaces.Email.Builders;
-using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Application.Interfaces.Email;
+using InvenireServer.Application.Interfaces.Email.Builders;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Infrastructure.Email.Builders;
 
 namespace InvenireServer.Infrastructure.Email;

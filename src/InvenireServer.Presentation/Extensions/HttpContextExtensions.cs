@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Core.Exceptions.Http;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 

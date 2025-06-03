@@ -1,7 +1,7 @@
+using InvenireServer.Application.Interfaces.Email;
 using Microsoft.EntityFrameworkCore;
 using InvenireServer.Tests.Integration.Fakers;
 using Microsoft.Extensions.DependencyInjection;
-using InvenireServer.Domain.Core.Interfaces.Email;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace InvenireServer.Tests.Integration.Server;

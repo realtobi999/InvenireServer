@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Interfaces.Repositories;
+using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;

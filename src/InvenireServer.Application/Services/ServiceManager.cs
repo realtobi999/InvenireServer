@@ -1,5 +1,6 @@
-using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Domain.Core.Interfaces.Services;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Services.Employees;
+using InvenireServer.Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Services;

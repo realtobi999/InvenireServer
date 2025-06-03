@@ -1,5 +1,5 @@
 using System.Net.Mail;
-using InvenireServer.Domain.Core.Interfaces.Email;
+using InvenireServer.Application.Interfaces.Email;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 

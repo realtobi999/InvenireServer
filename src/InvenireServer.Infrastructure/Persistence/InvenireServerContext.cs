@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Core.Entities;
+using InvenireServer.Domain.Entities;
 using InvenireServer.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 

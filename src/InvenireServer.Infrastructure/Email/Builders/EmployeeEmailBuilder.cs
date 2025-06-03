@@ -1,6 +1,6 @@
 using System.Net.Mail;
-using InvenireServer.Domain.Core.Dtos.Employees.Emails;
-using InvenireServer.Domain.Core.Interfaces.Email.Builders;
+using InvenireServer.Application.Dtos.Employees.Emails;
+using InvenireServer.Application.Interfaces.Email.Builders;
 
 namespace InvenireServer.Infrastructure.Email.Builders;
 

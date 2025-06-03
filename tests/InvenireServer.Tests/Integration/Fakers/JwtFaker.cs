@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using InvenireServer.Presentation;
 using Microsoft.Extensions.Configuration;
-using InvenireServer.Domain.Core.Options;
-using InvenireServer.Application.Core.Authentication;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Infrastructure.Authentication.Options;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 

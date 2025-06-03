@@ -1,8 +1,8 @@
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Validators;
 using Moq;
 using InvenireServer.Tests.Integration.Fakers;
-using InvenireServer.Domain.Core.Exceptions.Http;
-using InvenireServer.Application.Core.Validators;
-using InvenireServer.Domain.Core.Interfaces.Managers;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Tests.Unit.Validators;
 

@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Core.Entities;
-using InvenireServer.Domain.Core.Dtos.Employees;
+using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Tests.Integration.Extensions;
 

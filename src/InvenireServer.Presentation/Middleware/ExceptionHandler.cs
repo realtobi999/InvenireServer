@@ -1,9 +1,11 @@
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
-using InvenireServer.Domain.Core.Dtos.Common;
-using InvenireServer.Domain.Core.Interfaces.Common;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using InvenireServer.Application.Dtos.Common;
+using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Domain.Interfaces;
+using InvenireServer.Domain.Interfaces.Exceptions;
 
 namespace InvenireServer.Presentation.Middleware;
 

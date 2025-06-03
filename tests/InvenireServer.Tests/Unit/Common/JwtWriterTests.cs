@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using InvenireServer.Application.Core.Authentication;
-using InvenireServer.Domain.Core.Entities.Common;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Infrastructure.Authentication;
 
 namespace InvenireServer.Tests.Unit.Common;
 

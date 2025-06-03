@@ -1,10 +1,11 @@
 using Moq;
 using System.Linq.Expressions;
+using InvenireServer.Application.Interfaces.Managers;
 using Microsoft.Extensions.Logging;
-using InvenireServer.Domain.Core.Entities;
 using InvenireServer.Application.Services;
+using InvenireServer.Application.Services.Employees;
+using InvenireServer.Domain.Entities;
 using InvenireServer.Tests.Integration.Fakers;
-using InvenireServer.Domain.Core.Interfaces.Managers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InvenireServer.Tests.Unit.Services;

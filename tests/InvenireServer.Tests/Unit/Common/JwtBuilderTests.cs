@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using InvenireServer.Application.Core.Authentication;
+using InvenireServer.Infrastructure.Authentication;
 
 namespace InvenireServer.Tests.Unit.Common;
 

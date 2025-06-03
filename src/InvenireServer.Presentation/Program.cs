@@ -1,11 +1,11 @@
+using InvenireServer.Application.Factories;
+using InvenireServer.Application.Interfaces.Managers;
 using Serilog;
 using InvenireServer.Application.Services;
+using InvenireServer.Application.Services.Employees;
+using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
-using InvenireServer.Application.Core.Factories;
-using InvenireServer.Domain.Core.Interfaces.Managers;
-using InvenireServer.Infrastructure.Persistence.Managers;
-using InvenireServer.Application.Core.Authentication;
-using InvenireServer.Domain.Core.Interfaces.Services;
+using InvenireServer.Infrastructure.Persistence.Repositories;
 
 namespace InvenireServer.Presentation;
 
