@@ -76,5 +76,4 @@ public class Employee
     /// Maximum number of characters allowed for the employee's password.
     /// </summary>
     public const int MAX_PASSWORD_LENGTH = 155;
-
 }

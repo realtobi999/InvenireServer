@@ -17,6 +17,7 @@ public class ServerEndpointsTests
         _jwt = new JwtManagerFaker().Initiate();
         _client = _app.CreateDefaultClient();
     }
+
     [Fact]
     public async Task HealthCheck_ReturnsStatusCode200()
     {

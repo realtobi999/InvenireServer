@@ -23,6 +23,7 @@ public class Forbidden403Exception : Exception, IHttpException
     public Forbidden403Exception(string? message) : base(message)
     {
     }
+
     /// <inheritdoc/>
     public int StatusCode => (int)StatusCodes.Status403Forbidden;
 

@@ -44,7 +44,6 @@ public class JwtWriter : IJwtWriter
     }
 
     /** -------------------------------------------------------------------------- **/
-
     private string ComputeHmacSha256(string message)
     {
         using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(SigningKey));

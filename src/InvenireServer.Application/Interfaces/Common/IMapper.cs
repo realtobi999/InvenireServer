@@ -14,4 +14,3 @@ public interface IMapper<out TEntity, in TDto>
     /// <returns>The mapped entity instance.</returns>
     TEntity Map(TDto dto);
 }
-

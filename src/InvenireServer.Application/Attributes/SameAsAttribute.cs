@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace InvenireServer.Application.Attributes;
 
-
 /// <summary>
 /// Validation attribute that ensures the value of a property is the same as another specified property.
 /// </summary>

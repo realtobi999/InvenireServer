@@ -120,27 +120,27 @@ public static class ServiceExtensions
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.InvalidModelStateResponseFactory = context =>
+            {
+                var errors = context.ModelState
+                    .Where(e => e.Value?.Errors.Count > 0)
+                    .SelectMany(e => e.Value!.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                if (errors.Any(HasDefaultErrorMessages))
                 {
-                    var errors = context.ModelState
-                       .Where(e => e.Value?.Errors.Count > 0)
-                       .SelectMany(e => e.Value!.Errors)
-                       .Select(e => e.ErrorMessage)
-                       .ToList();
+                    errors =
+                    [
+                        .. errors.Where(err => !HasDefaultErrorMessages(err)),
+                        "Request body is empty or missing fields."
+                    ];
+                }
 
-                    if (errors.Any(HasDefaultErrorMessages))
-                    {
-                        errors =
-                        [
-                            .. errors.Where(err => !HasDefaultErrorMessages(err)),
-                            "Request body is empty or missing fields."
-                        ];
-                    }
+                throw new ValidationException(errors);
 
-                    throw new ValidationException(errors);
-
-                    // Filter out default error messages revealing internal info about JSON deserialization or missing DTO fields.
-                    static bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
-                };
+                // Filter out default error messages revealing internal info about JSON deserialization or missing DTO fields.
+                static bool HasDefaultErrorMessages(string err) => err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
+            };
         });
         services.AddExceptionHandler<ExceptionHandler>();
     }

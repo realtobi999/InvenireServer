@@ -24,10 +24,7 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
         });
 
         // Set the hosting environment to Production to simulate production behavior in tests.
-        builder.ConfigureAppConfiguration((context, _) =>
-        {
-            context.HostingEnvironment.EnvironmentName = Environments.Production;
-        });
+        builder.ConfigureAppConfiguration((context, _) => { context.HostingEnvironment.EnvironmentName = Environments.Production; });
     }
 
     /// <summary>

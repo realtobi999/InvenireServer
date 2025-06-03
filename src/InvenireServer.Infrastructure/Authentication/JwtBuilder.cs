@@ -86,7 +86,6 @@ public class JwtBuilder : IJwtBuilder
     }
 
     /** -------------------------------------------------------------------------- **/
-
     private static List<Claim> ParseJsonToClaims(string json)
     {
         var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
