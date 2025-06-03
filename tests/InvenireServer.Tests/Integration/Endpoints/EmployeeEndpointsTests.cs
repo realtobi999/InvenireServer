@@ -88,6 +88,32 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
+    public async Task SendEmailVerification_Returns429WhenTooManyRequestsHasBeenSent()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+
+        var jwt = _jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString)
+        ]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Trigger the endpoints 3 times to enable the rare limiter.
+        for (int i = 0; i < 3; i++)
+        {
+            (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        // Act & Assert.
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object());
+        response.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+    }
+
+    [Fact]
     public async Task ConfirmEmailVerification_Returns204AndEmailIsVerified()
     {
         // Prepare.
@@ -153,6 +179,7 @@ public class EmployeeEndpointsTests
         var jwt = JwtBuilder.Parse(body!.Token);
         jwt.Payload.Should().Contain(c => c.Type == "role");
         jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
+        jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);
     }
 
     [Fact]
@@ -179,5 +206,41 @@ public class EmployeeEndpointsTests
 
         var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task LoginEmployee_Returns429WhenTooManyRequestsHasBeenSent()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new("role", Jwt.Roles.EMPLOYEE),
+            new("employee_id", employee.Id.ToString()),
+            new("is_verified", bool.FalseString),
+            new("purpose", "email_verification")
+        ]))}");
+        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Trigger the endpoints 5 times to enable the rare limiter.
+        for (int i = 0; i < 5; i++)
+        {
+            (await _client.PostAsJsonAsync("/api/auth/employee/login", new LoginEmployeeDto
+            {
+                EmailAddress = employee.EmailAddress,
+                Password = new Faker().Internet.SecurePassword() // Generate a random password.
+            })).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        // Act & Assert.
+        var dto = new LoginEmployeeDto
+        {
+            EmailAddress = employee.EmailAddress,
+            Password = employee.Password
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        response.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
     }
 }

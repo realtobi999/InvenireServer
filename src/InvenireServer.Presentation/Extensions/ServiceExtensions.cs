@@ -20,6 +20,7 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InvenireServer.Infrastructure.Authentication.Options;
+using System.Net;
 
 namespace InvenireServer.Presentation.Extensions;
 
@@ -153,8 +154,9 @@ public static class ServiceExtensions
     {
         services.AddRateLimiter(options =>
         {
-            // Policy limiting login attempts per IP address: allow 5 immediate attempts,
-            // then replenish 1 token every 15 minutes, effectively limiting to 1 attempt per 15 minutes after the first 5.
+            options.RejectionStatusCode = (int)HttpStatusCode.TooManyRequests;
+
+            // Policy limiting login attempts per IP address: allow 5 immediate attempts, then replenishes 5 tokens every 15 minutes.
             options.AddPolicy("LoginPolicy", context =>
             {
                 var address = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
@@ -163,9 +165,23 @@ public static class ServiceExtensions
                 {
                     TokenLimit = 5,
                     QueueLimit = 0,
-                    TokensPerPeriod = 1,
+                    TokensPerPeriod = 5,
                     AutoReplenishment = true,
                     ReplenishmentPeriod = TimeSpan.FromMinutes(15)
+                });
+            });
+            // Policy limiting sending a verification email per IP address: allows 3 immediate attempts, then replenishes 1 token every 12 hours.
+            options.AddPolicy("SendEmailVerificationPolicy", context =>
+            {
+                var address = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+                return RateLimitPartition.GetTokenBucketLimiter(address, _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = 3,
+                    QueueLimit = 0,
+                    TokensPerPeriod = 1,
+                    AutoReplenishment = true,
+                    ReplenishmentPeriod = TimeSpan.FromHours(12)
                 });
             });
         });

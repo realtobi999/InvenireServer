@@ -55,6 +55,7 @@ public class EmployeeController : ControllerBase
     /// Sends an email verification link to the authenticated employee.
     /// </summary>
     /// <returns>Returns a NoContent response after the email has been sent.</returns>
+    [EnableRateLimiting("SendEmailVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/auth/employee/email-verification/send")]
     public async Task<IActionResult> SendEmailVerification()
