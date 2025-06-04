@@ -8,6 +8,11 @@ namespace InvenireServer.Application.Interfaces.Managers;
 public interface IRepositoryManager
 {
     /// <summary>
+    /// Gets the repository for admin-related data operations.
+    /// </summary>
+    IAdminRepository Admins { get; }
+
+    /// <summary>
     /// Gets the repository for employee-related data operations.
     /// </summary>
     IEmployeeRepository Employees { get; }

@@ -5,50 +5,50 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace InvenireServer.Infrastructure.Persistence.Configurations;
 
 /// <summary>
-/// Configures the database mapping for the <see cref="Employee"/> entity.
+/// Configures the database mapping for the <see cref="Admin"/> entity.
 /// </summary>
-public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
+public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
 {
     /// <inheritdoc/>
-    public void Configure(EntityTypeBuilder<Employee> builder)
+    public void Configure(EntityTypeBuilder<Admin> builder)
     {
         // Properties.
-        builder.Property(e => e.Id)
+        builder.Property(a => a.Id)
             .HasColumnName("id")
             .IsRequired();
-        builder.HasKey(e => e.Id);
+        builder.HasKey(a => a.Id);
 
-        builder.Property(e => e.OrganizationId)
+        builder.Property(a => a.OrganizationId)
             .HasColumnName("organization_id");
 
-        builder.Property(e => e.Name)
+        builder.Property(a => a.Name)
             .HasColumnName("name")
-            .HasMaxLength(Employee.MAX_NAME_LENGTH)
+            .HasMaxLength(Admin.MAX_NAME_LENGTH)
             .IsRequired();
 
-        builder.Property(e => e.Password)
+        builder.Property(a => a.Password)
             .HasColumnName("password_hash")
             .IsRequired();
 
-        builder.Property(e => e.EmailAddress)
+        builder.Property(a => a.EmailAddress)
             .HasColumnName("email_address")
-            .HasMaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)
+            .HasMaxLength(Admin.MAX_EMAIL_ADDRESS_LENGTH)
             .IsRequired();
-        builder.HasIndex(e => e.EmailAddress)
+        builder.HasIndex(a => a.EmailAddress)
             .IsUnique();
 
-        builder.Property(e => e.IsVerified)
+        builder.Property(a => a.IsVerified)
             .HasColumnName("is_verified")
             .IsRequired();
 
-        builder.Property(e => e.CreatedAt)
+        builder.Property(a => a.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
 
-        builder.Property(e => e.LastUpdatedAt)
+        builder.Property(a => a.LastUpdatedAt)
             .HasColumnName("last_updated_at");
 
-        builder.Property(e => e.LastLoginAt)
+        builder.Property(a => a.LastLoginAt)
             .HasColumnName("last_login_at");
     }
 }

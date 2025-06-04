@@ -10,6 +10,7 @@ namespace InvenireServer.Infrastructure.Persistence.Repositories;
 public class RepositoryManager : IRepositoryManager
 {
     private readonly InvenireServerContext _context;
+    private readonly Lazy<IAdminRepository> _admins;
     private readonly Lazy<IEmployeeRepository> _employees;
 
     /// <summary>
@@ -19,8 +20,12 @@ public class RepositoryManager : IRepositoryManager
     public RepositoryManager(InvenireServerContext context)
     {
         _context = context;
-        _employees = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
+        _admins = new Lazy<IAdminRepository>(() => new AdminRepository(_context));
+        _employees = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(_context));
     }
+
+    /// <inheritdoc/>
+    public IAdminRepository Admins => _admins.Value;
 
     /// <inheritdoc/>
     public IEmployeeRepository Employees => _employees.Value;

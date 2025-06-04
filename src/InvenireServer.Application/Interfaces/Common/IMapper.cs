@@ -1,7 +1,7 @@
 namespace InvenireServer.Application.Interfaces.Common;
 
 /// <summary>
-/// Provides a contract for mapping from a data transfer object (DTO) to an entity.
+/// Defines a contract for mapping from a data transfer object (DTO) to an entity.
 /// </summary>
 /// <typeparam name="TEntity">The type of the entity to map to.</typeparam>
 /// <typeparam name="TDto">The type of the data transfer object to map from.</typeparam>

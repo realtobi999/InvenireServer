@@ -10,6 +10,11 @@ namespace InvenireServer.Infrastructure.Persistence;
 public class InvenireServerContext : DbContext
 {
     /// <summary>
+    /// Gets or sets the table of admin entities.
+    /// </summary>
+    public DbSet<Admin> Admins { get; set; }
+
+    /// <summary>
     /// Gets or sets the table of employee entities.
     /// </summary>
     public DbSet<Employee> Employees { get; set; }
@@ -29,6 +34,7 @@ public class InvenireServerContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.
+        new AdminTypeConfiguration().Configure(builder.Entity<Admin>());
         new EmployeeTypeConfiguration().Configure(builder.Entity<Employee>());
     }
 }
