@@ -3,6 +3,7 @@ using InvenireServer.Application.Validators;
 using Moq;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Tests.Unit.Validators;
 
@@ -23,15 +24,15 @@ public class EmployeeValidatorTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        // Mock the repository to return that the email address is not unique.
-        _repository.Setup(r => r.Employees.HasUniqueEmailAddressAsync(employee)).ReturnsAsync(false);
+        // Mock the repository to return a employee that has seemingly the same email address.
+        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync(new EmployeeFaker().Generate());
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
 
         valid.Should().BeFalse();
         exception.Should().BeOfType<BadRequest400Exception>();
-        exception!.Message.Should().Be("Invalid value for EmailAddress: the address is already in use.");
+        exception!.Message.Should().Contain(nameof(Employee.EmailAddress));
     }
 
     [Fact]
@@ -41,16 +42,35 @@ public class EmployeeValidatorTests
         var employee = new EmployeeFaker().Generate();
 
         // Set the updated at time to be before the created at time.
-        employee.UpdatedAt = employee.CreatedAt.AddMonths(-1);
+        employee.LastUpdatedAt = employee.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Employees.HasUniqueEmailAddressAsync(employee)).ReturnsAsync(true);
+        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
 
         valid.Should().BeFalse();
         exception.Should().BeOfType<BadRequest400Exception>();
-        exception!.Message.Should().Be("Invalid value for UpdatedAt: must be greater than CreatedAt.");
+        exception!.Message.Should().Contain(nameof(Employee.LastUpdatedAt));
+    }
+
+    [Fact]
+    public async Task ValidateAsync_ReturnsFalseWhenLastLoginAtIsSetBeforeCreatedAt()
+    {
+        // Prepare.
+        var employee = new EmployeeFaker().Generate();
+
+        // Set the last login time to be before the created at time.
+        employee.LastLoginAt = employee.CreatedAt.AddMonths(-1);
+
+        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
+
+        // Act & Assert.
+        var (valid, exception) = await _validator.ValidateAsync(employee);
+
+        valid.Should().BeFalse();
+        exception.Should().BeOfType<BadRequest400Exception>();
+        exception!.Message.Should().Contain(nameof(Employee.LastLoginAt));
     }
 
     [Fact]
@@ -61,15 +81,15 @@ public class EmployeeValidatorTests
 
         // Set the created at time to be in the future.
         employee.CreatedAt = DateTimeOffset.UtcNow.AddMonths(1);
-        employee.UpdatedAt = null;
+        employee.LastUpdatedAt = null;
 
-        _repository.Setup(r => r.Employees.HasUniqueEmailAddressAsync(employee)).ReturnsAsync(true);
+        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
 
         valid.Should().BeFalse();
         exception.Should().BeOfType<BadRequest400Exception>();
-        exception!.Message.Should().Be("Invalid value for CreatedAt: cannot be set in the future.");
+        exception!.Message.Should().Contain(nameof(Employee.CreatedAt));
     }
 }

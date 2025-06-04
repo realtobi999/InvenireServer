@@ -33,15 +33,14 @@ public class Employee
     public required bool IsVerified { get; set; }
 
     /// <summary>
-    /// Date and time of the most recent update to the employee record.
-    /// Null if the record has never been updated.
-    /// </summary>
-    public required DateTimeOffset? UpdatedAt { get; set; }
-
-    /// <summary>
     /// Date and time when the employee record was created.
     /// </summary>
     public required DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// Date and time of the most recent update to the employee record. Null if the record has never been updated.
+    /// </summary>
+    public required DateTimeOffset? LastUpdatedAt { get; set; }
 
     /// <summary>
     /// Date and time of the employee's last successful login. Null if never logged in.

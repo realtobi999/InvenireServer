@@ -1,6 +1,5 @@
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
@@ -15,15 +14,5 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     /// <param name="context">The database context used for employee operations.</param>
     public EmployeeRepository(InvenireServerContext context) : base(context)
     {
-    }
-
-    /// <summary>
-    /// Checks whether the specified employee has a unique email address among all other employees.
-    /// </summary>
-    /// <param name="employee">The employee to check for uniqueness.</param>
-    /// <returns><c>true</c> if the email address is unique; otherwise, <c>false</c>.</returns>
-    public async Task<bool> HasUniqueEmailAddressAsync(Employee employee)
-    {
-        return !await Context.Employees.AnyAsync(e => e.Id != employee.Id && e.EmailAddress == employee.EmailAddress);
     }
 }

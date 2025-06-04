@@ -36,7 +36,7 @@ public class EmployeeMapper : IMapper<Employee, RegisterEmployeeDto>
             EmailAddress = dto.EmailAddress,
             IsVerified = false,
             Password = dto.Password,
-            UpdatedAt = null,
+            LastUpdatedAt = null,
             CreatedAt = DateTimeOffset.Now,
             LastLoginAt = null,
         };

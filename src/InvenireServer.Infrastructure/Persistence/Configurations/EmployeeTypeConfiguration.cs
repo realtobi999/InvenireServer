@@ -12,27 +12,43 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
-        // Properties.
+        // Properties
         builder.Property(e => e.Id)
             .HasColumnName("id")
             .IsRequired();
+        builder.HasKey(e => e.Id);
+
         builder.Property(e => e.OrganizationId)
             .HasColumnName("organization_id");
+
         builder.Property(e => e.Name)
             .HasColumnName("name")
             .HasMaxLength(Employee.MAX_NAME_LENGTH)
             .IsRequired();
+
+        builder.Property(e => e.Password)
+            .HasColumnName("password_hash")
+            .IsRequired();
+
         builder.Property(e => e.EmailAddress)
             .HasColumnName("email_address")
             .HasMaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)
             .IsRequired();
-        builder.Property(e => e.Password)
-            .HasColumnName("password_hash")
+        builder.HasIndex(e => e.EmailAddress)
+            .IsUnique();
+
+        builder.Property(e => e.IsVerified)
+            .HasColumnName("is_verified")
             .IsRequired();
-        builder.Property(e => e.UpdatedAt)
+
+        builder.Property(e => e.LastUpdatedAt)
             .HasColumnName("updated_at");
+
         builder.Property(e => e.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
+
+        builder.Property(e => e.LastLoginAt)
+            .HasColumnName("last_login_at");
     }
 }

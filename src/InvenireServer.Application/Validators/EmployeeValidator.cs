@@ -1,7 +1,7 @@
-using InvenireServer.Application.Interfaces.Common;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Validators;
 
@@ -24,25 +24,31 @@ public class EmployeeValidator : IValidator<Employee>
     /// <inheritdoc/>
     public async Task<(bool isValid, Exception? exception)> ValidateAsync(Employee employee)
     {
-        // Ensure that the EmailAddress is unique.
-        if (!await _repositories.Employees.HasUniqueEmailAddressAsync(employee))
+        // Email address must be unique.
+        if (await _repositories.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id) is not null)
         {
-            return (false, new BadRequest400Exception("Invalid value for EmailAddress: the address is already in use."));
+            return (false, new BadRequest400Exception($"{nameof(Employee.EmailAddress)} must be unique among all employees."));
         }
 
-        // Ensure that if UpdatedAt is set it must be after CreatedAt.
-        if (employee.UpdatedAt is not null && employee.CreatedAt >= employee.UpdatedAt)
+        // Last login must be later than creation time, if set.
+        if (employee.LastLoginAt is not null && employee.CreatedAt >= employee.LastLoginAt)
         {
-            return (false, new BadRequest400Exception("Invalid value for UpdatedAt: must be greater than CreatedAt."));
+            return (false, new BadRequest400Exception($"{nameof(Employee.LastLoginAt)} must be later than CreatedAt."));
         }
 
-        // Ensure that CreatedAt is not set in the future.
+        // Last update must be later than creation time, if set.
+        if (employee.LastUpdatedAt is not null && employee.CreatedAt >= employee.LastUpdatedAt)
+        {
+            return (false, new BadRequest400Exception($"{nameof(Employee.LastUpdatedAt)} must be later than CreatedAt."));
+        }
+
+        // Creation time cannot be set in the future.
         if (employee.CreatedAt > DateTimeOffset.UtcNow)
         {
-            return (false, new BadRequest400Exception("Invalid value for CreatedAt: cannot be set in the future."));
+            return (false, new BadRequest400Exception($"{nameof(Employee.CreatedAt)} cannot be set in the future."));
         }
 
-        // TODO: add validation to make sure that the assigned organization exists.
+        // TODO: Validate that the referenced organization exists.
 
         return (true, null);
     }

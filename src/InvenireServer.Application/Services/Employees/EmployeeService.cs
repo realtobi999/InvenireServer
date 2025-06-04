@@ -120,7 +120,7 @@ public class EmployeeService : IEmployeeService
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task UpdateAsync(Employee employee)
     {
-        employee.UpdatedAt = DateTimeOffset.UtcNow;
+        employee.LastUpdatedAt = DateTimeOffset.UtcNow;
 
         var (valid, exception) = await _validator.ValidateAsync(employee);
         if (!valid && exception is not null) throw exception;
