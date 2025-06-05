@@ -22,15 +22,12 @@ public class Program
     {
         try
         {
-            Log.Information("-----------------------------------------------------------");
-
             var builder = WebApplication.CreateBuilder(args);
             {
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
                 builder.Services.ConfigureJwt(builder.Configuration);
-                builder.Services.ConfigureMappers();
                 builder.Services.ConfigureHashing();
                 builder.Services.ConfigureValidators();
                 builder.Services.ConfigureRareLimiters();

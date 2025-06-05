@@ -1,5 +1,4 @@
 using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +9,7 @@ using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Interfaces.Factories.Employees;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -21,7 +21,7 @@ public class EmployeeController : ControllerBase
 {
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IMapper<Employee, RegisterEmployeeDto> _mapper;
+    private readonly IEmployeeFactory _factory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EmployeeController"/> class.
@@ -32,7 +32,7 @@ public class EmployeeController : ControllerBase
     public EmployeeController(IServiceManager services, IJwtManager jwt, IFactoryManager factories)
     {
         _jwt = jwt;
-        _mapper = factories.Mappers.Initiate<Employee, RegisterEmployeeDto>();
+        _factory = factories.Entities.Employees;
         _services = services;
     }
 
@@ -44,7 +44,7 @@ public class EmployeeController : ControllerBase
     [HttpPost("/api/auth/employee/register")]
     public async Task<IActionResult> RegisterEmployee(RegisterEmployeeDto dto)
     {
-        var employee = _mapper.Map(dto);
+        var employee = _factory.Create(dto);
 
         await _services.Employees.CreateAsync(employee);
 

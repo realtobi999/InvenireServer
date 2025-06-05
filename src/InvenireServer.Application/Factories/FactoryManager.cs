@@ -1,30 +1,35 @@
+using InvenireServer.Application.Factories.Admins;
+using InvenireServer.Application.Factories.Employees;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Factories;
 
 /// <summary>
-/// Provides centralized access to factory services used for creating JWTs, mappers, and validators.
+/// Provides centralized access to factory services.
 /// </summary>
 public class FactoryManager : IFactoryManager
 {
-    private readonly Lazy<IMapperFactory> _mappers;
     private readonly Lazy<IValidatorFactory> _validators;
+    private readonly Lazy<IEntityFactoryGroup> _entities;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FactoryManager"/> class.
     /// </summary>
-    /// <param name="mappers">The factory responsible for creating mappers.</param>
     /// <param name="validators">The factory responsible for creating validators.</param>
-    public FactoryManager(IMapperFactory mappers, IValidatorFactory validators)
+    public FactoryManager(IValidatorFactory validators)
     {
-        _mappers = new Lazy<IMapperFactory>(mappers);
+        _entities = new Lazy<IEntityFactoryGroup>(new EntityFactoryGroup
+        {
+            Admins = new AdminFactory(),
+            Employees = new EmployeeFactory(),
+        });
         _validators = new Lazy<IValidatorFactory>(validators);
     }
 
     /// <inheritdoc/>
-    public IMapperFactory Mappers => _mappers.Value;
+    public IValidatorFactory Validators => _validators.Value;
 
     /// <inheritdoc/>
-    public IValidatorFactory Validators => _validators.Value;
+    public IEntityFactoryGroup Entities => _entities.Value;
 }

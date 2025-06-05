@@ -1,20 +1,13 @@
-using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Domain.Entities;
+using InvenireServer.Application.Dtos.Admins;
+using InvenireServer.Application.Interfaces.Factories.Admins;
 using Microsoft.AspNetCore.Identity;
 
-namespace InvenireServer.Application.Mappers;
+namespace InvenireServer.Application.Factories.Admins;
 
-public class AdminMapper : IMapper<Admin, RegisterAdminDto>
+public class AdminFactory : IAdminFactory
 {
-    private readonly IPasswordHasher<Admin> _hasher;
-
-    public AdminMapper(IPasswordHasher<Admin> hasher)
-    {
-        _hasher = hasher;
-    }
-
-    public Admin Map(RegisterAdminDto dto)
+    public Admin Create(RegisterAdminDto dto)
     {
         // Map the object.
         var admin = new Admin
@@ -30,7 +23,7 @@ public class AdminMapper : IMapper<Admin, RegisterAdminDto>
         };
 
         // Hash the password.
-        admin.Password = _hasher.HashPassword(admin, admin.Password);
+        admin.Password = new PasswordHasher<Admin>().HashPassword(admin, admin.Password);
 
         return admin;
     }

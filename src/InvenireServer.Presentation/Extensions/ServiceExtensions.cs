@@ -8,7 +8,6 @@ using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Mappers;
 using InvenireServer.Application.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -80,17 +79,6 @@ public static class ServiceExtensions
                 policy.RequireRole(Jwt.Roles.EMPLOYEE);
                 policy.RequireClaim("is_verified", bool.FalseString);
             });
-    }
-
-    /// <summary>
-    /// Registers mapping services, including the mapper factory and entity-to-DTO mappers.
-    /// </summary>
-    /// <param name="services">The service collection to register mapping services into.</param>
-    public static void ConfigureMappers(this IServiceCollection services)
-    {
-        services.AddScoped<IMapperFactory, MapperFactory>();
-        services.AddScoped<IMapper<Admin, RegisterAdminDto>, AdminMapper>();
-        services.AddScoped<IMapper<Employee, RegisterEmployeeDto>, EmployeeMapper>();
     }
 
     /// <summary>
