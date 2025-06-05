@@ -42,6 +42,10 @@ public sealed class Jwt
         /// Policy allowing access to employees who have not yet verified their email.
         /// </summary>
         public const string UNVERIFIED_EMPLOYEE = "UNVERIFIED_EMPLOYEE_POLICY";
+
+        public const string ADMIN = "ADMIN_POLICY";
+
+        public const string UNVERIFIED_ADMIN = "UNVERIFIED_ADMIN_POLICY";
     }
 
     /// <summary>
@@ -53,5 +57,7 @@ public sealed class Jwt
         /// Role assigned to authenticated employees.
         /// </summary>
         public const string EMPLOYEE = "EMPLOYEE";
+
+        public const string ADMIN = "ADMIN";
     }
 }

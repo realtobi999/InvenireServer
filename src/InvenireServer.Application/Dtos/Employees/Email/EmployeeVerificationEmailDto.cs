@@ -1,4 +1,4 @@
-namespace InvenireServer.Application.Dtos.Employees.Emails;
+namespace InvenireServer.Application.Dtos.Employees.Email;
 
 /// <summary>
 ///  Represents a verification email to an employee.

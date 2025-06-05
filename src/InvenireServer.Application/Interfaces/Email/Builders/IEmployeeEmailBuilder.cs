@@ -1,5 +1,5 @@
 using System.Net.Mail;
-using InvenireServer.Application.Dtos.Employees.Emails;
+using InvenireServer.Application.Dtos.Employees.Email;
 
 namespace InvenireServer.Application.Interfaces.Email.Builders;
 

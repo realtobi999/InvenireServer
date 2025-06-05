@@ -13,8 +13,17 @@ public interface IEmailManager
     /// </summary>
     IEmailSender Sender { get; }
 
-    /// <summary>
-    /// Gets the builder used to create employee-specific email messages.
-    /// </summary>
-    IEmployeeEmailBuilder EmployeeBuilder { get; }
+    IEmailBuilderGroup Builders { get; }
+}
+
+public interface IEmailBuilderGroup
+{
+    IAdminEmailBuilder Admin { get; }
+    IEmployeeEmailBuilder Employee { get; }
+}
+
+public class EmailBuilderGroup : IEmailBuilderGroup
+{
+    public required IAdminEmailBuilder Admin { get; set; }
+    public required IEmployeeEmailBuilder Employee { get; set; }
 }

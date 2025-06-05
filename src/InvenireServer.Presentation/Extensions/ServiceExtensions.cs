@@ -78,6 +78,16 @@ public static class ServiceExtensions
             {
                 policy.RequireRole(Jwt.Roles.EMPLOYEE);
                 policy.RequireClaim("is_verified", bool.FalseString);
+            })
+            .AddPolicy(Jwt.Policies.ADMIN, policy =>
+            {
+                policy.RequireRole(Jwt.Roles.ADMIN);
+                policy.RequireClaim("is_verified", bool.TrueString);
+            })
+            .AddPolicy(Jwt.Policies.UNVERIFIED_ADMIN, policy =>
+            {
+                policy.RequireRole(Jwt.Roles.ADMIN);
+                policy.RequireClaim("is_verified", bool.FalseString);
             });
     }
 

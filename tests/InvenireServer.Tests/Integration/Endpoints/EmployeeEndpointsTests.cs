@@ -84,6 +84,7 @@ public class EmployeeEndpointsTests
         // Assert that the token in the verification link contains all important claims.
         token.Payload.Should().Contain(c => c.Type == "role" && c.Value == nameof(Employee).ToUpper());
         token.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
+        token.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);
         token.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }
 

@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Dtos.Employees.Emails;
+using InvenireServer.Application.Dtos.Employees.Email;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities;
@@ -148,7 +148,7 @@ public class EmployeeService : IEmployeeService
             VerificationLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
 
-        var message = _email.EmployeeBuilder.BuildVerificationEmail(dto);
+        var message = _email.Builders.Employee.BuildVerificationEmail(dto);
 
         await _email.Sender.SendEmailAsync(message);
     }

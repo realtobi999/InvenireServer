@@ -25,7 +25,7 @@ public class ServiceManager : IServiceManager
     /// <param name="jwt">JWT manager for handling token creation and parsing.</param>
     public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration, IJwtManager jwt)
     {
-        _admins = new Lazy<IAdminService>(() => new AdminService(repositories));
+        _admins = new Lazy<IAdminService>(() => new AdminService(repositories, email, jwt, configuration));
         _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, jwt, configuration));
     }
 

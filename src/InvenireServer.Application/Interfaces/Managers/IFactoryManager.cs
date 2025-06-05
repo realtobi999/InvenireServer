@@ -27,6 +27,5 @@ public interface IEntityFactoryGroup
 public class EntityFactoryGroup : IEntityFactoryGroup
 {
     public required IAdminFactory Admins { get; set; }
-
     public required IEmployeeFactory Employees { get; set; }
 }
