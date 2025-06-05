@@ -5,7 +5,7 @@ using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Interfaces.Services;
+using InvenireServer.Domain.Interfaces.Services.Employees;
 using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Services.Employees;

@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj"/>
+        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Interfaces\"/>
+        <Folder Include="Interfaces\" />
     </ItemGroup>
 
 </Project>

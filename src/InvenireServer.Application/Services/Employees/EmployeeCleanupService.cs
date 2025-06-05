@@ -1,5 +1,5 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Interfaces.Services;
+using InvenireServer.Domain.Interfaces.Services.Employees;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

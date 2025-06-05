@@ -40,14 +40,14 @@ public class RepositoryManager : IRepositoryManager
     /// Saves all changes to the database. Throws if no entries were affected.
     /// </summary>
     /// <returns>A task that represents the asynchronous save operation.</returns>
-    /// <exception cref="ZeroRowsAffectedException">Thrown when no rows are affected by the save operation.</exception>
+    /// <exception cref="NoRowsAffectedException">Thrown when no rows are affected by the save operation.</exception>
     public async Task SaveOrThrowAsync()
     {
         var affected = await SaveAsync();
 
         if (affected == 0)
         {
-            throw new ZeroRowsAffectedException();
+            throw new NoRowsAffectedException();
         }
     }
 }

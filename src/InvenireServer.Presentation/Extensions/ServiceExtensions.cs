@@ -21,6 +21,7 @@ using InvenireServer.Domain.Exceptions.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InvenireServer.Infrastructure.Authentication.Options;
 using System.Net;
+using InvenireServer.Application.Dtos.Admins;
 
 namespace InvenireServer.Presentation.Extensions;
 
@@ -88,6 +89,7 @@ public static class ServiceExtensions
     public static void ConfigureMappers(this IServiceCollection services)
     {
         services.AddScoped<IMapperFactory, MapperFactory>();
+        services.AddScoped<IMapper<Admin, RegisterAdminDto>, AdminMapper>();
         services.AddScoped<IMapper<Employee, RegisterEmployeeDto>, EmployeeMapper>();
     }
 
@@ -107,6 +109,7 @@ public static class ServiceExtensions
     /// <param name="services">The service collection to register hashing services into.</param>
     public static void ConfigureHashing(this IServiceCollection services)
     {
+        services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
         services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
     }
 

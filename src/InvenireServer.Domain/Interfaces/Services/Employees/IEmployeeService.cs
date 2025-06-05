@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
 
-namespace InvenireServer.Domain.Interfaces.Services;
+namespace InvenireServer.Domain.Interfaces.Services.Employees;
 
 /// <summary>
 /// Defines contract for business logic operations for managing employees.

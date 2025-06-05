@@ -1,4 +1,4 @@
-namespace InvenireServer.Domain.Interfaces.Services;
+namespace InvenireServer.Domain.Interfaces.Services.Employees;
 
 /// <summary>
 /// Defines contract for a service that cleans up unverified employee accounts.
