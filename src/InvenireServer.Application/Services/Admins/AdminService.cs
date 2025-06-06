@@ -67,6 +67,14 @@ public class AdminService : IAdminService
         ]);
     }
 
+    public async Task UpdateAsync(Admin admin)
+    {
+        admin.LastUpdatedAt = DateTimeOffset.UtcNow;
+
+        _repositories.Admins.Update(admin);
+        await _repositories.SaveOrThrowAsync();
+    }
+
     public async Task SendEmailVerificationAsync(Admin admin)
     {
         var jwt = CreateJwt(admin);
@@ -85,5 +93,16 @@ public class AdminService : IAdminService
         // Construct the email message and send it.
         var message = _email.Builders.Admin.BuildVerificationEmail(dto);
         await _email.Sender.SendEmailAsync(message);
+    }
+
+    public async Task ConfirmEmailVerificationAsync(Admin admin)
+    {
+        if (admin.IsVerified)
+        {
+            throw new BadRequest400Exception("Email is already verified.");
+        }
+
+        admin.IsVerified = true;
+        await UpdateAsync(admin);
     }
 }

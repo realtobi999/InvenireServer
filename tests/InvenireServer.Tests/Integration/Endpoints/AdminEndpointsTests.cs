@@ -85,4 +85,38 @@ public class AdminEndpointsTests
         token.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);
         token.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }
+
+    [Fact]
+    public async Task ConfirmEmailVerification_Returns204AndEmailIsVerified()
+    {
+        // Prepare.
+        var admin = new AdminFaker().Generate();
+
+        var jwt = _jwt.Builder.Build([
+            new("role", Jwt.Roles.ADMIN),
+            new("admin_id", admin.Id.ToString()),
+            new("is_verified", bool.FalseString)
+        ]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
+
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
+
+        // Extract the token from the verification link and call the backend endpoint directly.
+        var match = Regex.Match(email.CapturedMessages[0].Body, @"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
+        _client.DefaultRequestHeaders.Remove("Authorization");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(JwtBuilder.Parse(match.Groups[1].Value))}");
+
+        // Act & Assert.
+        var response = await _client.PostAsJsonAsync($"/api/auth/admin/email-verification/confirm", new object());
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        await using var context = _app.GetDatabaseContext();
+        var updatedAdmin = await context.Admins.FirstOrDefaultAsync(e => e.Id == admin.Id);
+
+        // Assert that the admin has a verified email.
+        updatedAdmin!.IsVerified.Should().Be(true);
+    }
 }
