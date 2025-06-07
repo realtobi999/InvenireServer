@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Email Verification</title>
     <style>
         body {
@@ -70,7 +70,7 @@
         <p>Dear @Model.EmployeeName,</p>
         <p>Thank you for registering. Please confirm your email address to complete your account setup.</p>
         <p style="text-align: center;">
-            <a href="@Model.VerificationLink" target="_blank" class="button">Verify Email Address</a>
+            <a class="button" href="@Model.VerificationLink" target="_blank">Verify Email Address</a>
         </p>
         <p>If the button above doesn't work, you can also copy and paste the following link into your browser:</p>
         <p><a href="@Model.VerificationLink">@Model.VerificationLink</a></p>

@@ -1,8 +1,7 @@
-using System.Security.Claims;
-using InvenireServer.Presentation;
-using Microsoft.Extensions.Configuration;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Authentication.Options;
+using InvenireServer.Presentation;
+using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 
@@ -13,7 +12,7 @@ public class JwtManagerFaker
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true)
             .AddUserSecrets<Program>()
             .Build();
 

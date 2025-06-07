@@ -1,6 +1,6 @@
-using InvenireServer.Domain.Entities;
 using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Application.Interfaces.Factories.Admins;
+using InvenireServer.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Factories.Admins;
@@ -19,7 +19,7 @@ public class AdminFactory : IAdminFactory
             IsVerified = false,
             CreatedAt = DateTimeOffset.Now,
             LastUpdatedAt = null,
-            LastLoginAt = null,
+            LastLoginAt = null
         };
 
         // Hash the password.

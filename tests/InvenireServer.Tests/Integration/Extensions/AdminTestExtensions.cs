@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Entities;
 using InvenireServer.Application.Dtos.Admins;
+using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Tests.Integration.Extensions;
 
@@ -13,7 +13,7 @@ public static class AdminTestExtensions
             Name = admin.Name,
             EmailAddress = admin.EmailAddress,
             Password = admin.Password,
-            PasswordConfirm = admin.Password,
+            PasswordConfirm = admin.Password
         };
 
         return dto;

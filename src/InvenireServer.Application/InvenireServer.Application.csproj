@@ -1,18 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj" />
+        <ProjectReference Include="../InvenireServer.Domain/InvenireServer.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Interfaces\" />
+        <Folder Include="Interfaces\"/>
     </ItemGroup>
 
 </Project>

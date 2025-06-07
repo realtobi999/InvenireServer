@@ -12,13 +12,13 @@ public class AdminEmailBuilder : BaseEmailBuilder, IAdminEmailBuilder
 
     public MailMessage BuildVerificationEmail(AdminVerificationEmailDto dto)
     {
-        var message = new MailMessage(this.SourceAddress, dto.AdminAddress)
+        var message = new MailMessage(SourceAddress, dto.AdminAddress)
         {
             IsBodyHtml = true
         };
 
         message.Subject = "Please verify your email to complete your registration";
-        message.Body = this.ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "admin_verification_email_template.html"), dto);
+        message.Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "admin_verification_email_template.html"), dto);
 
         return message;
     }

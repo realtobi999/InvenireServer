@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities;
@@ -18,9 +18,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class AdminEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public AdminEndpointsTests()
     {
@@ -55,9 +55,9 @@ public class AdminEndpointsTests
         var admin = new AdminFaker().Generate();
 
         var jwt = _jwt.Builder.Build([
-            new("role", Jwt.Roles.ADMIN),
-            new("admin_id", admin.Id.ToString()),
-            new("is_verified", bool.FalseString)
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString)
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
@@ -95,9 +95,9 @@ public class AdminEndpointsTests
         var admin = new AdminFaker().Generate();
 
         var jwt = _jwt.Builder.Build([
-            new("role", Jwt.Roles.ADMIN),
-            new("admin_id", admin.Id.ToString()),
-            new("is_verified", bool.FalseString)
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString)
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
@@ -112,7 +112,7 @@ public class AdminEndpointsTests
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(JwtBuilder.Parse(match.Groups[1].Value))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/auth/admin/email-verification/confirm", new object());
+        var response = await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         await using var context = _app.GetDatabaseContext();
@@ -130,10 +130,10 @@ public class AdminEndpointsTests
 
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new("role", Jwt.Roles.ADMIN),
-            new("admin_id", admin.Id.ToString()),
-            new("is_verified", bool.FalseString),
-            new("purpose", "email_verification")
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString),
+            new Claim("purpose", "email_verification")
         ]))}");
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
@@ -165,10 +165,10 @@ public class AdminEndpointsTests
 
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new("role", Jwt.Roles.ADMIN),
-            new("admin_id", admin.Id.ToString()),
-            new("is_verified", bool.FalseString),
-            new("purpose", "email_verification")
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString),
+            new Claim("purpose", "email_verification")
         ]))}");
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
@@ -191,22 +191,20 @@ public class AdminEndpointsTests
 
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new("role", Jwt.Roles.ADMIN),
-            new("admin_id", admin.Id.ToString()),
-            new("is_verified", bool.FalseString),
-            new("purpose", "email_verification")
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString),
+            new Claim("purpose", "email_verification")
         ]))}");
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Trigger the endpoints 5 times to enable the rare limiter.
-        for (int i = 0; i < 5; i++)
-        {
+        for (var i = 0; i < 5; i++)
             (await _client.PostAsJsonAsync("/api/auth/admin/login", new LoginAdminDto
             {
                 EmailAddress = admin.EmailAddress,
                 Password = new Faker().Internet.SecurePassword() // Generate a random password.
             })).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
 
         // Act & Assert.
         var dto = new LoginAdminDto

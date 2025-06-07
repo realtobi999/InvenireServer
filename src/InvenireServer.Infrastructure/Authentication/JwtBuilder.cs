@@ -6,39 +6,20 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Infrastructure.Authentication;
 
-/// <summary>
-/// Constructs and parses JWT's with configurable issuer and expiration.
-/// </summary>
 public class JwtBuilder : IJwtBuilder
 {
     private const int DEFAULT_EXPIRATION_TIME = 30;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JwtBuilder"/> class.
-    /// </summary>
-    /// <param name="issuer">The issuer claim value to include in the token.</param>
-    /// <param name="expiration">The expiration time in minutes. Defaults to 30 minutes.</param>
     public JwtBuilder(string issuer, int expiration = DEFAULT_EXPIRATION_TIME)
     {
         Issuer = issuer;
         ExpirationTime = TimeSpan.FromMinutes(expiration);
     }
 
-    /// <summary>
-    /// The value assigned to the 'iss' (issuer) claim in the token.
-    /// </summary>
     public string Issuer { get; set; }
 
-    /// <summary>
-    /// The time span for which the token is valid after issuance.
-    /// </summary>
     public TimeSpan ExpirationTime { get; set; }
 
-    /// <summary>
-    /// Builds a new JWT token with the specified claims, issuer, and expiration time.
-    /// </summary>
-    /// <param name="claims">Optional list of claims to include in the payload.</param>
-    /// <returns>The constructed <see cref="Jwt"/> token.</returns>
     public Jwt Build(List<Claim>? claims = null)
     {
         var header = new List<Claim>
@@ -49,30 +30,15 @@ public class JwtBuilder : IJwtBuilder
 
         var payload = claims ?? [];
 
-        if (payload.All(c => c.Type != "iss"))
-        {
-            payload.Add(new Claim("iss", Issuer));
-        }
+        if (payload.All(c => c.Type != "iss")) payload.Add(new Claim("iss", Issuer));
 
-        if (payload.All(c => c.Type != "aud"))
-        {
-            payload.Add(new Claim("aud", Issuer));
-        }
+        if (payload.All(c => c.Type != "aud")) payload.Add(new Claim("aud", Issuer));
 
-        if (payload.All(c => c.Type != "exp"))
-        {
-            payload.Add(new Claim("exp", DateTimeOffset.UtcNow.Add(ExpirationTime).ToUnixTimeSeconds().ToString()));
-        }
+        if (payload.All(c => c.Type != "exp")) payload.Add(new Claim("exp", DateTimeOffset.UtcNow.Add(ExpirationTime).ToUnixTimeSeconds().ToString()));
 
         return new Jwt(header, payload);
     }
 
-    /// <summary>
-    /// Parses a serialized JWT string into a structured <see cref="Jwt"/> object.
-    /// </summary>
-    /// <param name="token">The JWT string to parse.</param>
-    /// <returns>The parsed JWT containing its header and payload claims.</returns>
-    /// <exception cref="ArgumentException">Thrown if the token format is invalid.</exception>
     public static Jwt Parse(string token)
     {
         var parts = token.Split('.');
@@ -89,16 +55,10 @@ public class JwtBuilder : IJwtBuilder
     private static List<Claim> ParseJsonToClaims(string json)
     {
         var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
-        if (dict == null)
-        {
-            return [];
-        }
+        if (dict == null) return [];
 
         var claims = new List<Claim>();
-        foreach (var kvp in dict)
-        {
-            claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
-        }
+        foreach (var kvp in dict) claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
 
         return claims;
     }

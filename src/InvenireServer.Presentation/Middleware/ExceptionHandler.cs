@@ -1,20 +1,14 @@
 using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Dtos.Common;
-using InvenireServer.Application.Interfaces.Common;
-using InvenireServer.Domain.Interfaces;
 using InvenireServer.Domain.Interfaces.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace InvenireServer.Presentation.Middleware;
 
-/// <summary>
-/// Handles exceptions and returns a standardized JSON error response to the client.
-/// </summary>
 public class ExceptionHandler : IExceptionHandler
 {
-    /// <inheritdoc/>
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken token)
     {
         switch (exception)

@@ -4,12 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations;
 
-/// <summary>
-/// Configures the database mapping for the <see cref="Employee"/> entity.
-/// </summary>
 public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
 {
-    /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         // Properties.

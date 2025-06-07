@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Identity;
-using InvenireServer.Domain.Entities;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Factories.Employees;
+using InvenireServer.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Factories.Employees;
 
@@ -19,7 +19,7 @@ public class EmployeeFactory : IEmployeeFactory
             IsVerified = false,
             CreatedAt = DateTimeOffset.Now,
             LastUpdatedAt = null,
-            LastLoginAt = null,
+            LastLoginAt = null
         };
 
         // Hash the password.

@@ -4,12 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations;
 
-/// <summary>
-/// Configures the database mapping for the <see cref="Admin"/> entity.
-/// </summary>
 public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
 {
-    /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<Admin> builder)
     {
         // Properties.

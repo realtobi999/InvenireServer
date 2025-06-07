@@ -1,23 +1,16 @@
 using InvenireServer.Application.Factories;
 using InvenireServer.Application.Interfaces.Managers;
-using Serilog;
 using InvenireServer.Application.Services;
 using InvenireServer.Application.Services.Employees;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Persistence.Repositories;
+using InvenireServer.Presentation.Extensions;
+using Serilog;
 
 namespace InvenireServer.Presentation;
 
-/// <summary>
-/// The application entry point class responsible for configuring and running the web application.
-/// </summary>
 public class Program
 {
-    /// <summary>
-    /// The main entry point method which configures services, middleware, and runs the web application.
-    /// </summary>
-    /// <param name="args">The command-line arguments passed to the application.</param>
     private static void Main(string[] args)
     {
         try
@@ -46,10 +39,7 @@ public class Program
             {
                 app.UseSerilogRequestLogging();
 
-                if (app.Environment.IsProduction())
-                {
-                    app.UseExceptionHandler(_ => { });
-                }
+                if (app.Environment.IsProduction()) app.UseExceptionHandler(_ => { });
 
                 app.ConfigureStatusCodePages();
                 app.UseAuthorization();

@@ -16,8 +16,8 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    private readonly IJwtManager _jwt;
     private readonly IAdminFactory _factory;
+    private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
 
     public AdminController(IServiceManager services, IFactoryManager factories, IJwtManager jwt)
@@ -55,10 +55,7 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> ConfirmEmailVerification()
     {
         var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
-        if (!jwt.Payload.Any(c => c.Type == "purpose" && c.Value == "email_verification"))
-        {
-            throw new Unauthorized401Exception("Indication that the token is used for email verification is missing.");
-        }
+        if (!jwt.Payload.Any(c => c.Type == "purpose" && c.Value == "email_verification")) throw new Unauthorized401Exception("Indication that the token is used for email verification is missing.");
 
         var admin = await _services.Admins.GetAsync(jwt);
         await _services.Admins.ConfirmEmailVerificationAsync(admin);
@@ -82,17 +79,11 @@ public class AdminController : ControllerBase
         }
 
         // Make sure that the employee is verified before logging in.
-        if (!admin.IsVerified)
-        {
-            throw new Unauthorized401Exception("Email verification required to proceed.");
-        }
+        if (!admin.IsVerified) throw new Unauthorized401Exception("Email verification required to proceed.");
 
         // Validate the provided credentials.
         var hasher = new PasswordHasher<Admin>();
-        if (hasher.VerifyHashedPassword(admin, admin.Password, dto.Password) == PasswordVerificationResult.Failed)
-        {
-            throw new Unauthorized401Exception("Invalid credentials.");
-        }
+        if (hasher.VerifyHashedPassword(admin, admin.Password, dto.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
         // Updates the timestamp of the user's last login.
         admin.LastLoginAt = DateTimeOffset.Now;

@@ -4,10 +4,8 @@
 
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
-    /// <inheritdoc />
     public partial class Employee_Table_1 : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -43,7 +41,6 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 });
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

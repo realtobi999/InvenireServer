@@ -1,21 +1,19 @@
-using Moq;
 using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Managers;
-using Microsoft.Extensions.Logging;
-using InvenireServer.Application.Services;
 using InvenireServer.Application.Services.Employees;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Tests.Integration.Fakers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace InvenireServer.Tests.Unit.Services;
 
 public class EmployeeCleanupServiceTests
 {
-    private readonly Mock<IServiceScope> _mockServiceScope = new();
-    private readonly Mock<IRepositoryManager> _mockRepositoryManager = new();
-    private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory = new();
     private readonly Mock<ILogger<EmployeeCleanupService>> _mockLogger = new();
+    private readonly Mock<IRepositoryManager> _mockRepositoryManager = new();
+    private readonly Mock<IServiceScope> _mockServiceScope = new();
+    private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory = new();
 
     private EmployeeCleanupService CreateService()
     {
@@ -30,10 +28,10 @@ public class EmployeeCleanupServiceTests
     {
         // Prepare.
         var now = DateTimeOffset.UtcNow;
-        var employees = new List<Employee> { };
+        var employees = new List<Employee>();
 
         // Create employees that are categorized for deletion.
-        for (int i = 0; i < 2; i++)
+        for (var i = 0; i < 2; i++)
         {
             var employee = new EmployeeFaker().Generate();
 
@@ -56,10 +54,7 @@ public class EmployeeCleanupServiceTests
         // Act & Assert.
         await service.CleanupAsync();
 
-        foreach (var employee in employees)
-        {
-            _mockRepositoryManager.Verify(repo => repo.Employees.Delete(employee), Times.Once);
-        }
+        foreach (var employee in employees) _mockRepositoryManager.Verify(repo => repo.Employees.Delete(employee), Times.Once);
 
         _mockRepositoryManager.Verify(r => r.SaveAsync(), Times.Once);
     }
