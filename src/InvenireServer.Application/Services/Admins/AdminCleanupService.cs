@@ -1,18 +1,18 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Interfaces.Services.Employees;
+using InvenireServer.Domain.Interfaces.Services.Admins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace InvenireServer.Application.Services.Employees;
+namespace InvenireServer.Application.Services.Admins;
 
-public class EmployeeCleanupService : BackgroundService, IEmployeeCleanupService
+public class AdminCleanupService : BackgroundService, IAdminCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(7);
     private readonly IServiceScopeFactory _scope;
-    private readonly ILogger<EmployeeCleanupService> _logger;
+    private readonly ILogger<AdminCleanupService> _logger;
 
-    public EmployeeCleanupService(IServiceScopeFactory scope, ILogger<EmployeeCleanupService> logger)
+    public AdminCleanupService(IServiceScopeFactory scope, ILogger<AdminCleanupService> logger)
     {
         _scope = scope;
         _logger = logger;
@@ -22,11 +22,11 @@ public class EmployeeCleanupService : BackgroundService, IEmployeeCleanupService
     {
         var manager = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
 
-        foreach (var employee in await manager.Employees.IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.AddDays(-7))) manager.Employees.Delete(employee);
+        foreach (var admin in await manager.Admins.IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.AddDays(-7))) manager.Admins.Delete(admin);
 
         await manager.SaveAsync();
 
-        _logger.LogInformation("Unverified employees cleanup completed at {Time}", DateTime.UtcNow);
+        _logger.LogInformation("Unverified admins cleanup completed at {Time}", DateTime.UtcNow);
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
