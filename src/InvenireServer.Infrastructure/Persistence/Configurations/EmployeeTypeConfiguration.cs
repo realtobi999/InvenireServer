@@ -4,15 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations;
 
-/// <summary>
-/// Configures the database mapping for the <c>Employee</c> entity.
-/// </summary>
 public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
 {
-    /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
-        // Properties
+        // Properties.
         builder.Property(e => e.Id)
             .HasColumnName("id")
             .IsRequired();
@@ -41,12 +37,12 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
             .HasColumnName("is_verified")
             .IsRequired();
 
-        builder.Property(e => e.LastUpdatedAt)
-            .HasColumnName("updated_at");
-
         builder.Property(e => e.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
+
+        builder.Property(e => e.LastUpdatedAt)
+            .HasColumnName("last_updated_at");
 
         builder.Property(e => e.LastLoginAt)
             .HasColumnName("last_login_at");

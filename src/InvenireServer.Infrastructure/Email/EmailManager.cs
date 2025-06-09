@@ -1,28 +1,25 @@
 using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Application.Interfaces.Email.Builders;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Infrastructure.Email.Builders;
 
 namespace InvenireServer.Infrastructure.Email;
 
-/// <summary>
-/// Provides access to email-related components, including message builders and the sender.
-/// </summary>
 public class EmailManager : IEmailManager
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EmailManager"/> class using the specified sender.
-    /// </summary>
-    /// <param name="sender">The email sender responsible for dispatching messages.</param>
+    private readonly Lazy<EmailBuilderGroup> _builders;
+    private readonly Lazy<IEmailSender> _sender;
+
     public EmailManager(IEmailSender sender)
     {
-        Sender = sender;
-        EmployeeBuilder = new EmployeeEmailBuilder(sender.SourceAddress);
+        _sender = new Lazy<IEmailSender>(sender);
+        _builders = new Lazy<EmailBuilderGroup>(new EmailBuilderGroup
+        {
+            Admin = new AdminEmailBuilder(sender.SourceAddress),
+            Employee = new EmployeeEmailBuilder(sender.SourceAddress)
+        });
     }
 
-    /// <inheritdoc/>
-    public IEmailSender Sender { get; }
+    public EmailBuilderGroup Builders => _builders.Value;
 
-    /// <inheritdoc/>
-    public IEmployeeEmailBuilder EmployeeBuilder { get; }
+    public IEmailSender Sender => _sender.Value;
 }

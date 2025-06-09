@@ -7,9 +7,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class ServerEndpointsTests
 {
-    private readonly IJwtManager _jwt;
-    private readonly HttpClient _client;
     private readonly ServerFactory<Program> _app;
+    private readonly HttpClient _client;
+    private readonly IJwtManager _jwt;
 
     public ServerEndpointsTests()
     {

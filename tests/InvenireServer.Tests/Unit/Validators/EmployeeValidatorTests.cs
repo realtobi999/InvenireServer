@@ -1,16 +1,15 @@
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Validators;
-using Moq;
-using InvenireServer.Tests.Integration.Fakers;
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Tests.Integration.Fakers;
 
 namespace InvenireServer.Tests.Unit.Validators;
 
 public class EmployeeValidatorTests
 {
-    private readonly EmployeeValidator _validator;
     private readonly Mock<IRepositoryManager> _repository;
+    private readonly EmployeeValidator _validator;
 
     public EmployeeValidatorTests()
     {

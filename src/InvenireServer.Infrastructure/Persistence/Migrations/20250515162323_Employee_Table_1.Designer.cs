@@ -15,7 +15,6 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
     [Migration("20250515162323_Employee_Table_1")]
     partial class Employee_Table_1
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

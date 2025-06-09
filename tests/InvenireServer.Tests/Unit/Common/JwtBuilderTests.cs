@@ -9,7 +9,7 @@ public class JwtBuilderTests
 
     public JwtBuilderTests()
     {
-        _builder = new JwtBuilder("issuer", 30);
+        _builder = new JwtBuilder("issuer");
     }
 
     [Fact]
