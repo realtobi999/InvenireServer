@@ -14,10 +14,13 @@ public class InvenireServerContext : DbContext
 
     public DbSet<Employee> Employees { get; set; }
 
+    public DbSet<Organization> Organizations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.
         new AdminTypeConfiguration().Configure(builder.Entity<Admin>());
         new EmployeeTypeConfiguration().Configure(builder.Entity<Employee>());
+        new OrganizationTypeConfiguration().Configure(builder.Entity<Organization>());
     }
 }
