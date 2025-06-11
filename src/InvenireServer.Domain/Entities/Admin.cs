@@ -32,5 +32,5 @@ public class Admin
 
     // Navigational Properties.
 
-    public Guid? OrganizationId { get; init; }
+    public Guid? OrganizationId { get; set; }
 }

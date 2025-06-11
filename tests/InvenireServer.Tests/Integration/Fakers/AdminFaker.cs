@@ -15,6 +15,10 @@ public class AdminFaker : Faker<Admin>
         RuleFor(e => e.CreatedAt, f => f.Date.PastOffset(10));
         RuleFor(e => e.LastUpdatedAt, f => f.Date.RecentOffset(10));
         RuleFor(e => e.LastLoginAt, f => f.Date.RecentOffset(10));
-        RuleFor(e => e.OrganizationId, f => f.Random.Bool() ? f.Random.Guid() : null); // TODO: Change this to be a id of the organization passed in the constructor.
+    }
+
+    public AdminFaker(Organization organization) : this()
+    {
+        RuleFor(e => e.OrganizationId, _ => organization.Id);
     }
 }

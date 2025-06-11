@@ -2,6 +2,10 @@ namespace InvenireServer.Domain.Entities;
 
 public class Organization
 {
+    // Constants.
+
+    public const int MAX_NAME_LENGTH = 155;
+
     // Core properties.
 
     public required Guid Id { get; set; }

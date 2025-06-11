@@ -8,6 +8,8 @@ public interface IRepositoryManager
 
     IEmployeeRepository Employees { get; }
 
+    IOrganizationRepository Organizations { get; }
+
     Task<int> SaveAsync();
 
     Task SaveOrThrowAsync();
