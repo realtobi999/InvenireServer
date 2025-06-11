@@ -39,7 +39,7 @@ public class AdminService : IAdminService
     {
         var admin = await _repositories.Admins.GetAsync(predicate);
 
-        if (admin is null) throw new NotFound404Exception(nameof(admin));
+        if (admin is null) throw new NotFound404Exception($"The requested {nameof(admin)} was not found in the system");
 
         return admin;
     }

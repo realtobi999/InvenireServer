@@ -28,7 +28,13 @@ public class EmployeeValidator : IValidator<Employee>
         // Creation time cannot be set in the future.
         if (employee.CreatedAt > DateTimeOffset.UtcNow) return (false, new BadRequest400Exception($"{nameof(Employee.CreatedAt)} cannot be set in the future."));
 
-        // TODO: Validate that the referenced organization exists.
+        // Organization if set, must exit.
+        if (employee.OrganizationId is not null)
+        {
+            var organization = await _repositories.Organizations.GetAsync(o => o.Id == employee.OrganizationId);
+
+            if (organization is null) return (false, new NotFound404Exception($"The assigned {nameof(Organization)} was not found in the system."));
+        }
 
         return (true, null);
     }
