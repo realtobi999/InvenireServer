@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation;
@@ -7,6 +8,7 @@ using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Server;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
@@ -55,5 +57,16 @@ public class OrganizationEndpointsTests
         // Assert that the admin has a assigned organization.
         updatedAdmin.Should().NotBeNull();
         updatedAdmin!.OrganizationId.Should().Be(organization.Id);
+
+        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
+        email.CapturedMessages.Count.Should().Be(1);
+
+        var message = email.CapturedMessages[0];
+
+        // Assert that the email is properly constructed;
+        message.Should().NotBeNull();
+        message.To.Should().ContainSingle(t => t.Address == admin.EmailAddress);
+        message.Subject.Should().Contain("organization creation");
+        message.Body.Should().NotBeNull();
     }
 }

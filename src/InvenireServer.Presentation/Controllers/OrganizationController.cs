@@ -40,6 +40,9 @@ public class OrganizationController : ControllerBase
         admin.OrganizationId = organization.Id;
         await _services.Admins.UpdateAsync(admin);
 
+        // Send a confirmation email.
+        await _services.Admins.SendOrganizationCreationEmail(admin, organization);
+
         return Created($"/api/organization/{organization.Id}", null);
     }
 }

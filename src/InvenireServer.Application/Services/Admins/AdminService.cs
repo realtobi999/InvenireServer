@@ -12,9 +12,9 @@ namespace InvenireServer.Application.Services.Admins;
 
 public class AdminService : IAdminService
 {
-    private readonly IConfiguration _configuration;
-    private readonly IEmailManager _email;
     private readonly IJwtManager _jwt;
+    private readonly IEmailManager _email;
+    private readonly IConfiguration _configuration;
     private readonly IRepositoryManager _repositories;
 
     public AdminService(IRepositoryManager repositories, IEmailManager email, IJwtManager jwt, IConfiguration configuration)
@@ -67,7 +67,7 @@ public class AdminService : IAdminService
         await _repositories.SaveOrThrowAsync();
     }
 
-    public async Task SendEmailVerificationAsync(Admin admin)
+    public async Task SendVerificationEmailAsync(Admin admin)
     {
         var jwt = CreateJwt(admin);
 
@@ -80,8 +80,8 @@ public class AdminService : IAdminService
             VerificationLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
 
-        var message = _email.Builders.Admin.BuildVerificationEmail(dto);
-        await _email.Sender.SendEmailAsync(message);
+        var email = _email.Builders.Admin.BuildVerificationEmail(dto);
+        await _email.Sender.SendEmailAsync(email);
     }
 
     public async Task ConfirmEmailVerificationAsync(Admin admin)
@@ -90,5 +90,19 @@ public class AdminService : IAdminService
 
         admin.IsVerified = true;
         await UpdateAsync(admin);
+    }
+
+    public async Task SendOrganizationCreationEmail(Admin admin, Organization organization)
+    {
+        var dto = new AdminOrganizationCreationEmailDto
+        {
+            AdminAddress = admin.EmailAddress,
+            AdminName = admin.Name,
+            OrganizationName = organization.Name,
+            DashboardLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/dashboard"
+        };
+
+        var email = _email.Builders.Admin.BuildOrganizationCreationEmail(dto);
+        await _email.Sender.SendEmailAsync(email);
     }
 }

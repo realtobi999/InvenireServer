@@ -45,7 +45,7 @@ public class AdminController : ControllerBase
         var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
         var admin = await _services.Admins.GetAsync(jwt);
-        await _services.Admins.SendEmailVerificationAsync(admin);
+        await _services.Admins.SendVerificationEmailAsync(admin);
 
         return NoContent();
     }

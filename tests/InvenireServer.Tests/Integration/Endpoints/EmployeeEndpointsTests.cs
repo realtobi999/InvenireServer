@@ -73,7 +73,7 @@ public class EmployeeEndpointsTests
 
         var message = email.CapturedMessages[0];
 
-        // Assert that the email message is properly constructed and contains a verification link.
+        // Assert that the email is properly constructed and contains a verification link.
         message.To.Should().ContainSingle(t => t.Address == employee.EmailAddress);
         message.Subject.Should().Contain("verify your email");
         message.Body.Should().NotBeNull();

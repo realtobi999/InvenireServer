@@ -10,6 +10,19 @@ public class AdminEmailBuilder : BaseEmailBuilder, IAdminEmailBuilder
     {
     }
 
+    public MailMessage BuildOrganizationCreationEmail(AdminOrganizationCreationEmailDto dto)
+    {
+        var message = new MailMessage(SourceAddress, dto.AdminAddress)
+        {
+            IsBodyHtml = true
+        };
+
+        message.Subject = "Successful organization creation!";
+        message.Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "admin_organization_creation_email_template.html"), dto);
+
+        return message;
+    }
+
     public MailMessage BuildVerificationEmail(AdminVerificationEmailDto dto)
     {
         var message = new MailMessage(SourceAddress, dto.AdminAddress)

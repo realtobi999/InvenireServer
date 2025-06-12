@@ -81,7 +81,7 @@ public class EmployeeService : IEmployeeService
         await _repositories.SaveOrThrowAsync();
     }
 
-    public async Task SendEmailVerificationAsync(Employee employee)
+    public async Task SendVerificationEmailAsync(Employee employee)
     {
         var jwt = CreateJwt(employee);
         jwt.Payload.Add(new Claim("purpose", "email_verification"));
@@ -93,9 +93,8 @@ public class EmployeeService : IEmployeeService
             VerificationLink = $"{_configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
 
-        var message = _email.Builders.Employee.BuildVerificationEmail(dto);
-
-        await _email.Sender.SendEmailAsync(message);
+        var email = _email.Builders.Employee.BuildVerificationEmail(dto);
+        await _email.Sender.SendEmailAsync(email);
     }
 
     public async Task ConfirmEmailVerificationAsync(Employee employee)
