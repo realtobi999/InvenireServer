@@ -19,7 +19,7 @@ public class ServiceManager : IServiceManager
     {
         _admins = new Lazy<IAdminService>(() => new AdminService(repositories, email, jwt, configuration));
         _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, jwt, configuration));
-        _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories));
+        _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories, factories));
     }
 
     public IAdminService Admins => _admins.Value;
