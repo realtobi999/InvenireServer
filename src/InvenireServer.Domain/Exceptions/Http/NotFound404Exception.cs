@@ -9,7 +9,7 @@ public class NotFound404Exception : Exception, IHttpException
     {
     }
 
-    public NotFound404Exception(string entity) : base($"The requested {entity} was not found in the system.")
+    public NotFound404Exception(string message) : base(message)
     {
     }
 

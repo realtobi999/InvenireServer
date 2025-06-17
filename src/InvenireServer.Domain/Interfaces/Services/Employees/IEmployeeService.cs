@@ -16,7 +16,7 @@ public interface IEmployeeService
 
     Task UpdateAsync(Employee employee);
 
-    Task SendEmailVerificationAsync(Employee employee);
+    Task SendVerificationEmailAsync(Employee employee);
 
     Task ConfirmEmailVerificationAsync(Employee employee);
 }

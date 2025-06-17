@@ -45,7 +45,7 @@ public class EmployeeController : ControllerBase
         var jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken());
 
         var employee = await _services.Employees.GetAsync(jwt);
-        await _services.Employees.SendEmailVerificationAsync(employee);
+        await _services.Employees.SendVerificationEmailAsync(employee);
 
         return NoContent();
     }

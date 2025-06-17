@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Organization Created</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            clear: both;
+        }
+
+        .content a {
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h2>Organization Created</h2>
+    </div>
+    <div class="content">
+        <p>Dear @Model.AdminName,</p>
+        <p>Congratulations! Your organization <strong>@Model.OrganizationName</strong> has been successfully created.</p>
+        <p>You can now start inviting members, assigning roles, and managing your organization’s resources.</p>
+        <p style="text-align: center;">
+            <a class="button" href="@Model.DashboardLink" target="_blank">Go to Dashboard</a>
+        </p>
+        <p>If the button above doesn't work, you can access your dashboard using the following link:</p>
+        <p><a href="@Model.DashboardLink">@Model.DashboardLink</a></p>
+        <p>We're excited to have you on board. If you need any help, feel free to reach out to our support team.</p>
+        <p>Best regards,</p>
+        <p>Invenire Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; Invenire</p>
+    </div>
+</div>
+</body>
+</html>

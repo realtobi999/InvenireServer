@@ -91,4 +91,22 @@ public class AdminValidatorTests
         exception.Should().BeOfType<BadRequest400Exception>();
         exception!.Message.Should().Contain(nameof(Employee.CreatedAt));
     }
+
+    [Fact]
+    public async Task ValidateAsync_ReturnsFalseWhenOrganizationIsNotFound()
+    {
+        // Prepare.
+        var organization = new OrganizationFaker().Generate();
+        var admin = new AdminFaker(organization).Generate();
+
+        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
+        _repository.Setup(r => r.Organizations.GetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+
+        // Act & Assert.
+        var (valid, exception) = await _validator.ValidateAsync(admin);
+
+        valid.Should().BeFalse();
+        exception.Should().BeOfType<NotFound404Exception>();
+        exception!.Message.Should().Contain(nameof(Organization));
+    }
 }

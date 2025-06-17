@@ -11,6 +11,7 @@ public interface IAdminService
     Task CreateAsync(Admin admin);
     Jwt CreateJwt(Admin admin);
     Task UpdateAsync(Admin admin);
-    Task SendEmailVerificationAsync(Admin admin);
+    Task SendVerificationEmailAsync(Admin admin);
+    Task SendOrganizationCreationEmail(Admin admin, Organization organization);
     Task ConfirmEmailVerificationAsync(Admin admin);
 }

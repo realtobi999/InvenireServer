@@ -1,7 +1,9 @@
 using InvenireServer.Application.Factories.Admins;
 using InvenireServer.Application.Factories.Employees;
+using InvenireServer.Application.Factories.Organizations;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Application.Factories;
 
@@ -15,7 +17,8 @@ public class FactoryManager : IFactoryManager
         _entities = new Lazy<EntityFactoryGroup>(new EntityFactoryGroup
         {
             Admins = new AdminFactory(),
-            Employees = new EmployeeFactory()
+            Employees = new EmployeeFactory(),
+            Organization = new OrganizationFactory()
         });
         _validators = new Lazy<IValidatorFactory>(validators);
     }

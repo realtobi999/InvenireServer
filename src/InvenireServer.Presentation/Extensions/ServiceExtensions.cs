@@ -80,6 +80,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
+        services.AddScoped<IValidator<Organization>, OrganizationValidator>();
     }
 
     public static void ConfigureHashing(this IServiceCollection services)
