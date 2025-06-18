@@ -12,9 +12,9 @@ namespace InvenireServer.Application.Services.Admins;
 
 public class AdminService : IAdminService
 {
-    private readonly IJwtManager _jwt;
-    private readonly IEmailManager _email;
     private readonly IConfiguration _configuration;
+    private readonly IEmailManager _email;
+    private readonly IJwtManager _jwt;
     private readonly IRepositoryManager _repositories;
 
     public AdminService(IRepositoryManager repositories, IEmailManager email, IJwtManager jwt, IConfiguration configuration)

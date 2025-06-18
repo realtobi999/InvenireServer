@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace InvenireServer.Domain.Interfaces.Repositories;
 
-public interface IBaseRepository<T> where T : class
+public interface IRepositoryBase<T> where T : class
 {
     Task<IEnumerable<T>> IndexAsync();
 

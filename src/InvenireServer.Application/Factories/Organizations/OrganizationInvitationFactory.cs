@@ -4,18 +4,18 @@ using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Application.Factories.Organizations;
 
-public class OrganizationFactory : IOrganizationFactory
+public class OrganizationInvitationFactory : IOrganizationInvitationFactory
 {
-    public Organization Create(CreateOrganizationDto dto)
+    public OrganizationInvitation Create(CreateOrganizationInvitationDto dto)
     {
-        var organization = new Organization
+        var invitation = new OrganizationInvitation
         {
             Id = dto.Id ?? Guid.NewGuid(),
-            Name = dto.Name,
+            Description = dto.Description,
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null
         };
 
-        return organization;
+        return invitation;
     }
 }

@@ -10,7 +10,18 @@ public static class OrganizationTextExtensions
         var dto = new CreateOrganizationDto
         {
             Id = organization.Id,
-            Name = organization.Name,
+            Name = organization.Name
+        };
+
+        return dto;
+    }
+
+    public static CreateOrganizationInvitationDto ToCreateOrganizationInvitationDto(this OrganizationInvitation invitation)
+    {
+        var dto = new CreateOrganizationInvitationDto
+        {
+            Id = invitation.Id,
+            Description = invitation.Description
         };
 
         return dto;

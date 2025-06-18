@@ -11,4 +11,6 @@ public interface IServiceManager
     IEmployeeService Employees { get; }
 
     IOrganizationService Organizations { get; }
+
+    IOrganizationInvitationService OrganizationInvitations { get; }
 }

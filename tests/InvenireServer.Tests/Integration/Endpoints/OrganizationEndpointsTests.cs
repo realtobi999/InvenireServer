@@ -14,9 +14,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class OrganizationEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public OrganizationEndpointsTests()
     {
@@ -35,7 +35,7 @@ public class OrganizationEndpointsTests
         var jwt = _jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.TrueString),
+            new Claim("is_verified", bool.TrueString)
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
@@ -68,5 +68,43 @@ public class OrganizationEndpointsTests
         message.To.Should().ContainSingle(t => t.Address == admin.EmailAddress);
         message.Subject.Should().Contain("organization creation");
         message.Body.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task CreateOrganizationInvitation_Returns201AndInvitationIsCreated()
+    {
+        // Prepare.
+        var organization = new OrganizationFaker().Generate();
+        var admin = new AdminFaker(organization).Generate();
+        var employee = new EmployeeFaker(organization).Generate();
+        var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
+
+        var jwt = _jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]);
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
+
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/organization", organization.ToCreateOrganizationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.PostAsJsonAsync($"/api/organization/{organization.Id}/invite/{employee.Id}", invitation.ToCreateOrganizationInvitationDto());
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        await using var context = _app.GetDatabaseContext();
+        var createdInvitation = await context.Invitations.Include(i => i.Employee).FirstOrDefaultAsync(i => i.Id == invitation.Id);
+        var updatedOrganization = await context.Organizations.Include(o => o.Invitations).FirstOrDefaultAsync(o => o.Id == organization.Id);
+
+        // Assert that the invitation is created.
+        createdInvitation.Should().NotBeNull();
+        // Assert that the organization and employee is assigned.
+        createdInvitation!.OrganizationId.Should().Be(organization.Id);
+        createdInvitation!.Employee.Should().NotBeNull();
+        createdInvitation!.Employee!.Id.Should().Be(employee.Id);
+        // Assert that the organization has a assigned invitation.
+        updatedOrganization!.Invitations!.Should().ContainSingle(i => i.Id == invitation.Id);
     }
 }

@@ -1,8 +1,8 @@
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Validators;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Application.Validators;
 using InvenireServer.Tests.Integration.Fakers;
-using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Tests.Unit.Validators;
 

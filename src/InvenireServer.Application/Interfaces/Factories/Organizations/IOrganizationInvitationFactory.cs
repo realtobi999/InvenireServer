@@ -3,7 +3,7 @@ using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Application.Interfaces.Factories.Organizations;
 
-public interface IOrganizationFactory
+public interface IOrganizationInvitationFactory
 {
-    Organization Create(CreateOrganizationDto dto);
+    OrganizationInvitation Create(CreateOrganizationInvitationDto dto);
 }

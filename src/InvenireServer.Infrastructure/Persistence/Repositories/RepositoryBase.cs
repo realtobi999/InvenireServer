@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
-public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
+public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 {
     protected readonly InvenireServerContext Context;
 
-    protected BaseRepository(InvenireServerContext context)
+    protected RepositoryBase(InvenireServerContext context)
     {
         Context = context;
     }

@@ -4,13 +4,12 @@ using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Application.Dtos.Organizations;
 
-public record CreateOrganizationDto
+public record CreateOrganizationInvitationDto
 {
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }
 
-    [Required]
-    [JsonPropertyName("name")]
-    [MaxLength(Organization.MAX_NAME_LENGTH)]
-    public required string Name { get; set; }
+    [JsonPropertyName("description")]
+    [MaxLength(OrganizationInvitation.MAX_DESCRIPTION_LENGTH)]
+    public string? Description { get; set; }
 }

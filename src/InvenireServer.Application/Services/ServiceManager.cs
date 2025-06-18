@@ -13,12 +13,14 @@ public class ServiceManager : IServiceManager
 {
     private readonly Lazy<IAdminService> _admins;
     private readonly Lazy<IEmployeeService> _employees;
+    private readonly Lazy<IOrganizationInvitationService> _invitations;
     private readonly Lazy<IOrganizationService> _organizations;
 
     public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration, IJwtManager jwt)
     {
         _admins = new Lazy<IAdminService>(() => new AdminService(repositories, email, jwt, configuration));
         _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, jwt, configuration));
+        _invitations = new Lazy<IOrganizationInvitationService>(() => new OrganizationInvitationService(repositories));
         _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories, factories));
     }
 
@@ -27,4 +29,6 @@ public class ServiceManager : IServiceManager
     public IEmployeeService Employees => _employees.Value;
 
     public IOrganizationService Organizations => _organizations.Value;
+
+    public IOrganizationInvitationService OrganizationInvitations => _invitations.Value;
 }

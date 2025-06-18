@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Factories.Admins;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Admins;
 using InvenireServer.Domain.Entities;
@@ -11,9 +10,9 @@ namespace InvenireServer.Tests.Unit.Services;
 
 public class AdminCleanupServiceTests
 {
-    private readonly Mock<IServiceScope> _mockServiceScope = new();
     private readonly Mock<ILogger<AdminCleanupService>> _mockLogger = new();
     private readonly Mock<IRepositoryManager> _mockRepositoryManager = new();
+    private readonly Mock<IServiceScope> _mockServiceScope = new();
     private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory = new();
 
     private AdminCleanupService CreateService()

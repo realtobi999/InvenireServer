@@ -18,9 +18,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public EmployeeEndpointsTests()
     {

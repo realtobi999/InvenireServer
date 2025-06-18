@@ -32,5 +32,5 @@ public class Employee
 
     // Navigational Properties.
 
-    public Guid? OrganizationId { get; init; }
+    public Guid? OrganizationId { get; set; }
 }

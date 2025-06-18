@@ -2,7 +2,7 @@ using InvenireServer.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace InvenireServer.Infrastructure.Persistence.Configurations;
+namespace InvenireServer.Infrastructure.Persistence.Configurations.Employees;
 
 public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
 {

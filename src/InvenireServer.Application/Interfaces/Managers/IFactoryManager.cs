@@ -19,4 +19,6 @@ public class EntityFactoryGroup
     public required IEmployeeFactory Employees { get; set; }
 
     public required IOrganizationFactory Organization { get; set; }
+
+    public required IOrganizationInvitationFactory OrganizationInvitation { get; set; }
 }

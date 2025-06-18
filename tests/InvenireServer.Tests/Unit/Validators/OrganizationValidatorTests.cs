@@ -3,14 +3,11 @@ using InvenireServer.Application.Validators;
 using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.FileProviders;
 
 namespace InvenireServer.Tests.Unit.Validators;
 
 public class OrganizationValidatorTests
 {
-
     private readonly Mock<IRepositoryManager> _repository;
     private readonly OrganizationValidator _validator;
 

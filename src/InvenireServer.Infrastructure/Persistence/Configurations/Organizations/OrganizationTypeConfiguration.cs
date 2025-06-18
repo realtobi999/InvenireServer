@@ -2,7 +2,7 @@ using InvenireServer.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace InvenireServer.Infrastructure.Persistence.Configurations;
+namespace InvenireServer.Infrastructure.Persistence.Configurations.Organizations;
 
 public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organization>
 {
@@ -35,5 +35,9 @@ public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organizati
         builder.HasMany(o => o.Employees)
             .WithOne()
             .HasForeignKey(e => e.OrganizationId);
+
+        builder.HasMany(o => o.Invitations)
+            .WithOne()
+            .HasForeignKey(i => i.OrganizationId);
     }
 }

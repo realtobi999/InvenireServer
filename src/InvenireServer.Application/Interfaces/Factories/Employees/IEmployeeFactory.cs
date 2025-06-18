@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Entities;
 using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Domain.Entities;
 
 namespace InvenireServer.Application.Interfaces.Factories.Employees;
 

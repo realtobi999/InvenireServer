@@ -1,16 +1,16 @@
 namespace InvenireServer.Domain.Entities;
 
-public class Organization
+public class OrganizationInvitation
 {
     // Constants.
 
-    public const int MAX_NAME_LENGTH = 155;
+    public const int MAX_DESCRIPTION_LENGTH = 555;
 
     // Core properties.
 
     public required Guid Id { get; set; }
 
-    public required string Name { get; set; }
+    public required string? Description { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; }
 
@@ -18,9 +18,7 @@ public class Organization
 
     // Navigational properties.
 
-    public Admin? Admin { get; set; }
+    public Guid? OrganizationId { get; set; }
 
-    public ICollection<Employee>? Employees { get; set; }
-
-    public ICollection<OrganizationInvitation>? Invitations { get; set; }
+    public Employee? Employee { get; set; }
 }
