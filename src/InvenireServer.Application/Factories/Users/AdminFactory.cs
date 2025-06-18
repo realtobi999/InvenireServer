@@ -1,9 +1,9 @@
 using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Application.Interfaces.Factories.Admins;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Application.Interfaces.Factories.Users;
+using InvenireServer.Domain.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace InvenireServer.Application.Factories.Admins;
+namespace InvenireServer.Application.Factories.Users;
 
 public class AdminFactory : IAdminFactory
 {

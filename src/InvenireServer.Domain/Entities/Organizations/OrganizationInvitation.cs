@@ -1,4 +1,6 @@
-namespace InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
+
+namespace InvenireServer.Domain.Entities.Organizations;
 
 public class OrganizationInvitation
 {

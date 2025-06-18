@@ -1,7 +1,7 @@
-using InvenireServer.Domain.Entities;
-using InvenireServer.Infrastructure.Persistence.Configurations.Admins;
-using InvenireServer.Infrastructure.Persistence.Configurations.Employees;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Persistence.Configurations.Organizations;
+using InvenireServer.Infrastructure.Persistence.Configurations.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence;

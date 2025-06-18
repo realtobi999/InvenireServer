@@ -1,6 +1,6 @@
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Factories.Organizations;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Factories.Organizations;
 

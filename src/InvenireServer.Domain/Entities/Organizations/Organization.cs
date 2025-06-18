@@ -1,4 +1,6 @@
-namespace InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
+
+namespace InvenireServer.Domain.Entities.Organizations;
 
 public class Organization
 {
@@ -20,7 +22,7 @@ public class Organization
 
     public Admin? Admin { get; set; }
 
-    public ICollection<Employee>? Employees { get; set; }
+    public ICollection<Employee> Employees { get; set; } = [];
 
-    public ICollection<OrganizationInvitation>? Invitations { get; set; }
+    public ICollection<OrganizationInvitation> Invitations { get; set; } = [];
 }

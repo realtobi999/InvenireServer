@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Organizations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -1,6 +1,7 @@
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Validators;

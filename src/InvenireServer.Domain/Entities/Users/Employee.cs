@@ -1,4 +1,4 @@
-namespace InvenireServer.Domain.Entities;
+namespace InvenireServer.Domain.Entities.Users;
 
 public class Employee
 {

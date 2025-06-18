@@ -1,9 +1,9 @@
 using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Application.Interfaces.Factories.Employees;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Application.Interfaces.Factories.Users;
+using InvenireServer.Domain.Entities.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace InvenireServer.Application.Factories.Employees;
+namespace InvenireServer.Application.Factories.Users;
 
 public class EmployeeFactory : IEmployeeFactory
 {

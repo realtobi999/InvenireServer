@@ -60,12 +60,12 @@ public class OrganizationController : ControllerBase
         if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
 
         // Initiate the invitation from the body and assign the employee and organization to it.
-        var invitation = _factories.Entities.OrganizationInvitation.Create(body);
+        var invitation = _factories.Entities.Organization.Invitation.Create(body);
         invitation.Employee = employee;
         invitation.OrganizationId = organization.Id;
 
         // Save to the database.
-        await _services.OrganizationInvitations.CreateAsync(invitation);
+        await _services.Organizations.Invitations.CreateAsync(invitation);
 
         // Assign the invitation to the organization.
         organization.Invitations?.Add(invitation);

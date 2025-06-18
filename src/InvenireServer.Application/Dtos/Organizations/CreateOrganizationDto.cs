@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Dtos.Organizations;
 

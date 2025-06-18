@@ -1,8 +1,8 @@
 using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Application.Interfaces.Factories.Employees;
+using InvenireServer.Application.Interfaces.Factories.Users;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;

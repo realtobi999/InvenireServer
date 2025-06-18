@@ -1,8 +1,8 @@
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace InvenireServer.Infrastructure.Persistence.Configurations.Admins;
+namespace InvenireServer.Infrastructure.Persistence.Configurations.Users;
 
 public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
 {

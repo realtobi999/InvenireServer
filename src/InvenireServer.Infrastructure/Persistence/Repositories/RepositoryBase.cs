@@ -30,16 +30,21 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 
     public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
     {
-        return await Context.Set<T>().FirstOrDefaultAsync(predicate);
+        return await GetQueryable().FirstOrDefaultAsync(predicate);
     }
 
     public virtual async Task<IEnumerable<T>> IndexAsync()
     {
-        return await Context.Set<T>().ToListAsync();
+        return await GetQueryable().ToListAsync();
     }
 
     public virtual async Task<IEnumerable<T>> IndexAsync(Expression<Func<T, bool>> predicate)
     {
-        return await Context.Set<T>().Where(predicate).ToListAsync();
+        return await GetQueryable().Where(predicate).ToListAsync();
+    }
+
+    protected virtual IQueryable<T> GetQueryable()
+    {
+        return Context.Set<T>();
     }
 }

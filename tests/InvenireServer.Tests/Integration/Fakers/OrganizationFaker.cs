@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Tests.Integration.Fakers;
 

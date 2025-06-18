@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Employees;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Tests.Integration.Fakers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

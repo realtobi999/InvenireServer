@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Dtos.Admins;
 

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Domain.Interfaces.Services.Employees;
 
