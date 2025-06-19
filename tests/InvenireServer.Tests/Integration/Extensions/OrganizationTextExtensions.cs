@@ -21,7 +21,8 @@ public static class OrganizationTextExtensions
         var dto = new CreateOrganizationInvitationDto
         {
             Id = invitation.Id,
-            Description = invitation.Description
+            Description = invitation.Description,
+            EmployeeId = (invitation.Employee ?? throw new NullReferenceException("Employee not set.")).Id
         };
 
         return dto;

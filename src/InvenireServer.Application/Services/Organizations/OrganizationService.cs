@@ -37,4 +37,15 @@ public class OrganizationService : IOrganizationService
         _repositories.Organizations.Create(organization);
         await _repositories.SaveOrThrowAsync();
     }
+
+    public async Task UpdateAsync(Organization organization)
+    {
+        organization.LastUpdatedAt = DateTimeOffset.UtcNow;
+
+        var (valid, exception) = await _validator.ValidateAsync(organization);
+        if (!valid && exception is not null) throw exception;
+
+        _repositories.Organizations.Update(organization);
+        await _repositories.SaveOrThrowAsync();
+    }
 }

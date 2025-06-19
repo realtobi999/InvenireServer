@@ -12,4 +12,8 @@ public record CreateOrganizationInvitationDto
     [JsonPropertyName("description")]
     [MaxLength(OrganizationInvitation.MAX_DESCRIPTION_LENGTH)]
     public string? Description { get; set; }
+
+    [Required]
+    [JsonPropertyName("employee_id")]
+    public required Guid EmployeeId { get; set; }
 }
