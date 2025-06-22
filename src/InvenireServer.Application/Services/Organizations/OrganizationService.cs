@@ -24,7 +24,7 @@ public class OrganizationService : IOrganizationService
     {
         var organization = await _repositories.Organizations.GetAsync(predicate);
 
-        if (organization is null) throw new NotFound404Exception($"The requested {nameof(organization)} was not found in the system.");
+        if (organization is null) throw new NotFound404Exception($"The requested {nameof(Organization).ToLower()} was not found in the system.");
 
         return organization;
     }

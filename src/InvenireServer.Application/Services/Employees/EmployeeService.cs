@@ -47,7 +47,7 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _repositories.Employees.GetAsync(predicate);
 
-        if (employee is null) throw new NotFound404Exception($"The requested {nameof(employee)} was not found in the system.");
+        if (employee is null) throw new NotFound404Exception($"The requested {nameof(Employee).ToLower()} was not found in the system.");
 
         return employee;
     }
