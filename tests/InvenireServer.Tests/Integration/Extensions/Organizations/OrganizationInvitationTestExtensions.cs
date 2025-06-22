@@ -1,21 +1,11 @@
+using System;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Domain.Entities.Organizations;
 
-namespace InvenireServer.Tests.Integration.Extensions;
+namespace InvenireServer.Tests.Integration.Extensions.Organizations;
 
-public static class OrganizationTextExtensions
+public static class OrganizationInvitationTestExtensions
 {
-    public static CreateOrganizationDto ToCreateOrganizationDto(this Organization organization)
-    {
-        var dto = new CreateOrganizationDto
-        {
-            Id = organization.Id,
-            Name = organization.Name
-        };
-
-        return dto;
-    }
-
     public static CreateOrganizationInvitationDto ToCreateOrganizationInvitationDto(this OrganizationInvitation invitation)
     {
         var dto = new CreateOrganizationInvitationDto

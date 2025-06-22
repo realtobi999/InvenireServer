@@ -1,6 +1,6 @@
 using InvenireServer.Domain.Entities.Organizations;
 
-namespace InvenireServer.Tests.Integration.Fakers;
+namespace InvenireServer.Tests.Integration.Fakers.Organizations;
 
 public class OrganizationFaker : Faker<Organization>
 {

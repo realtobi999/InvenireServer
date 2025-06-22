@@ -1,6 +1,7 @@
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Fakers;
+using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints;

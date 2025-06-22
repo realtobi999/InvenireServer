@@ -3,7 +3,7 @@ using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Presentation;
 using Microsoft.Extensions.Configuration;
 
-namespace InvenireServer.Tests.Integration.Fakers;
+namespace InvenireServer.Tests.Integration.Fakers.Common;
 
 public class JwtManagerFaker
 {

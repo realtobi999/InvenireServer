@@ -4,6 +4,8 @@ using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers;
+using InvenireServer.Tests.Integration.Fakers.Organizations;
+using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Validators;
 

@@ -1,7 +1,7 @@
 using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Domain.Entities.Users;
 
-namespace InvenireServer.Tests.Integration.Extensions;
+namespace InvenireServer.Tests.Integration.Extensions.Users;
 
 public static class AdminTestExtensions
 {

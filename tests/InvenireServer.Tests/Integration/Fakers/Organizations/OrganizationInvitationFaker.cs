@@ -1,7 +1,7 @@
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 
-namespace InvenireServer.Tests.Integration.Fakers;
+namespace InvenireServer.Tests.Integration.Fakers.Organizations;
 
 public class OrganizationInvitationFaker : Faker<OrganizationInvitation>
 {

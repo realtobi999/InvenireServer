@@ -1,7 +1,7 @@
 using System.Net.Mail;
 using InvenireServer.Application.Interfaces.Email;
 
-namespace InvenireServer.Tests.Integration.Fakers;
+namespace InvenireServer.Tests.Integration.Fakers.Common;
 
 public class EmailSenderFaker : IEmailSender
 {

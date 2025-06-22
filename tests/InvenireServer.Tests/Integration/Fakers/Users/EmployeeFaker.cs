@@ -2,11 +2,11 @@ using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Tests.Integration.Extensions;
 
-namespace InvenireServer.Tests.Integration.Fakers;
+namespace InvenireServer.Tests.Integration.Fakers.Users;
 
-public class AdminFaker : Faker<Admin>
+public sealed class EmployeeFaker : Faker<Employee>
 {
-    public AdminFaker()
+    public EmployeeFaker()
     {
         RuleFor(e => e.Id, f => f.Random.Guid());
         RuleFor(e => e.Name, f => f.Name.FullName());
@@ -18,7 +18,7 @@ public class AdminFaker : Faker<Admin>
         RuleFor(e => e.LastLoginAt, f => f.Date.RecentOffset(10));
     }
 
-    public AdminFaker(Organization organization) : this()
+    public EmployeeFaker(Organization organization) : this()
     {
         RuleFor(e => e.OrganizationId, _ => organization.Id);
     }
