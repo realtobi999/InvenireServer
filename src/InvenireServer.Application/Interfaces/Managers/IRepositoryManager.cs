@@ -1,4 +1,5 @@
-using InvenireServer.Domain.Interfaces.Repositories;
+using InvenireServer.Domain.Interfaces.Repositories.Organizations;
+using InvenireServer.Domain.Interfaces.Repositories.Users;
 
 namespace InvenireServer.Application.Interfaces.Managers;
 

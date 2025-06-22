@@ -1,7 +1,6 @@
 using InvenireServer.Application.Interfaces.Factories;
-using InvenireServer.Application.Interfaces.Factories.Admins;
-using InvenireServer.Application.Interfaces.Factories.Employees;
 using InvenireServer.Application.Interfaces.Factories.Organizations;
+using InvenireServer.Application.Interfaces.Factories.Users;
 
 namespace InvenireServer.Application.Interfaces.Managers;
 

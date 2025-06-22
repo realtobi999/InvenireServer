@@ -1,13 +1,16 @@
-using InvenireServer.Domain.Exceptions.Common;
-using InvenireServer.Domain.Interfaces.Repositories;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Exceptions.Common;
+using InvenireServer.Domain.Interfaces.Repositories.Organizations;
+using InvenireServer.Domain.Interfaces.Repositories.Users;
+using InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
+using InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
 public class RepositoryManager : IRepositoryManager
 {
-    private readonly InvenireServerContext _context;
     private readonly Lazy<IAdminRepository> _admins;
+    private readonly InvenireServerContext _context;
     private readonly Lazy<IEmployeeRepository> _employees;
     private readonly Lazy<IOrganizationRepository> _organizations;
 

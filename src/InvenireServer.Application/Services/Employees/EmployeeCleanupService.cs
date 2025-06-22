@@ -9,8 +9,8 @@ namespace InvenireServer.Application.Services.Employees;
 public class EmployeeCleanupService : BackgroundService, IEmployeeCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(7);
-    private readonly IServiceScopeFactory _scope;
     private readonly ILogger<EmployeeCleanupService> _logger;
+    private readonly IServiceScopeFactory _scope;
 
     public EmployeeCleanupService(IServiceScopeFactory scope, ILogger<EmployeeCleanupService> logger)
     {

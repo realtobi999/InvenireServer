@@ -1,5 +1,5 @@
 using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Domain.Entities;
+using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Extensions;
 

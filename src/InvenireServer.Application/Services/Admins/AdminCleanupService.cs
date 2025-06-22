@@ -9,8 +9,8 @@ namespace InvenireServer.Application.Services.Admins;
 public class AdminCleanupService : BackgroundService, IAdminCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(7);
-    private readonly IServiceScopeFactory _scope;
     private readonly ILogger<AdminCleanupService> _logger;
+    private readonly IServiceScopeFactory _scope;
 
     public AdminCleanupService(IServiceScopeFactory scope, ILogger<AdminCleanupService> logger)
     {

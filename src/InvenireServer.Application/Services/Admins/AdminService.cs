@@ -2,8 +2,9 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Admins;
 using Microsoft.Extensions.Configuration;
@@ -12,9 +13,9 @@ namespace InvenireServer.Application.Services.Admins;
 
 public class AdminService : IAdminService
 {
-    private readonly IJwtManager _jwt;
-    private readonly IEmailManager _email;
     private readonly IConfiguration _configuration;
+    private readonly IEmailManager _email;
+    private readonly IJwtManager _jwt;
     private readonly IRepositoryManager _repositories;
 
     public AdminService(IRepositoryManager repositories, IEmailManager email, IJwtManager jwt, IConfiguration configuration)

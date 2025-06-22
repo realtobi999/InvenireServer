@@ -4,8 +4,8 @@ using System.Text.RegularExpressions;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Extensions;
@@ -18,9 +18,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public EmployeeEndpointsTests()
     {
