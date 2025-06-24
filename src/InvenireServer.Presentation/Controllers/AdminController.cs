@@ -2,10 +2,10 @@ using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
-using MediatR;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -15,8 +15,8 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IConfiguration _configuration;
+    private readonly IMediator _mediator;
 
     public AdminController(IMediator mediator, IConfiguration configuration)
     {
@@ -53,7 +53,7 @@ public class AdminController : ControllerBase
     {
         var command = new ConfirmVerificationAdminCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         await _mediator.Send(command);
 

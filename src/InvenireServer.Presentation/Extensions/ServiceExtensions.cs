@@ -1,5 +1,4 @@
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
 using InvenireServer.Application;
@@ -169,9 +168,6 @@ public static class ServiceExtensions
 
     public static void ConfigureMediatR(this IServiceCollection services)
     {
-        services.AddMediatR(options =>
-        {
-            options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly);
-        });
+        services.AddMediatR(options => { options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly); });
     }
 }

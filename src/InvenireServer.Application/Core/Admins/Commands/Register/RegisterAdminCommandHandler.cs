@@ -8,9 +8,9 @@ namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
 public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand, RegisterAdminCommandResult>
 {
+    private readonly IPasswordHasher<Admin> _hasher;
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IPasswordHasher<Admin> _hasher;
 
     public RegisterAdminCommandHandler(IServiceManager services, IPasswordHasher<Admin> hasher, IJwtManager jwt)
     {
@@ -31,7 +31,7 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
             IsVerified = false,
             CreatedAt = DateTimeOffset.UtcNow,
             LastLoginAt = null,
-            LastUpdatedAt = null,
+            LastUpdatedAt = null
         };
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
@@ -48,7 +48,7 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         return new RegisterAdminCommandResult
         {
             Admin = admin,
-            Token = _jwt.Writer.Write(jwt),
+            Token = _jwt.Writer.Write(jwt)
         };
     }
 }

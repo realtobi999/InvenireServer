@@ -2,7 +2,6 @@ using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
 using MediatR;
@@ -14,8 +13,8 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class OrganizationController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IConfiguration _configuration;
+    private readonly IMediator _mediator;
 
     public OrganizationController(IMediator mediator, IConfiguration configuration)
     {
@@ -44,7 +43,7 @@ public class OrganizationController : ControllerBase
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            OrganizationId = organizationId,
+            OrganizationId = organizationId
         };
         var result = await _mediator.Send(command);
 
@@ -59,7 +58,7 @@ public class OrganizationController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             InvitationId = invitationId,
-            OrganizationId = organizationId,
+            OrganizationId = organizationId
         };
         await _mediator.Send(command);
 

@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -10,9 +9,9 @@ namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
 public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand, LoginEmployeeCommandResult>
 {
+    private readonly IPasswordHasher<Employee> _hasher;
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IPasswordHasher<Employee> _hasher;
 
     public LoginEmployeeCommandHandler(IServiceManager services, IPasswordHasher<Employee> hasher, IJwtManager jwt)
     {

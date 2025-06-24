@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using InvenireServer.Application.Core.Admins.Commands.Login;
-using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -21,9 +20,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class AdminEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public AdminEndpointsTests()
     {
@@ -115,7 +114,7 @@ public class AdminEndpointsTests
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.FalseString),
-            new Claim("purpose", "email_verification"),
+            new Claim("purpose", "email_verification")
         ]);
         _client.DefaultRequestHeaders.Remove("Authorization");
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");

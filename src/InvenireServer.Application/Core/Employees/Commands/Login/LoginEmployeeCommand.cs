@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Login;
 

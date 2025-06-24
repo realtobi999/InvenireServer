@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Organizations;
 
 namespace InvenireServer.Application.Services.Organizations;

@@ -3,13 +3,10 @@ using InvenireServer.Application.Core.Employees.Commands.Register;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Confirm;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Send;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -18,8 +15,8 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class EmployeeController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IConfiguration _configuration;
+    private readonly IMediator _mediator;
 
     public EmployeeController(IMediator mediator, IConfiguration configuration)
     {
@@ -56,7 +53,7 @@ public class EmployeeController : ControllerBase
     {
         var command = new ConfirmVerificationEmployeeCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         await _mediator.Send(command);
 

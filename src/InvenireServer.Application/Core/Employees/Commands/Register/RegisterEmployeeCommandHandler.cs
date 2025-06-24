@@ -1,4 +1,3 @@
-
 using System.Security.Claims;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -9,9 +8,9 @@ namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
 public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCommand, RegisterEmployeeCommandResult>
 {
+    private readonly IPasswordHasher<Employee> _hasher;
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IPasswordHasher<Employee> _hasher;
 
     public RegisterEmployeeCommandHandler(IServiceManager services, IPasswordHasher<Employee> hasher, IJwtManager jwt)
     {
@@ -32,7 +31,7 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
             IsVerified = false,
             CreatedAt = DateTimeOffset.UtcNow,
             LastLoginAt = null,
-            LastUpdatedAt = null,
+            LastUpdatedAt = null
         };
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
@@ -49,7 +48,7 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         return new RegisterEmployeeCommandResult
         {
             Employee = employee,
-            Token = _jwt.Writer.Write(jwt),
+            Token = _jwt.Writer.Write(jwt)
         };
     }
 }

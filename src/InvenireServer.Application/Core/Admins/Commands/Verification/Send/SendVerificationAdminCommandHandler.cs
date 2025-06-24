@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 
@@ -5,8 +6,8 @@ namespace InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 
 public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificationAdminCommand>
 {
-    private readonly IJwtManager _jwt;
     private readonly IEmailManager _email;
+    private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
 
     public SendVerificationAdminCommandHandler(IServiceManager services, IEmailManager email, IJwtManager jwt)
@@ -22,7 +23,7 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         var admin = await _services.Admins.GetAsync(jwt);
 
         // Make the purpose of the token to be of verification.
-        jwt.Payload.Add(new("purpose", "email_verification"));
+        jwt.Payload.Add(new Claim("purpose", "email_verification"));
 
         // Build and send the email.
         var dto = new AdminVerificationEmailDto

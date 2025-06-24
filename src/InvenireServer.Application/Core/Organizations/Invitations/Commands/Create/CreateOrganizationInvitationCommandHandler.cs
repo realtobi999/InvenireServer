@@ -30,7 +30,7 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
             Employee = employee,
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         // Save the invitation.
@@ -42,7 +42,7 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
         return new CreateOrganizationInvitationCommandResult
         {
             Invitation = invitation,
-            Organization = organization,
+            Organization = organization
         };
     }
 }

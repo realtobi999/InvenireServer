@@ -38,6 +38,5 @@ public class AcceptOrganizationInvitationCommandHandler : IRequestHandler<Accept
         // Save the changes.
         await _services.Organizations.UpdateAsync(organization);
         await _services.Employees.UpdateAsync(employee);
-
     }
 }

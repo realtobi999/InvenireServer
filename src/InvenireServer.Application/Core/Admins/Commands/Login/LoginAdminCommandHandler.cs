@@ -9,9 +9,9 @@ namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
 public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResult>
 {
+    private readonly IPasswordHasher<Admin> _hasher;
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
-    private readonly IPasswordHasher<Admin> _hasher;
 
     public LoginAdminCommandHandler(IServiceManager services, IPasswordHasher<Admin> hasher, IJwtManager jwt)
     {

@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

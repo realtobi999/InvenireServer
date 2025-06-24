@@ -1,6 +1,6 @@
-using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Dtos.Admins.Email;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
@@ -47,7 +47,7 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
 
         return new CreateOrganizationCommandResult
         {
-            Organization = organization,
+            Organization = organization
         };
     }
 }
