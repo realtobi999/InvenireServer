@@ -5,16 +5,18 @@ using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Login;
+namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
 public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResult>
 {
     private readonly IJwtManager _jwt;
     private readonly IServiceManager _services;
+    private readonly IPasswordHasher<Admin> _hasher;
 
-    public LoginAdminCommandHandler(IServiceManager services, IJwtManager jwt)
+    public LoginAdminCommandHandler(IServiceManager services, IPasswordHasher<Admin> hasher, IJwtManager jwt)
     {
         _jwt = jwt;
+        _hasher = hasher;
         _services = services;
     }
 
@@ -31,14 +33,13 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
             throw new Unauthorized401Exception("Invalid credentials.");
         }
 
-        // Make sure that the employee is verified before logging in.
+        // Make sure that the admin is verified before logging in.
         if (!admin.IsVerified) throw new Unauthorized401Exception("Verification required to proceed.");
 
         // Validate the provided credentials.
-        var hasher = new PasswordHasher<Admin>();
-        if (hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
+        if (_hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
-        // Update the timestamp of the user's last login.
+        // Update the timestamp of the admins's last login.
         admin.LastLoginAt = DateTimeOffset.Now;
         await _services.Admins.UpdateAsync(admin);
 

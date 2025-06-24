@@ -1,9 +1,9 @@
 using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Verification.Send;
+namespace InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 
-public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificationAdminCommand, Unit>
+public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificationAdminCommand>
 {
     private readonly IJwtManager _jwt;
     private readonly IEmailManager _email;
@@ -16,7 +16,7 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         _services = services;
     }
 
-    public async Task<Unit> Handle(SendVerificationAdminCommand request, CancellationToken _)
+    public async Task Handle(SendVerificationAdminCommand request, CancellationToken _)
     {
         var jwt = request.Jwt;
         var admin = await _services.Admins.GetAsync(jwt);
@@ -33,7 +33,5 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         };
         var email = _email.Builders.Admin.BuildVerificationEmail(dto);
         await _email.Sender.SendEmailAsync(email);
-
-        return Unit.Value;
     }
 }

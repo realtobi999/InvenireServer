@@ -1,4 +1,4 @@
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Login;
+namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
 public record LoginAdminCommandResult
 {

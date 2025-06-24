@@ -1,14 +1,14 @@
+using InvenireServer.Application.Core.Admins.Commands.Login;
+using InvenireServer.Application.Core.Admins.Commands.Register;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 using MediatR;
-using InvenireServer.Application.Cqrs.Admins.Commands.Register;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using InvenireServer.Application.Cqrs.Admins.Commands.Login;
-using InvenireServer.Application.Cqrs.Admins.Commands.Verification.Confirm;
-using InvenireServer.Application.Cqrs.Admins.Commands.Verification.Send;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -42,7 +42,6 @@ public class AdminController : ControllerBase
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
         };
-
         await _mediator.Send(command);
 
         return NoContent();
@@ -56,7 +55,6 @@ public class AdminController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
         };
-
         await _mediator.Send(command);
 
         return NoContent();
@@ -64,7 +62,7 @@ public class AdminController : ControllerBase
 
     [EnableRateLimiting("LoginPolicy")]
     [HttpPost("/api/auth/admin/login")]
-    public async Task<IActionResult> Login(LoginAdminCommand command)
+    public async Task<IActionResult> Login([FromBody] LoginAdminCommand command)
     {
         var result = await _mediator.Send(command);
 

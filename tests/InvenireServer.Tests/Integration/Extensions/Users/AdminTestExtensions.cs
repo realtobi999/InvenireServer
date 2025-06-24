@@ -1,4 +1,4 @@
-using InvenireServer.Application.Cqrs.Admins.Commands.Register;
+using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Extensions.Users;

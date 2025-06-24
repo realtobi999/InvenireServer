@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Login;
+namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
 public record LoginAdminCommand : IRequest<LoginAdminCommandResult>
 {

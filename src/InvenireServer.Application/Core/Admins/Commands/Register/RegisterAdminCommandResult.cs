@@ -1,6 +1,6 @@
 using InvenireServer.Domain.Entities.Users;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Register;
+namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
 public record RegisterAdminCommandResult
 {

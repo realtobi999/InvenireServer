@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
-namespace InvenireServer.Application.Dtos.Employees;
+namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
-public record LoginEmployeeDto
+public record LoginEmployeeCommand : IRequest<LoginEmployeeCommandResult>
 {
     [Required]
     [JsonPropertyName("email_address")]

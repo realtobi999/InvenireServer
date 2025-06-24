@@ -1,8 +1,8 @@
 using InvenireServer.Domain.Entities.Common;
 
-namespace InvenireServer.Application.Core.Admins.Commands.Verification.Send;
+namespace InvenireServer.Application.Core.Employees.Commands.Verification.Send;
 
-public record SendVerificationAdminCommand : IRequest
+public class SendVerificationEmployeeCommand : IRequest
 {
     public required Jwt Jwt { get; set; }
     public required string FrontendBaseUrl { get; set; }

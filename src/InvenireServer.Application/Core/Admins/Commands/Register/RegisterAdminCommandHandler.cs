@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Identity;
-using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Application.Interfaces.Managers;
 using System.Security.Claims;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
+using Microsoft.AspNetCore.Identity;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Register;
+namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
 public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand, RegisterAdminCommandResult>
 {

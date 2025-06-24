@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Users;
 
-namespace InvenireServer.Application.Dtos.Employees;
+namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
-public record RegisterEmployeeDto
+public record RegisterEmployeeCommand : IRequest<RegisterEmployeeCommandResult>
 {
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }

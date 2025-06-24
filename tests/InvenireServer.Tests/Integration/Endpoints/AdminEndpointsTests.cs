@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
-using InvenireServer.Application.Cqrs.Admins.Commands.Login;
+using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
@@ -156,11 +156,8 @@ public class AdminEndpointsTests
         var response = await _client.PostAsJsonAsync("/api/auth/admin/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await response.Content.ReadFromJsonAsync<LoginAdminResponseDto>();
-        body.Should().NotBeNull();
-
         // Assert that the token has all the necessary claims.
-        var jwt = JwtBuilder.Parse(body!.Token);
+        var jwt = JwtBuilder.Parse(await response.Content.ReadAsStringAsync());
         jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
         jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == admin.Id.ToString());
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);

@@ -1,9 +1,9 @@
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Cqrs.Admins.Commands.Verification.Confirm;
+namespace InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 
-public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVerificationAdminCommand, Unit>
+public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVerificationAdminCommand>
 {
     private readonly IServiceManager _services;
 
@@ -12,7 +12,7 @@ public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVer
         _services = services;
     }
 
-    public async Task<Unit> Handle(ConfirmVerificationAdminCommand request, CancellationToken _)
+    public async Task Handle(ConfirmVerificationAdminCommand request, CancellationToken _)
     {
         // Make sure that the token purpose is for verification.
         var jwt = request.Jwt;
@@ -22,7 +22,5 @@ public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVer
         var admin = await _services.Admins.GetAsync(jwt);
         admin.Verify();
         await _services.Admins.UpdateAsync(admin);
-
-        return Unit.Value;
     }
 }

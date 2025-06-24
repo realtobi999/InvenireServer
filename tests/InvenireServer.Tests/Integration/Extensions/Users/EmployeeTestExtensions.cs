@@ -1,13 +1,13 @@
-using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Application.Core.Employees.Commands.Register;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Extensions.Users;
 
 public static class EmployeeTestExtensions
 {
-    public static RegisterEmployeeDto ToRegisterEmployeeDto(this Employee employee)
+    public static RegisterEmployeeCommand ToRegisterEmployeeDto(this Employee employee)
     {
-        var dto = new RegisterEmployeeDto
+        var dto = new RegisterEmployeeCommand
         {
             Id = employee.Id,
             Name = employee.Name,

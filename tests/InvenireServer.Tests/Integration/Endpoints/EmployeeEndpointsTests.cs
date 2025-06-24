@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using InvenireServer.Application.Core.Employees.Commands.Login;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
@@ -21,9 +22,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
-    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
+    private readonly ServerFactory<Program> _app;
 
     public EmployeeEndpointsTests()
     {
@@ -33,7 +34,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task RegisterEmployee_Returns201AndEmployeeIsCreated()
+    public async Task Register_Returns201AndEmployeeIsCreated()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -41,6 +42,12 @@ public class EmployeeEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Assert that the token has all the necessary claims.
+        var jwt = JwtBuilder.Parse(await response.Content.ReadAsStringAsync());
+        jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.EMPLOYEE);
+        jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == employee.Id.ToString());
+        jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);
 
         await using var context = _app.GetDatabaseContext();
         var createdEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
@@ -53,7 +60,7 @@ public class EmployeeEndpointsTests
 
 
     [Fact]
-    public async Task SendEmailVerification_Returns204AndEmailIsSentWithTheACorrectLink()
+    public async Task SendVerification_Returns204AndEmailIsSentWithTheACorrectLink()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -73,7 +80,6 @@ public class EmployeeEndpointsTests
 
         var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
         email.CapturedMessages.Count.Should().Be(1);
-
         var message = email.CapturedMessages[0];
 
         // Assert that the email is properly constructed and contains a verification link.
@@ -93,7 +99,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task SendEmailVerification_Returns429WhenTooManyRequestsHasBeenSent()
+    public async Task SendVerification_Returns429WhenTooManyRequestsHasBeenSent()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -116,7 +122,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task ConfirmEmailVerification_Returns204AndEmailIsVerified()
+    public async Task ConfirmVerification_Returns204AndEmailIsVerified()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -150,7 +156,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task LoginEmployee_Returns200AndJwtIsReturned()
+    public async Task Login_Returns200AndJwtIsReturned()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -165,7 +171,7 @@ public class EmployeeEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var dto = new LoginEmployeeDto
+        var dto = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = employee.Password
@@ -174,18 +180,15 @@ public class EmployeeEndpointsTests
         var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await response.Content.ReadFromJsonAsync<LoginEmployeeResponseDto>();
-        body.Should().NotBeNull();
-
         // Assert that the JWT has all the necessary claims.
-        var jwt = JwtBuilder.Parse(body!.Token);
+        var jwt = JwtBuilder.Parse(await response.Content.ReadAsStringAsync());
         jwt.Payload.Should().Contain(c => c.Type == "role");
         jwt.Payload.Should().Contain(c => c.Type == "employee_id" && c.Value == employee.Id.ToString());
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);
     }
 
     [Fact]
-    public async Task LoginEmployee_Returns401WhenBadCredentials()
+    public async Task Login_Returns401WhenBadCredentials()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -200,7 +203,7 @@ public class EmployeeEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var dto = new LoginEmployeeDto
+        var dto = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = new Faker().Internet.SecurePassword() // Generate a random password.
@@ -211,7 +214,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task LoginEmployee_Returns429WhenTooManyRequestsHasBeenSent()
+    public async Task Login_Returns429WhenTooManyRequestsHasBeenSent()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -227,14 +230,14 @@ public class EmployeeEndpointsTests
 
         // Trigger the endpoints 5 times to enable the rare limiter.
         for (var i = 0; i < 5; i++)
-            (await _client.PostAsJsonAsync("/api/auth/employee/login", new LoginEmployeeDto
+            (await _client.PostAsJsonAsync("/api/auth/employee/login", new LoginEmployeeCommand
             {
                 EmailAddress = employee.EmailAddress,
                 Password = new Faker().Internet.SecurePassword() // Generate a random password.
             })).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         // Act & Assert.
-        var dto = new LoginEmployeeDto
+        var dto = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = employee.Password
