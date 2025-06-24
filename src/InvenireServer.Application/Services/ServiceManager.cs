@@ -17,8 +17,8 @@ public class ServiceManager : IServiceManager
 
     public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration, IJwtManager jwt)
     {
-        _admins = new Lazy<IAdminService>(() => new AdminService(repositories, email, jwt, configuration));
-        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories, email, jwt, configuration));
+        _admins = new Lazy<IAdminService>(() => new AdminService(repositories, factories));
+        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories));
         _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories, factories));
     }
 

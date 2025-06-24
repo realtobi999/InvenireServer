@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace InvenireServer.Application.Dtos.Admins;
+namespace InvenireServer.Application.Cqrs.Admins.Commands.Login;
 
-public record LoginAdminDto
+public record LoginAdminCommand : IRequest<LoginAdminCommandResult>
 {
     [Required]
-    [JsonPropertyName("email_address")]
     [EmailAddress]
+    [JsonPropertyName("email_address")]
     public required string EmailAddress { get; init; }
 
     [Required]

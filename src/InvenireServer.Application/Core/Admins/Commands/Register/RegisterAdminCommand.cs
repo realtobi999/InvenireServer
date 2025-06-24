@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Users;
 
-namespace InvenireServer.Application.Dtos.Admins;
+namespace InvenireServer.Application.Cqrs.Admins.Commands.Register;
 
-public record RegisterAdminDto
+public record RegisterAdminCommand : IRequest<RegisterAdminCommandResult>
 {
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }
@@ -16,9 +16,9 @@ public record RegisterAdminDto
     public required string Name { get; init; }
 
     [Required]
+    [EmailAddress]
     [JsonPropertyName("email_address")]
     [MaxLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)]
-    [EmailAddress]
     public required string EmailAddress { get; init; }
 
     [Required]

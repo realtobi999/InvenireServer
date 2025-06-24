@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Services.Admins;
+using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Fakers.Users;
@@ -11,17 +11,17 @@ namespace InvenireServer.Tests.Unit.Services;
 
 public class AdminCleanupServiceTests
 {
-    private readonly Mock<ILogger<AdminCleanupService>> _mockLogger = new();
+    private readonly Mock<ILogger<AdminCleanupBackgroundService>> _mockLogger = new();
     private readonly Mock<IRepositoryManager> _mockRepositoryManager = new();
     private readonly Mock<IServiceScope> _mockServiceScope = new();
     private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory = new();
 
-    private AdminCleanupService CreateService()
+    private AdminCleanupBackgroundService CreateService()
     {
         _mockServiceScope.Setup(ss => ss.ServiceProvider.GetService(typeof(IRepositoryManager))).Returns(_mockRepositoryManager.Object);
         _mockServiceScopeFactory.Setup(ssf => ssf.CreateScope()).Returns(_mockServiceScope.Object);
 
-        return new AdminCleanupService(_mockServiceScopeFactory.Object, _mockLogger.Object);
+        return new AdminCleanupBackgroundService(_mockServiceScopeFactory.Object, _mockLogger.Object);
     }
 
     [Fact]

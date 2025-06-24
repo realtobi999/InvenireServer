@@ -1,13 +1,13 @@
-using InvenireServer.Application.Dtos.Admins;
+using InvenireServer.Application.Cqrs.Admins.Commands.Register;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Extensions.Users;
 
 public static class AdminTestExtensions
 {
-    public static RegisterAdminDto ToRegisterAdminDto(this Admin admin)
+    public static RegisterAdminCommand ToRegisterAdminDto(this Admin admin)
     {
-        var dto = new RegisterAdminDto
+        var dto = new RegisterAdminCommand
         {
             Id = admin.Id,
             Name = admin.Name,

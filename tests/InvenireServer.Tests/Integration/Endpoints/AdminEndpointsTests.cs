@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using InvenireServer.Application.Cqrs.Admins.Commands.Login;
 using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
@@ -10,7 +11,6 @@ using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Tests.Integration.Extensions.Users;
-using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
@@ -21,9 +21,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class AdminEndpointsTests
 {
-    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
+    private readonly ServerFactory<Program> _app;
 
     public AdminEndpointsTests()
     {
@@ -33,7 +33,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task RegisterAdmin_Returns201AndAdminIsCreated()
+    public async Task Register_Returns201AndAdminIsCreated()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -41,6 +41,12 @@ public class AdminEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Assert that the token has all the necessary claims.
+        var jwt = JwtBuilder.Parse(await response.Content.ReadAsStringAsync());
+        jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
+        jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == admin.Id.ToString());
+        jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);
 
         await using var context = _app.GetDatabaseContext();
         var createdAdmin = await context.Admins.FirstOrDefaultAsync(e => e.Id == admin.Id);
@@ -52,7 +58,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task SendEmailVerification_Returns204AndEmailIsSentWithTheACorrectLink()
+    public async Task SendVerification_Returns204AndEmailIsSentWithTheACorrectLink()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -92,7 +98,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task ConfirmEmailVerification_Returns204AndEmailIsVerified()
+    public async Task ConfirmVerification_Returns204AndEmailIsVerified()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -126,7 +132,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task LoginAdmin_Returns200AndJwtIsReturned()
+    public async Task Login_Returns200AndJwtIsReturned()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -141,7 +147,7 @@ public class AdminEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var dto = new LoginAdminDto
+        var dto = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
             Password = admin.Password
@@ -153,15 +159,15 @@ public class AdminEndpointsTests
         var body = await response.Content.ReadFromJsonAsync<LoginAdminResponseDto>();
         body.Should().NotBeNull();
 
-        // Assert that the JWT has all the necessary claims.
+        // Assert that the token has all the necessary claims.
         var jwt = JwtBuilder.Parse(body!.Token);
-        jwt.Payload.Should().Contain(c => c.Type == "role");
+        jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
         jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == admin.Id.ToString());
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);
     }
 
     [Fact]
-    public async Task LoginAdmin_Returns401WhenBadCredentials()
+    public async Task Login_Returns401WhenBadCredentials()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -176,7 +182,7 @@ public class AdminEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var dto = new LoginAdminDto
+        var dto = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
             Password = new Faker().Internet.SecurePassword() // Generate a random password.
@@ -187,7 +193,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task LoginEmployee_Returns429WhenTooManyRequestsHasBeenSent()
+    public async Task Login_Returns429WhenTooManyRequestsHasBeenSent()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -203,14 +209,14 @@ public class AdminEndpointsTests
 
         // Trigger the endpoints 5 times to enable the rare limiter.
         for (var i = 0; i < 5; i++)
-            (await _client.PostAsJsonAsync("/api/auth/admin/login", new LoginAdminDto
+            (await _client.PostAsJsonAsync("/api/auth/admin/login", new LoginAdminCommand
             {
                 EmailAddress = admin.EmailAddress,
                 Password = new Faker().Internet.SecurePassword() // Generate a random password.
             })).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         // Act & Assert.
-        var dto = new LoginAdminDto
+        var dto = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
             Password = admin.Password

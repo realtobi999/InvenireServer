@@ -1,0 +1,57 @@
+using System.Security.Claims;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Exceptions.Http;
+using Microsoft.AspNetCore.Identity;
+
+namespace InvenireServer.Application.Cqrs.Admins.Commands.Login;
+
+public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResult>
+{
+    private readonly IJwtManager _jwt;
+    private readonly IServiceManager _services;
+
+    public LoginAdminCommandHandler(IServiceManager services, IJwtManager jwt)
+    {
+        _jwt = jwt;
+        _services = services;
+    }
+
+    public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken _)
+    {
+        // Retrieves the admin and returns 401 unauthorized if the admin is not found.
+        Admin admin;
+        try
+        {
+            admin = await _services.Admins.GetAsync(e => e.EmailAddress == request.EmailAddress);
+        }
+        catch (NotFound404Exception)
+        {
+            throw new Unauthorized401Exception("Invalid credentials.");
+        }
+
+        // Make sure that the employee is verified before logging in.
+        if (!admin.IsVerified) throw new Unauthorized401Exception("Verification required to proceed.");
+
+        // Validate the provided credentials.
+        var hasher = new PasswordHasher<Admin>();
+        if (hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
+
+        // Update the timestamp of the user's last login.
+        admin.LastLoginAt = DateTimeOffset.Now;
+        await _services.Admins.UpdateAsync(admin);
+
+        // Create the jwt.
+        var jwt = _jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]);
+
+        return new LoginAdminCommandResult
+        {
+            Token = _jwt.Writer.Write(jwt)
+        };
+    }
+}

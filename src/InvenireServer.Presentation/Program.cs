@@ -1,7 +1,7 @@
 using InvenireServer.Application.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services;
-using InvenireServer.Application.Services.Employees;
+using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
@@ -33,7 +33,7 @@ public class Program
                 builder.Services.AddScoped<IFactoryManager, FactoryManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
                 builder.Services.AddControllers();
-                builder.Services.AddHostedService<EmployeeCleanupService>();
+                builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
             }
             var app = builder.Build();
             {

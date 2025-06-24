@@ -1,3 +1,5 @@
+using InvenireServer.Domain.Exceptions.Http;
+
 namespace InvenireServer.Domain.Entities.Users;
 
 public class Admin
@@ -33,4 +35,13 @@ public class Admin
     // Navigational Properties.
 
     public Guid? OrganizationId { get; set; }
+
+    // Methods.
+
+    public void Verify()
+    {
+        if (IsVerified) throw new BadRequest400Exception("Email is already verified.");
+
+        IsVerified = true;
+    }
 }

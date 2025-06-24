@@ -79,7 +79,6 @@ public static class ServiceExtensions
 
     public static void ConfigureValidators(this IServiceCollection services)
     {
-        services.AddScoped<IValidatorFactory, ValidatorFactory>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
     }
@@ -143,7 +142,7 @@ public static class ServiceExtensions
                 });
             });
             // Policy limiting sending a verification email per IP address: allows 3 immediate attempts, then replenishes 1 token every 12 hours.
-            options.AddPolicy("SendEmailVerificationPolicy", context =>
+            options.AddPolicy("SendVerificationPolicy", context =>
             {
                 var address = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
