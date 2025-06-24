@@ -5,7 +5,7 @@ namespace InvenireServer.Tests.Integration.Extensions.Users;
 
 public static class AdminTestExtensions
 {
-    public static RegisterAdminCommand ToRegisterAdminDto(this Admin admin)
+    public static RegisterAdminCommand ToRegisterAdminCommand(this Admin admin)
     {
         var dto = new RegisterAdminCommand
         {

@@ -1,14 +1,14 @@
 using System;
-using InvenireServer.Application.Dtos.Organizations;
+using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Tests.Integration.Extensions.Organizations;
 
 public static class OrganizationInvitationTestExtensions
 {
-    public static CreateOrganizationInvitationDto ToCreateOrganizationInvitationDto(this OrganizationInvitation invitation)
+    public static CreateOrganizationInvitationCommand ToCreateOrganizationInvitationDto(this OrganizationInvitation invitation)
     {
-        var dto = new CreateOrganizationInvitationDto
+        var dto = new CreateOrganizationInvitationCommand
         {
             Id = invitation.Id,
             Description = invitation.Description,

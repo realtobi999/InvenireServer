@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using InvenireServer.Application.Core.Employees.Commands.Login;
-using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -11,7 +10,6 @@ using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Tests.Integration.Extensions.Users;
-using InvenireServer.Tests.Integration.Fakers;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
@@ -40,7 +38,7 @@ public class EmployeeEndpointsTests
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto());
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Assert that the token has all the necessary claims.
@@ -72,7 +70,7 @@ public class EmployeeEndpointsTests
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object());
@@ -111,7 +109,7 @@ public class EmployeeEndpointsTests
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Trigger the endpoints 3 times to enable the rare limiter.
         for (var i = 0; i < 3; i++) (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -127,22 +125,23 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        var jwt = _jwt.Builder.Build([
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
             new Claim("employee_id", employee.Id.ToString()),
             new Claim("is_verified", bool.FalseString)
-        ]);
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
+        ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
-
-        // Extract the token from the verification link and call the backend endpoint directly.
-        var match = Regex.Match(email.CapturedMessages[0].Body, @"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
+        var jwt = _jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.EMPLOYEE),
+            new Claim("employee_id", employee.Id.ToString()),
+            new Claim("is_verified", bool.FalseString),
+            new Claim("purpose", "email_verification"),
+        ]);
         _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(JwtBuilder.Parse(match.Groups[1].Value))}");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object());
@@ -161,7 +160,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
             new Claim("employee_id", employee.Id.ToString()),
@@ -193,7 +192,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
             new Claim("employee_id", employee.Id.ToString()),
@@ -219,7 +218,7 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = new EmployeeFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
             new Claim("employee_id", employee.Id.ToString()),

@@ -35,7 +35,7 @@ public class EmployeeController : ControllerBase
         return Created($"/api/employee/{result.Employee.Id}", result.Token);
     }
 
-    [EnableRateLimiting("SendEmailVerificationPolicy")]
+    [EnableRateLimiting("SendVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/auth/employee/email-verification/send")]
     public async Task<IActionResult> SendVerification()

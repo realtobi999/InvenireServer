@@ -12,9 +12,9 @@ public class OrganizationService : IOrganizationService
     private readonly IRepositoryManager _repositories;
     private readonly IValidator<Organization> _validator;
 
-    public OrganizationService(IRepositoryManager repositories, IFactoryManager factories)
+    public OrganizationService(IRepositoryManager repositories, IValidator<Organization> validator)
     {
-        _validator = factories.Validators.Initiate<Organization>();
+        _validator = validator;
         _repositories = repositories;
     }
 

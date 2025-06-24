@@ -1,3 +1,4 @@
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Users;
@@ -43,5 +44,11 @@ public class Employee
         if (IsVerified) throw new BadRequest400Exception("Email is already verified.");
 
         IsVerified = true;
+    }
+
+    public void AssignOrganization(Organization organization)
+    {
+        if (OrganizationId is not null) throw new BadRequest400Exception("Admin is already a owner of a organization");
+        OrganizationId = organization.Id;
     }
 }

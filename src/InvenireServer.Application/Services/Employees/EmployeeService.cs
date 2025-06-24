@@ -13,9 +13,9 @@ public class EmployeeService : IEmployeeService
     private readonly IRepositoryManager _repositories;
     private readonly IValidator<Employee> _validator;
 
-    public EmployeeService(IRepositoryManager repositories, IFactoryManager factories)
+    public EmployeeService(IRepositoryManager repositories, IValidator<Employee> validator)
     {
-        _validator = factories.Validators.Initiate<Employee>();
+        _validator = validator;
         _repositories = repositories;
     }
 

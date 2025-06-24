@@ -1,11 +1,13 @@
+using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Admins;
 using InvenireServer.Application.Services.Employees;
 using InvenireServer.Application.Services.Organizations;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Interfaces.Services.Admins;
 using InvenireServer.Domain.Interfaces.Services.Employees;
 using InvenireServer.Domain.Interfaces.Services.Organizations;
-using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Services;
 
@@ -15,16 +17,14 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IEmployeeService> _employees;
     private readonly Lazy<IOrganizationService> _organizations;
 
-    public ServiceManager(IRepositoryManager repositories, IFactoryManager factories, IEmailManager email, IConfiguration configuration, IJwtManager jwt)
+    public ServiceManager(IRepositoryManager repositories, IValidatorFactory validators)
     {
-        _admins = new Lazy<IAdminService>(() => new AdminService(repositories, factories));
-        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, factories));
-        _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories, factories));
+        _admins = new Lazy<IAdminService>(() => new AdminService(repositories, validators.Initiate<Admin>()));
+        _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, validators.Initiate<Employee>()));
+        _organizations = new Lazy<IOrganizationService>(() => new OrganizationService(repositories, validators.Initiate<Organization>()));
     }
 
     public IAdminService Admins => _admins.Value;
-
     public IEmployeeService Employees => _employees.Value;
-
     public IOrganizationService Organizations => _organizations.Value;
 }

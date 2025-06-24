@@ -1,7 +1,8 @@
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.RateLimiting;
-using InvenireServer.Application.Factories;
+using InvenireServer.Application;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
@@ -79,8 +80,10 @@ public static class ServiceExtensions
 
     public static void ConfigureValidators(this IServiceCollection services)
     {
+        services.AddScoped<IValidator<Admin>, AdminValidator>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
+        services.AddScoped<IValidatorFactory, ValidatorFactory>();
     }
 
     public static void ConfigureHashing(this IServiceCollection services)
@@ -162,5 +165,13 @@ public static class ServiceExtensions
     {
         services.AddScoped<IEmailSender, EmailSender>(_ => EmailSenderFactory.Initiate(configuration));
         services.AddScoped<IEmailManager, EmailManager>();
+    }
+
+    public static void ConfigureMediatR(this IServiceCollection services)
+    {
+        services.AddMediatR(options =>
+        {
+            options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly);
+        });
     }
 }

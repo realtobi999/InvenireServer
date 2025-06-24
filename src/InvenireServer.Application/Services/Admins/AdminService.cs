@@ -1,14 +1,10 @@
 using System.Linq.Expressions;
-using System.Security.Claims;
-using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Admins;
-using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Application.Services.Admins;
 
@@ -17,9 +13,9 @@ public class AdminService : IAdminService
     private readonly IValidator<Admin> _validator;
     private readonly IRepositoryManager _repositories;
 
-    public AdminService(IRepositoryManager repositories, IFactoryManager factories)
+    public AdminService(IRepositoryManager repositories, IValidator<Admin> validator)
     {
-        _validator = factories.Validators.Initiate<Admin>();
+        _validator = validator;
         _repositories = repositories;
     }
 

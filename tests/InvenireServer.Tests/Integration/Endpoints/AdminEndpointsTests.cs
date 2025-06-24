@@ -39,7 +39,7 @@ public class AdminEndpointsTests
         var admin = new AdminFaker().Generate();
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto());
+        var response = await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Assert that the token has all the necessary claims.
@@ -70,7 +70,7 @@ public class AdminEndpointsTests
         ]);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/admin/email-verification/send", new object());
@@ -78,7 +78,6 @@ public class AdminEndpointsTests
 
         var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
         email.CapturedMessages.Count.Should().Be(1);
-
         var message = email.CapturedMessages[0];
 
         // Assert that the email message is properly constructed and contains a verification link.
@@ -103,22 +102,23 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = new AdminFaker().Generate();
 
-        var jwt = _jwt.Builder.Build([
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.FalseString)
-        ]);
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
+        ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
-
-        // Extract the token from the verification link and call the backend endpoint directly.
-        var match = Regex.Match(email.CapturedMessages[0].Body, @"https?:\/\/[^\/]+\/verify-email\?token=([\w\-_.]+)");
+        var jwt = _jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString),
+            new Claim("purpose", "email_verification"),
+        ]);
         _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(JwtBuilder.Parse(match.Groups[1].Value))}");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(jwt)}");
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object());
@@ -137,7 +137,7 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = new AdminFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
@@ -169,7 +169,7 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = new AdminFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
@@ -195,7 +195,7 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = new AdminFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),

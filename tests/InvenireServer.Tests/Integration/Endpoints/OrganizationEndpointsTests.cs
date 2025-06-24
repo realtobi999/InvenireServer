@@ -43,7 +43,7 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto());
@@ -89,8 +89,8 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
@@ -126,8 +126,8 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeDto())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
 

@@ -5,7 +5,7 @@ namespace InvenireServer.Tests.Integration.Extensions.Users;
 
 public static class EmployeeTestExtensions
 {
-    public static RegisterEmployeeCommand ToRegisterEmployeeDto(this Employee employee)
+    public static RegisterEmployeeCommand ToRegisterEmployeeCommand(this Employee employee)
     {
         var dto = new RegisterEmployeeCommand
         {
