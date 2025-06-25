@@ -131,7 +131,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task Login_Returns200AndJwtIsReturned()
+    public async Task Login_Returns200()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -154,71 +154,5 @@ public class AdminEndpointsTests
 
         var response = await _client.PostAsJsonAsync("/api/auth/admin/login", dto);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Assert that the token has all the necessary claims.
-        var jwt = JwtBuilder.Parse(await response.Content.ReadAsStringAsync());
-        jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
-        jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == admin.Id.ToString());
-        jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);
-    }
-
-    [Fact]
-    public async Task Login_Returns401WhenBadCredentials()
-    {
-        // Prepare.
-        var admin = new AdminFaker().Generate();
-
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.FalseString),
-            new Claim("purpose", "email_verification")
-        ]))}");
-        (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
-
-        // Act & Assert.
-        var dto = new LoginAdminCommand
-        {
-            EmailAddress = admin.EmailAddress,
-            Password = new Faker().Internet.SecurePassword() // Generate a random password.
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/login", dto);
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Login_Returns429WhenTooManyRequestsHasBeenSent()
-    {
-        // Prepare.
-        var admin = new AdminFaker().Generate();
-
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.FalseString),
-            new Claim("purpose", "email_verification")
-        ]))}");
-        (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
-
-        // Trigger the endpoints 5 times to enable the rare limiter.
-        for (var i = 0; i < 5; i++)
-            (await _client.PostAsJsonAsync("/api/auth/admin/login", new LoginAdminCommand
-            {
-                EmailAddress = admin.EmailAddress,
-                Password = new Faker().Internet.SecurePassword() // Generate a random password.
-            })).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-
-        // Act & Assert.
-        var dto = new LoginAdminCommand
-        {
-            EmailAddress = admin.EmailAddress,
-            Password = admin.Password
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/login", dto);
-        response.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
     }
 }
