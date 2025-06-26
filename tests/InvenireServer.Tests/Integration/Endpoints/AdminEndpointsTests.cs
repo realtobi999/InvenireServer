@@ -13,8 +13,8 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class AdminEndpointsTests
 {
-    private readonly HttpClient _client;
     private readonly JwtManager _jwt;
+    private readonly HttpClient _client;
     private readonly ServerFactory<Program> _app;
 
     public AdminEndpointsTests()
@@ -25,7 +25,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task Register_Returns201AndAdminIsCreated()
+    public async Task Register_Returns201()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -36,7 +36,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task SendVerification_Returns204AndEmailIsSentWithTheACorrectLink()
+    public async Task SendVerification_Returns204()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -55,7 +55,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task ConfirmVerification_Returns204AndEmailIsVerified()
+    public async Task ConfirmVerification_Returns204()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -88,13 +88,14 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = new AdminFaker().Generate();
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.FalseString),
             new Claim("purpose", "email_verification")
         ]))}");
+
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.

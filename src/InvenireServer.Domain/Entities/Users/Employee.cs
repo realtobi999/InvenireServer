@@ -41,14 +41,14 @@ public class Employee
 
     public void Verify()
     {
-        if (IsVerified) throw new BadRequest400Exception("Email is already verified.");
+        if (IsVerified) throw new BadRequest400Exception("Employee is already verified.");
 
         IsVerified = true;
     }
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("Admin is already a owner of a organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("Employee is already part of a organization");
         OrganizationId = organization.Id;
     }
 }

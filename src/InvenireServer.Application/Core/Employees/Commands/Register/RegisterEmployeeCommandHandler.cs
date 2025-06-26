@@ -41,7 +41,7 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         // Create the jwt.
         var jwt = _jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("admin_id", employee.Id.ToString()),
+            new Claim("employee_id", employee.Id.ToString()),
             new Claim("is_verified", bool.FalseString)
         ]);
 

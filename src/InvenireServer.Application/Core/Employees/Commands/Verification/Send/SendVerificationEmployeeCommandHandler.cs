@@ -6,11 +6,11 @@ namespace InvenireServer.Application.Core.Employees.Commands.Verification.Send;
 
 public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerificationEmployeeCommand>
 {
-    private readonly IEmailManager _email;
     private readonly IJwtManager _jwt;
+    private readonly IEmailManager _email;
     private readonly IServiceManager _services;
 
-    public SendVerificationEmployeeCommandHandler(IJwtManager jwt, IEmailManager email, IServiceManager services)
+    public SendVerificationEmployeeCommandHandler(IServiceManager services, IEmailManager email, IJwtManager jwt)
     {
         _jwt = jwt;
         _email = email;

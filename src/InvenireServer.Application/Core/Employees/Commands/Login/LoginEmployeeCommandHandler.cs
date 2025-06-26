@@ -22,7 +22,7 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
 
     public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken cancellationToken)
     {
-        // Retrieves the employee and returns 401 unauthorized if the admin is not found.
+        // Retrieves the employee and returns 401 unauthorized if the employee is not found.
         Employee employee;
         try
         {
