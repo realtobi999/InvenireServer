@@ -12,10 +12,10 @@ namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class SendVerificationEmployeeCommandHandlerTests
 {
-    private readonly IJwtManager _jwt;
     private readonly Mock<IEmailManager> _email;
-    private readonly Mock<IServiceManager> _services;
     private readonly SendVerificationEmployeeCommandHandler _handler;
+    private readonly IJwtManager _jwt;
+    private readonly Mock<IServiceManager> _services;
 
     public SendVerificationEmployeeCommandHandlerTests()
     {

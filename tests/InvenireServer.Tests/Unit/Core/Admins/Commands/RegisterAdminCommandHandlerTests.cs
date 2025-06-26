@@ -11,10 +11,10 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class RegisterAdminCommandHandlerTests
 {
-    private readonly IJwtManager _jwt;
-    private readonly PasswordHasher<Admin> _hasher;
-    private readonly Mock<IServiceManager> _services;
     private readonly RegisterAdminCommandHandler _handler;
+    private readonly PasswordHasher<Admin> _hasher;
+    private readonly IJwtManager _jwt;
+    private readonly Mock<IServiceManager> _services;
 
     public RegisterAdminCommandHandlerTests()
     {
@@ -36,7 +36,7 @@ public class RegisterAdminCommandHandlerTests
             Name = faker.Internet.UserName(),
             EmailAddress = faker.Internet.Email(),
             Password = password,
-            PasswordConfirm = password,
+            PasswordConfirm = password
         };
 
         _services.Setup(s => s.Admins.CreateAsync(It.IsAny<Admin>()));

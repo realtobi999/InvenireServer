@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -11,8 +10,8 @@ namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
 public class CreateOrganizationInvitationCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
     private readonly CreateOrganizationInvitationCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public CreateOrganizationInvitationCommandHandlerTests()
     {
@@ -37,7 +36,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -80,7 +79,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

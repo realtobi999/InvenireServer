@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -8,8 +9,8 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class ConfirmVerificationAdminCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
     private readonly ConfirmVerificationAdminCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public ConfirmVerificationAdminCommandHandlerTests()
     {
@@ -26,7 +27,7 @@ public class ConfirmVerificationAdminCommandHandlerTests
 
         var command = new ConfirmVerificationAdminCommand
         {
-            Jwt = new Jwt([], [new("purpose", "email_verification")])
+            Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -63,7 +64,7 @@ public class ConfirmVerificationAdminCommandHandlerTests
 
         var command = new ConfirmVerificationAdminCommand
         {
-            Jwt = new Jwt([], [new("purpose", "email_verification")])
+            Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

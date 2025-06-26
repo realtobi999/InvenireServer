@@ -1,28 +1,21 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using InvenireServer.Application.Core.Employees.Commands.Login;
-using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
-using InvenireServer.Tests.Integration.Extensions;
 using InvenireServer.Tests.Integration.Extensions.Users;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class EmployeeEndpointsTests
 {
-    private readonly JwtManager _jwt;
-    private readonly HttpClient _client;
     private readonly ServerFactory<Program> _app;
+    private readonly HttpClient _client;
+    private readonly JwtManager _jwt;
 
     public EmployeeEndpointsTests()
     {

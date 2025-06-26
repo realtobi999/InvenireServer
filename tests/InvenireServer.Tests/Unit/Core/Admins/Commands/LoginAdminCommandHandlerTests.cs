@@ -1,4 +1,3 @@
-using System.Security.Authentication;
 using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -13,10 +12,10 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class LoginAdminCommandHandlerTests
 {
-    private readonly IJwtManager _jwt;
-    private readonly PasswordHasher<Admin> _hasher;
-    private readonly Mock<IServiceManager> _services;
     private readonly LoginAdminCommandHandler _handler;
+    private readonly PasswordHasher<Admin> _hasher;
+    private readonly IJwtManager _jwt;
+    private readonly Mock<IServiceManager> _services;
 
     public LoginAdminCommandHandlerTests()
     {
@@ -35,7 +34,7 @@ public class LoginAdminCommandHandlerTests
         var command = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
-            Password = admin.Password,
+            Password = admin.Password
         };
 
         admin.IsVerified = true;
@@ -64,8 +63,8 @@ public class LoginAdminCommandHandlerTests
 
         var command = new LoginAdminCommand
         {
-            EmailAddress = new([.. admin.EmailAddress.Reverse()]), // Set invalid email.
-            Password = admin.Password,
+            EmailAddress = new string([.. admin.EmailAddress.Reverse()]), // Set invalid email.
+            Password = admin.Password
         };
 
         admin.IsVerified = true;
@@ -88,7 +87,7 @@ public class LoginAdminCommandHandlerTests
         var command = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
-            Password = new([.. admin.Password.Reverse()]), // Set incorrect password
+            Password = new string([.. admin.Password.Reverse()]) // Set incorrect password
         };
 
         admin.IsVerified = true;
@@ -111,7 +110,7 @@ public class LoginAdminCommandHandlerTests
         var command = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
-            Password = admin.Password,
+            Password = admin.Password
         };
 
         admin.IsVerified = false; // Set the admin as unverified.

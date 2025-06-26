@@ -1,16 +1,16 @@
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Tests.Integration.Fakers.Organizations;
+using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
 public class AcceptOrganizationInvitationCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
     private readonly AcceptOrganizationInvitationCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public AcceptOrganizationInvitationCommandHandlerTests()
     {
@@ -31,7 +31,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         {
             Jwt = new Jwt([], []),
             InvitationId = invitation.Id,
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
@@ -65,7 +65,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         {
             Jwt = new Jwt([], []),
             InvitationId = invitation.Id,
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
@@ -91,7 +91,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         {
             Jwt = new Jwt([], []),
             InvitationId = invitation.Id,
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
@@ -117,7 +117,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         {
             Jwt = new Jwt([], []),
             InvitationId = invitation.Id,
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);

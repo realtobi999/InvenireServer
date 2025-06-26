@@ -5,7 +5,6 @@ using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Infrastructure.Email;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;
 
@@ -13,10 +12,10 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class SendVerificationAdminCommandHandlerTests
 {
-    private readonly IJwtManager _jwt;
     private readonly Mock<IEmailManager> _email;
-    private readonly Mock<IServiceManager> _services;
     private readonly SendVerificationAdminCommandHandler _handler;
+    private readonly IJwtManager _jwt;
+    private readonly Mock<IServiceManager> _services;
 
     public SendVerificationAdminCommandHandlerTests()
     {

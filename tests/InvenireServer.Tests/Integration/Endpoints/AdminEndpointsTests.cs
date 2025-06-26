@@ -13,9 +13,9 @@ namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class AdminEndpointsTests
 {
-    private readonly JwtManager _jwt;
-    private readonly HttpClient _client;
     private readonly ServerFactory<Program> _app;
+    private readonly HttpClient _client;
+    private readonly JwtManager _jwt;
 
     public AdminEndpointsTests()
     {

@@ -12,8 +12,8 @@ namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 public class CreateOrganizationCommandHandlerTests
 {
     private readonly Mock<IEmailManager> _email;
-    private readonly Mock<IServiceManager> _services;
     private readonly CreateOrganizationCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public CreateOrganizationCommandHandlerTests()
     {

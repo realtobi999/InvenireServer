@@ -12,10 +12,10 @@ namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class LoginEmployeeCommandHandlerTests
 {
+    private readonly LoginEmployeeCommandHandler _handler;
+    private readonly PasswordHasher<Employee> _hasher;
     private readonly IJwtManager _jwt;
     private readonly Mock<IServiceManager> _services;
-    private readonly PasswordHasher<Employee> _hasher;
-    private readonly LoginEmployeeCommandHandler _handler;
 
     public LoginEmployeeCommandHandlerTests()
     {
@@ -34,7 +34,7 @@ public class LoginEmployeeCommandHandlerTests
         var command = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
-            Password = employee.Password,
+            Password = employee.Password
         };
 
         employee.IsVerified = true;
@@ -63,8 +63,8 @@ public class LoginEmployeeCommandHandlerTests
 
         var command = new LoginEmployeeCommand
         {
-            EmailAddress = new([.. employee.EmailAddress.Reverse()]), // Set invalid email.
-            Password = employee.Password,
+            EmailAddress = new string([.. employee.EmailAddress.Reverse()]), // Set invalid email.
+            Password = employee.Password
         };
 
         employee.IsVerified = true;
@@ -87,7 +87,7 @@ public class LoginEmployeeCommandHandlerTests
         var command = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
-            Password = new([.. employee.Password.Reverse()]), // Set incorrect password
+            Password = new string([.. employee.Password.Reverse()]) // Set incorrect password
         };
 
         employee.IsVerified = true;
@@ -110,7 +110,7 @@ public class LoginEmployeeCommandHandlerTests
         var command = new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
-            Password = employee.Password,
+            Password = employee.Password
         };
 
         employee.IsVerified = false; // Set the employee as unverified.
