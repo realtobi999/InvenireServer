@@ -7,10 +7,17 @@ public interface IEmailManager
 {
     IEmailSender Sender { get; }
 
-    EmailBuilderGroup Builders { get; }
+    IEmailBuilderGroup Builders { get; }
 }
 
-public class EmailBuilderGroup
+public interface IEmailBuilderGroup
+{
+    public IAdminEmailBuilder Admin { get; }
+
+    public IEmployeeEmailBuilder Employee { get; }
+}
+
+public class EmailBuilderGroup : IEmailBuilderGroup
 {
     public required IAdminEmailBuilder Admin { get; set; }
 

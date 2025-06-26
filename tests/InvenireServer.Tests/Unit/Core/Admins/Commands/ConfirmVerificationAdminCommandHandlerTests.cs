@@ -1,0 +1,76 @@
+using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Tests.Integration.Fakers.Users;
+
+namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
+
+public class ConfirmVerificationAdminCommandHandlerTests
+{
+    private readonly Mock<IServiceManager> _services;
+    private readonly ConfirmVerificationAdminCommandHandler _handler;
+
+    public ConfirmVerificationAdminCommandHandlerTests()
+    {
+        _services = new Mock<IServiceManager>();
+        _handler = new ConfirmVerificationAdminCommandHandler(_services.Object);
+    }
+
+    [Fact]
+    public async Task Handle_ReturnsVerifiedAdmin()
+    {
+        // Prepare
+        var admin = new AdminFaker().Generate();
+        admin.IsVerified = false;
+
+        var command = new ConfirmVerificationAdminCommand
+        {
+            Jwt = new Jwt([], [new("purpose", "email_verification")])
+        };
+
+        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _services.Setup(s => s.Admins.UpdateAsync(admin));
+
+        // Act & Assert.
+        await _handler.Handle(command, new CancellationToken());
+
+        // Assert that the admin is verified.
+        admin.IsVerified.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenInvalidToken()
+    {
+        // Prepare
+        var command = new ConfirmVerificationAdminCommand
+        {
+            Jwt = new Jwt([], []) // Insert empty token.
+        };
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, new CancellationToken());
+
+        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Indication that the token is used for email verification is missing.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenAdminIsAlreadyVerified()
+    {
+        // Prepare
+        var admin = new AdminFaker().Generate();
+        admin.IsVerified = true; // Set the admin as verified.
+
+        var command = new ConfirmVerificationAdminCommand
+        {
+            Jwt = new Jwt([], [new("purpose", "email_verification")])
+        };
+
+        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, new CancellationToken());
+
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Admin is already verified.");
+    }
+}

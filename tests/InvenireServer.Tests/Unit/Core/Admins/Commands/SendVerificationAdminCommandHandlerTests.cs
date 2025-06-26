@@ -1,0 +1,60 @@
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
+using InvenireServer.Application.Dtos.Admins.Email;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Infrastructure.Email;
+using InvenireServer.Tests.Integration.Fakers.Common;
+using InvenireServer.Tests.Integration.Fakers.Users;
+
+namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
+
+public class SendVerificationAdminCommandHandlerTests
+{
+    private readonly IJwtManager _jwt;
+    private readonly Mock<IEmailManager> _email;
+    private readonly Mock<IServiceManager> _services;
+    private readonly SendVerificationAdminCommandHandler _handler;
+
+    public SendVerificationAdminCommandHandlerTests()
+    {
+        _jwt = new JwtManagerFaker().Initiate();
+        _email = new Mock<IEmailManager>();
+        _services = new Mock<IServiceManager>();
+
+        _handler = new SendVerificationAdminCommandHandler(_services.Object, _email.Object, _jwt);
+    }
+
+    [Fact]
+    public async Task Handle_BuildsCorrectToken()
+    {
+        // Prepare.
+        var admin = new AdminFaker().Generate();
+        var command = new SendVerificationAdminCommand
+        {
+            Jwt = new Jwt([], []),
+            FrontendBaseUrl = "invenire.com"
+        };
+
+        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+
+        var dto = (AdminVerificationEmailDto?)null;
+        _email.Setup(e => e.Builders.Admin.BuildVerificationEmail(It.IsAny<AdminVerificationEmailDto>())).Callback<AdminVerificationEmailDto>(captured => dto = captured);
+        _email.Setup(e => e.Sender.SendEmailAsync(It.IsAny<MailMessage>()));
+
+        // Act & Assert
+        await _handler.Handle(command, new CancellationToken());
+
+        // Assert that the email dto is correctly build.
+        dto.Should().NotBeNull();
+        dto!.AdminAddress.Should().Be(admin.EmailAddress);
+        dto!.AdminName.Should().Be(admin.Name);
+
+        // Assert that the token has all the added claims.
+        var match = Regex.Match(dto.VerificationLink, $@"{command.FrontendBaseUrl}/verify-email\?token=([\w\-_.]+)");
+        var jwt = JwtBuilder.Parse(match.Groups[1].Value);
+        jwt.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
+    }
+}

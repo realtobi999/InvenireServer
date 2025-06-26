@@ -41,7 +41,7 @@ public class Admin
 
     public void Verify()
     {
-        if (IsVerified) throw new BadRequest400Exception("Email is already verified.");
+        if (IsVerified) throw new BadRequest400Exception("Admin is already verified.");
         IsVerified = true;
     }
 

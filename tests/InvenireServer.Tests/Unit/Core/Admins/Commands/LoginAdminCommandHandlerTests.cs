@@ -16,7 +16,6 @@ public class LoginAdminCommandHandlerTests
     private readonly IJwtManager _jwt;
     private readonly PasswordHasher<Admin> _hasher;
     private readonly Mock<IServiceManager> _services;
-
     private readonly LoginAdminCommandHandler _handler;
 
     public LoginAdminCommandHandlerTests()
@@ -24,7 +23,6 @@ public class LoginAdminCommandHandlerTests
         _jwt = new JwtManagerFaker().Initiate();
         _hasher = new PasswordHasher<Admin>();
         _services = new Mock<IServiceManager>();
-
         _handler = new LoginAdminCommandHandler(_services.Object, _hasher, _jwt);
     }
 
@@ -66,7 +64,7 @@ public class LoginAdminCommandHandlerTests
 
         var command = new LoginAdminCommand
         {
-            EmailAddress = new([.. admin.EmailAddress.Reverse()]),
+            EmailAddress = new([.. admin.EmailAddress.Reverse()]), // Set invalid email.
             Password = admin.Password,
         };
 
@@ -90,7 +88,7 @@ public class LoginAdminCommandHandlerTests
         var command = new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
-            Password = new([.. admin.Password.Reverse()]),
+            Password = new([.. admin.Password.Reverse()]), // Set incorrect password
         };
 
         admin.IsVerified = true;
@@ -116,7 +114,7 @@ public class LoginAdminCommandHandlerTests
             Password = admin.Password,
         };
 
-        admin.IsVerified = false;
+        admin.IsVerified = false; // Set the admin as unverified.
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
         _services.Setup(s => s.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
