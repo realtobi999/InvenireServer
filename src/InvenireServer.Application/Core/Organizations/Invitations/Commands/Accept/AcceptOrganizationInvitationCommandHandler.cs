@@ -25,7 +25,7 @@ public class AcceptOrganizationInvitationCommandHandler : IRequestHandler<Accept
         if (invitation.Employee!.Id != employee.Id) throw new Unauthorized401Exception();
 
         // Ensure the employee is not already part of an organization.
-        if (employee.OrganizationId is not null) throw new BadRequest400Exception("You are already part of an organization.");
+        if (employee.OrganizationId is not null) throw new BadRequest400Exception("Employee is already a part of an organization.");
 
         // Associate the employee with the organization.
         organization.Employees.Add(employee);

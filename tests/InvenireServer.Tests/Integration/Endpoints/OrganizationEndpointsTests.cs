@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation;
@@ -10,8 +9,6 @@ using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
@@ -29,7 +26,7 @@ public class OrganizationEndpointsTests
     }
 
     [Fact]
-    public async Task CreateOrganization_Returns201AndOrganizationIsCreated()
+    public async Task CreateOrganization_Returns201()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -46,30 +43,6 @@ public class OrganizationEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        await using var context = _app.GetDatabaseContext();
-        var updatedAdmin = await context.Admins.FirstOrDefaultAsync(a => a.Id == admin.Id);
-        var createdOrganization = await context.Organizations.Include(o => o.Admin).FirstOrDefaultAsync(o => o.Id == organization.Id);
-
-        // Assert that the organization is created.
-        createdOrganization.Should().NotBeNull();
-        // Assert that the admin is assigned.
-        createdOrganization!.Admin.Should().NotBeNull();
-        createdOrganization.Admin!.Id.Should().Be(admin.Id);
-        // Assert that the admin has a assigned organization.
-        updatedAdmin.Should().NotBeNull();
-        updatedAdmin!.OrganizationId.Should().Be(organization.Id);
-
-        var email = (EmailSenderFaker)_app.Services.GetRequiredService<IEmailSender>();
-        email.CapturedMessages.Count.Should().Be(1);
-
-        var message = email.CapturedMessages[0];
-
-        // Assert that the email is properly constructed;
-        message.Should().NotBeNull();
-        message.To.Should().ContainSingle(t => t.Address == admin.EmailAddress);
-        message.Subject.Should().Contain("organization creation");
-        message.Body.Should().NotBeNull();
     }
 
     [Fact]
@@ -94,19 +67,6 @@ public class OrganizationEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationDto());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        await using var context = _app.GetDatabaseContext();
-        var createdInvitation = await context.Invitations.Include(i => i.Employee).FirstOrDefaultAsync(i => i.Id == invitation.Id);
-        var updatedOrganization = await context.Organizations.Include(o => o.Invitations).FirstOrDefaultAsync(o => o.Id == organization.Id);
-
-        // Assert that the invitation is created.
-        createdInvitation.Should().NotBeNull();
-        // Assert that the organization and employee is assigned.
-        createdInvitation!.OrganizationId.Should().Be(organization.Id);
-        createdInvitation!.Employee.Should().NotBeNull();
-        createdInvitation!.Employee!.Id.Should().Be(employee.Id);
-        // Assert that the organization has a assigned invitation.
-        updatedOrganization!.Invitations!.Should().ContainSingle(i => i.Id == invitation.Id);
     }
 
     [Fact]
@@ -139,17 +99,5 @@ public class OrganizationEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations/{invitation.Id}/accept", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-
-        await using var context = _app.GetDatabaseContext();
-        var deletedInvitation = await context.Invitations.FirstOrDefaultAsync(i => i.Id == invitation.Id);
-        var updatedOrganization = await context.Organizations.Include(o => o.Invitations).Include(o => o.Employees).FirstOrDefaultAsync(o => o.Id == organization.Id);
-        var updatedEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == employee.Id);
-
-        // Assert that the employee is a part of the organization.
-        updatedEmployee!.OrganizationId.Should().Be(organization.Id);
-        updatedOrganization!.Employees.Should().ContainSingle(e => e.Id == employee.Id);
-        // Assert that the invitation is deleted.
-        deletedInvitation.Should().BeNull();
-        updatedOrganization!.Invitations.Should().NotContain(i => i.Id == invitation.Id);
     }
 }

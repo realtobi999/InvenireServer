@@ -33,11 +33,12 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
             OrganizationId = organization.Id
         };
 
-        // Save the invitation.
-        await _services.Organizations.Invitations.CreateAsync(invitation);
-
         // Add invitation to the organization.
         organization.Invitations?.Add(invitation);
+
+        // Save the changes.
+        await _services.Organizations.Invitations.CreateAsync(invitation);
+        await _services.Organizations.UpdateAsync(organization);
 
         return new CreateOrganizationInvitationCommandResult
         {
