@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
@@ -12,13 +13,15 @@ public class OrganizationService : IOrganizationService
     private readonly IRepositoryManager _repositories;
     private readonly IValidator<Organization> _validator;
 
-    public OrganizationService(IRepositoryManager repositories, IValidator<Organization> validator)
+    public OrganizationService(IRepositoryManager repositories, IValidatorFactory validators)
     {
-        _validator = validator;
+        _validator = validators.Initiate<Organization>();
         _repositories = repositories;
+
+        Invitations = new OrganizationInvitationService(_repositories, validators.Initiate<OrganizationInvitation>());
     }
 
-    public IOrganizationInvitationService Invitations => new OrganizationInvitationService(_repositories);
+    public IOrganizationInvitationService Invitations { get; }
 
     public async Task<Organization> GetAsync(Expression<Func<Organization, bool>> predicate)
     {

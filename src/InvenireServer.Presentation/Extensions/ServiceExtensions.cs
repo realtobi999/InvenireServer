@@ -7,6 +7,8 @@ using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Validators;
+using InvenireServer.Application.Validators.Organizations;
+using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
@@ -82,6 +84,7 @@ public static class ServiceExtensions
         services.AddScoped<IValidator<Admin>, AdminValidator>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
+        services.AddScoped<IValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
     }
 

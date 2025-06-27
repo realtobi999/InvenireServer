@@ -1,5 +1,5 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Validators;
+using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
@@ -10,13 +10,13 @@ namespace InvenireServer.Tests.Unit.Validators;
 
 public class AdminValidatorTests
 {
-    private readonly Mock<IRepositoryManager> _repository;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly AdminValidator _validator;
 
     public AdminValidatorTests()
     {
-        _repository = new Mock<IRepositoryManager>();
-        _validator = new AdminValidator(_repository.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _validator = new AdminValidator(_repositories.Object);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class AdminValidatorTests
         var admin = new AdminFaker().Generate();
 
         // Mock the repository to return a employee that has seemingly the same email address.
-        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync(new AdminFaker().Generate());
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync(new AdminFaker().Generate());
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(admin);
@@ -45,7 +45,7 @@ public class AdminValidatorTests
         // Set the updated at time to be before the created at time.
         admin.LastUpdatedAt = admin.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(admin);
@@ -64,7 +64,7 @@ public class AdminValidatorTests
         // Set the last login time to be before the created at time.
         admin.LastLoginAt = admin.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(admin);
@@ -84,7 +84,7 @@ public class AdminValidatorTests
         admin.CreatedAt = DateTimeOffset.UtcNow.AddMonths(1);
         admin.LastUpdatedAt = null;
 
-        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(admin);
@@ -101,8 +101,8 @@ public class AdminValidatorTests
         var organization = new OrganizationFaker().Generate();
         var admin = new AdminFaker(organization).Generate();
 
-        _repository.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
-        _repository.Setup(r => r.Organizations.GetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == admin.EmailAddress && e.Id != admin.Id)).ReturnsAsync((Admin?)null);
+        _repositories.Setup(r => r.Organizations.GetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(admin);

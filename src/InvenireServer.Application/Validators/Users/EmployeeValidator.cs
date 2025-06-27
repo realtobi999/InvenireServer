@@ -4,7 +4,7 @@ using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Validators;
+namespace InvenireServer.Application.Validators.Users;
 
 public class EmployeeValidator : IValidator<Employee>
 {

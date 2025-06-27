@@ -1,5 +1,5 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Validators;
+using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
@@ -10,13 +10,13 @@ namespace InvenireServer.Tests.Unit.Validators;
 
 public class EmployeeValidatorTests
 {
-    private readonly Mock<IRepositoryManager> _repository;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly EmployeeValidator _validator;
 
     public EmployeeValidatorTests()
     {
-        _repository = new Mock<IRepositoryManager>();
-        _validator = new EmployeeValidator(_repository.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _validator = new EmployeeValidator(_repositories.Object);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class EmployeeValidatorTests
         var employee = new EmployeeFaker().Generate();
 
         // Mock the repository to return a employee that has seemingly the same email address.
-        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync(new EmployeeFaker().Generate());
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync(new EmployeeFaker().Generate());
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -45,7 +45,7 @@ public class EmployeeValidatorTests
         // Set the updated at time to be before the created at time.
         employee.LastUpdatedAt = employee.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -64,7 +64,7 @@ public class EmployeeValidatorTests
         // Set the last login time to be before the created at time.
         employee.LastLoginAt = employee.CreatedAt.AddMonths(-1);
 
-        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -84,7 +84,7 @@ public class EmployeeValidatorTests
         employee.CreatedAt = DateTimeOffset.UtcNow.AddMonths(1);
         employee.LastUpdatedAt = null;
 
-        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);
@@ -101,8 +101,8 @@ public class EmployeeValidatorTests
         var organization = new OrganizationFaker().Generate();
         var employee = new EmployeeFaker(organization).Generate();
 
-        _repository.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
-        _repository.Setup(r => r.Organizations.GetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == employee.EmailAddress && e.Id != employee.Id)).ReturnsAsync((Employee?)null);
+        _repositories.Setup(r => r.Organizations.GetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var (valid, exception) = await _validator.ValidateAsync(employee);

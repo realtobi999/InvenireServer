@@ -4,7 +4,7 @@ using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Validators;
+namespace InvenireServer.Application.Validators.Organizations;
 
 public class OrganizationValidator : IValidator<Organization>
 {
@@ -27,7 +27,7 @@ public class OrganizationValidator : IValidator<Organization>
         if (organization.CreatedAt > DateTimeOffset.UtcNow) return (false, new BadRequest400Exception($"{nameof(Organization.CreatedAt)} cannot be set in the future."));
 
         // Admin must be assigned.
-        if (organization.Admin is null) return (false, new BadRequest400Exception($"{nameof(Organization.Admin)} must be assigned."));
+        if (organization.Admin is null) return (false, new BadRequest400Exception($"{nameof(Admin)} must be assigned."));
 
         // Admin must exist in the system.
         var admin = await _repositories.Admins.GetAsync(a => a.Id == organization.Admin.Id);
