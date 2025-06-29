@@ -22,7 +22,7 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
     {
         var manager = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
 
-        foreach (var admin in await manager.Admins.IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.AddDays(-7))) manager.Admins.Delete(admin);
+        foreach (var admin in await manager.Admins.IndexInactiveAsync()) manager.Admins.Delete(admin);
 
         await manager.SaveAsync();
 

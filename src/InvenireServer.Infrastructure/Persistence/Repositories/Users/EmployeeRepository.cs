@@ -8,4 +8,9 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
     public EmployeeRepository(InvenireServerContext context) : base(context)
     {
     }
+
+    public async Task<IEnumerable<Employee>> IndexInactiveAsync()
+    {
+        return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.Add(Employee.INACTIVE_THRESHOLD));
+    }
 }

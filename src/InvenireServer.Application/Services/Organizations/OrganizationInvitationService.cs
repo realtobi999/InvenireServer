@@ -22,7 +22,16 @@ public class OrganizationInvitationService : IOrganizationInvitationService
     {
         var invitation = await _repositories.Organizations.Invitations.GetAsync(predicate);
 
-        if (invitation is null) throw new NotFound404Exception("The requested invitation was not found in the system.");
+        if (invitation is null) throw new NotFound404Exception($"The requested {nameof(OrganizationInvitation).ToLower()} was not found in the system.");
+
+        return invitation;
+    }
+
+    public async Task<OrganizationInvitation> GetWithRelationsAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        var invitation = await _repositories.Organizations.Invitations.GetWithRelationsAsync(predicate);
+
+        if (invitation is null) throw new NotFound404Exception($"The requested {nameof(OrganizationInvitation).ToLower()} was not found in the system.");
 
         return invitation;
     }

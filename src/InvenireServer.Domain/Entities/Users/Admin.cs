@@ -15,6 +15,8 @@ public class Admin
 
     public const int MAX_PASSWORD_LENGTH = 155;
 
+    public static readonly TimeSpan INACTIVE_THRESHOLD = TimeSpan.FromDays(7);
+
     // Core Properties.
 
     public required Guid Id { get; set; }

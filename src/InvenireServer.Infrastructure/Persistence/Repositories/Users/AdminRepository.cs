@@ -8,4 +8,9 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
     public AdminRepository(InvenireServerContext context) : base(context)
     {
     }
+
+    public async Task<IEnumerable<Admin>> IndexInactiveAsync()
+    {
+        return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.Add(Admin.INACTIVE_THRESHOLD));
+    }
 }

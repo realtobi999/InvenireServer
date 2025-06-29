@@ -26,7 +26,7 @@ public class OrganizationEndpointsTests
     }
 
     [Fact]
-    public async Task CreateOrganization_Returns201()
+    public async Task Create_Returns201()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -46,7 +46,7 @@ public class OrganizationEndpointsTests
     }
 
     [Fact]
-    public async Task CreateOrganizationInvitation_Returns201AndInvitationIsCreated()
+    public async Task CreateInvitation_Returns201AndInvitationIsCreated()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -70,7 +70,7 @@ public class OrganizationEndpointsTests
     }
 
     [Fact]
-    public async Task AcceptOrganizationInvitation_Returns204AndEmployeeIsPartOfOrganization()
+    public async Task AcceptInvitation_Returns204AndEmployeeIsPartOfOrganization()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();

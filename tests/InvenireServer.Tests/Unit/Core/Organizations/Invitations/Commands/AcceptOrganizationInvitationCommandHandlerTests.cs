@@ -35,8 +35,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
         _services.Setup(s => s.Organizations.Invitations.DeleteAsync(invitation));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
         _services.Setup(s => s.Employees.UpdateAsync(employee));
@@ -69,8 +69,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
@@ -95,8 +95,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
@@ -121,8 +121,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());

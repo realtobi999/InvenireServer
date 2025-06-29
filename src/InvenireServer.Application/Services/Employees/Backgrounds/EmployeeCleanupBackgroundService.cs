@@ -22,7 +22,7 @@ public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeClea
     {
         var manager = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
 
-        foreach (var employee in await manager.Employees.IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.AddDays(-7))) manager.Employees.Delete(employee);
+        foreach (var employee in await manager.Employees.IndexInactiveAsync()) manager.Employees.Delete(employee);
 
         await manager.SaveAsync();
 

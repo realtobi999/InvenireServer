@@ -32,6 +32,15 @@ public class OrganizationService : IOrganizationService
         return organization;
     }
 
+    public async Task<Organization> GetWithRelationsAsync(Expression<Func<Organization, bool>> predicate)
+    {
+        var organization = await _repositories.Organizations.GetWithRelationsAsync(predicate);
+
+        if (organization is null) throw new NotFound404Exception($"The requested {nameof(Organization).ToLower()} was not found in the system.");
+
+        return organization;
+    }
+
     public async Task CreateAsync(Organization organization)
     {
         var (valid, exception) = await _validator.ValidateAsync(organization);

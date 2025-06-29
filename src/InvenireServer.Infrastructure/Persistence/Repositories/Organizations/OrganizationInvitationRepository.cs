@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Interfaces.Repositories.Organizations;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,8 @@ public class OrganizationInvitationRepository : RepositoryBase<OrganizationInvit
     {
     }
 
-    protected override IQueryable<OrganizationInvitation> GetQueryable()
+    public Task<OrganizationInvitation?> GetWithRelationsAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
     {
-        return base.GetQueryable()
-            .Include(i => i.Employee);
+        return Context.Set<OrganizationInvitation>().Include(i => i.Employee).FirstOrDefaultAsync(predicate);
     }
 }
