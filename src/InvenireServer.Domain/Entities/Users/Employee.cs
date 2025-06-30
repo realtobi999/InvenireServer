@@ -54,7 +54,14 @@ public class Employee
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("Employee is already part of a organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("This employee is already part of a another organization");
         OrganizationId = organization.Id;
+    }
+
+    public void UnassignOrganization(Organization organization)
+    {
+        if (OrganizationId is null) throw new BadRequest400Exception("This employee is not part of a any organization");
+        if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the employee doesn't belong to.");
+        OrganizationId = null;
     }
 }

@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Properties;
 
@@ -6,7 +8,7 @@ public class Property
 {
     // Core properties.
 
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; }
 
@@ -17,4 +19,10 @@ public class Property
     public Guid? OrganizationId { get; set; }
 
     public Collection<PropertyItem> Items { get; set; } = [];
+
+    public void AssignOrganization(Organization organization)
+    {
+        if (OrganizationId is not null) throw new BadRequest400Exception("This property is already a part of a another organization");
+        OrganizationId = organization.Id;
+    }
 }
