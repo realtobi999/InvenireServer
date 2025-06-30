@@ -30,11 +30,10 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
             Employee = employee,
-            OrganizationId = organization.Id
         };
 
         // Add invitation to the organization.
-        organization.Invitations?.Add(invitation);
+        organization.AddInvitation(invitation);
 
         // Save the changes.
         await _services.Organizations.Invitations.CreateAsync(invitation);

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Transactions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
@@ -22,6 +23,8 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
 
     public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken _)
     {
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
         // Retrieves the admin and returns 401 unauthorized if the admin is not found.
         Admin admin;
         try
@@ -49,6 +52,8 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.TrueString)
         ]);
+
+        scope.Complete();
 
         return new LoginAdminCommandResult
         {

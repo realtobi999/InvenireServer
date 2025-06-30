@@ -7,7 +7,6 @@ public interface IOrganizationService
 {
     IOrganizationInvitationService Invitations { get; }
     Task<Organization> GetAsync(Expression<Func<Organization, bool>> predicate);
-    Task<Organization> GetWithRelationsAsync(Expression<Func<Organization, bool>> predicate);
     Task CreateAsync(Organization organization);
     Task UpdateAsync(Organization organization);
 }

@@ -22,7 +22,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         // Ensure the admin is the owner of the organization.
         if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
 
-        // Create the property instance and assign it to the organization.
+        // Create the property and assign it to the organization.
         var property = new Property
         {
             Id = request.Id ?? Guid.NewGuid(),

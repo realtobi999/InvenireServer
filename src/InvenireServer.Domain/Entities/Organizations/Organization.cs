@@ -59,15 +59,6 @@ public class Organization
         employee.AssignOrganization(this);
     }
 
-    public void RemoveEmployee(Employee employee)
-    {
-        if (!this.Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is not a part of this organization.");
-
-        this.Employees.Remove(employee);
-
-        employee.UnassignOrganization(this);
-    }
-
     public void AddInvitation(OrganizationInvitation invitation)
     {
         if (this.Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
@@ -75,14 +66,5 @@ public class Organization
         this.Invitations.Add(invitation);
 
         invitation.AssignOrganization(this);
-    }
-
-    public void RemoveInvitation(OrganizationInvitation invitation)
-    {
-        if (!this.Invitations.Any(e => e.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is not a part of this organization.");
-
-        this.Invitations.Remove(invitation);
-
-        invitation.UnassignOrganization(this);
     }
 }

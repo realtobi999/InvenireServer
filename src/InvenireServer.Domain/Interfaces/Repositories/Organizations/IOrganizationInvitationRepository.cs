@@ -5,5 +5,4 @@ namespace InvenireServer.Domain.Interfaces.Repositories.Organizations;
 
 public interface IOrganizationInvitationRepository : IRepositoryBase<OrganizationInvitation>
 {
-    Task<OrganizationInvitation?> GetWithRelationsAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
 }
