@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Users;
@@ -38,6 +40,8 @@ public class Employee
     // Navigational Properties.
 
     public Guid? OrganizationId { get; set; }
+
+    public Collection<PropertyItem> AssignedItems { get; set; } = [];
 
     // Methods.
 

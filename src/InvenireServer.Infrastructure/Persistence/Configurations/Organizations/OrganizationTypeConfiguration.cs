@@ -1,4 +1,5 @@
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -32,6 +33,10 @@ public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organizati
         builder.HasOne(o => o.Admin)
             .WithOne()
             .HasForeignKey<Admin>(a => a.OrganizationId);
+
+        builder.HasOne(o => o.Property)
+            .WithOne()
+            .HasForeignKey<Property>(p => p.OrganizationId);
 
         builder.HasMany(o => o.Employees)
             .WithOne()

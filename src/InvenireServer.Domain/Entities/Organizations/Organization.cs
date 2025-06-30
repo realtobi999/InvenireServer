@@ -1,3 +1,4 @@
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Domain.Entities.Organizations;
@@ -21,6 +22,8 @@ public class Organization
     // Navigational properties.
 
     public Admin? Admin { get; set; }
+
+    public Property? Property { get; set; }
 
     public ICollection<Employee> Employees { get; set; } = [];
 

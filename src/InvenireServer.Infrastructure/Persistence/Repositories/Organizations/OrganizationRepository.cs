@@ -17,6 +17,6 @@ public class OrganizationRepository : RepositoryBase<Organization>, IOrganizatio
 
     public Task<Organization?> GetWithRelationsAsync(Expression<Func<Organization, bool>> predicate)
     {
-        return Context.Set<Organization>().Include(o => o.Admin).Include(o => o.Employees).Include(o => o.Invitations).FirstOrDefaultAsync(predicate);
+        return Context.Set<Organization>().Include(o => o.Admin).Include(o => o.Employees).Include(o => o.Invitations).Include(o => o.Property).FirstOrDefaultAsync(predicate);
     }
 }

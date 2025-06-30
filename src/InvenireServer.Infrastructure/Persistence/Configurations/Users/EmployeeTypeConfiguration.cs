@@ -46,5 +46,10 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder.Property(e => e.LastLoginAt)
             .HasColumnName("last_login_at");
+
+        // Relationships
+        builder.HasMany(e => e.AssignedItems)
+            .WithOne()
+            .HasForeignKey(i => i.EmployeeId);
     }
 }
