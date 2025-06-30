@@ -1,7 +1,9 @@
+using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Common;
 using InvenireServer.Domain.Interfaces.Repositories.Organizations;
 using InvenireServer.Domain.Interfaces.Repositories.Users;
+using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
 using InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -38,5 +40,10 @@ public class RepositoryManager : IRepositoryManager
         var affected = await SaveAsync();
 
         if (affected == 0) throw new NoRowsAffectedException();
+    }
+
+    public async Task<ITransaction> BeginTransactionAsync()
+    {
+        return new Transaction(await _context.Database.BeginTransactionAsync());
     }
 }

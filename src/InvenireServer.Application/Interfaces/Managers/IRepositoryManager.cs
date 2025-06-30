@@ -1,3 +1,4 @@
+using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Domain.Interfaces.Repositories.Organizations;
 using InvenireServer.Domain.Interfaces.Repositories.Users;
 
@@ -14,4 +15,6 @@ public interface IRepositoryManager
     Task<int> SaveAsync();
 
     Task SaveOrThrowAsync();
+
+    Task<ITransaction> BeginTransactionAsync();
 }

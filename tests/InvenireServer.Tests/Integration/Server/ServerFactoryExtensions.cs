@@ -1,6 +1,7 @@
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,9 +21,12 @@ public static class ServerFactoryExtensions
         services.AddSingleton<IEmailSender, EmailSenderFaker>();
     }
 
-    public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services, string dbName) where TContext : DbContext
+    public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services, string name) where TContext : DbContext
     {
         services.RemoveService<IDbContextOptionsConfiguration<TContext>>();
-        services.AddDbContext<TContext>(options => { options.UseInMemoryDatabase(dbName); });
+        services.AddDbContext<TContext>(options =>
+        {
+            options.UseInMemoryDatabase(name).ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+        });
     }
 }

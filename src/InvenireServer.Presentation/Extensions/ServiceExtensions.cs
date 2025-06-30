@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Threading.RateLimiting;
 using InvenireServer.Application;
+using InvenireServer.Application.Behaviors;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
@@ -17,6 +18,7 @@ using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Presentation.Middleware;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -171,6 +173,10 @@ public static class ServiceExtensions
 
     public static void ConfigureMediatR(this IServiceCollection services)
     {
-        services.AddMediatR(options => { options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly); });
+        services.AddMediatR(options =>
+        {
+            options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly);
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+        });
     }
 }
