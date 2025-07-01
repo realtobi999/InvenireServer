@@ -10,4 +10,5 @@ public interface IEmployeeService
     Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate);
     Task CreateAsync(Employee employee);
     Task UpdateAsync(Employee employee);
+    Task UpdateAsync(IEnumerable<Employee> employees);
 }

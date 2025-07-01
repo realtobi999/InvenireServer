@@ -22,17 +22,17 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
         // Ensure the admin is the owner of the organization.
         if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
 
-        // Create and associate the invitation.
+        // Create the invitation and assign the employee to it.
         var invitation = new OrganizationInvitation
         {
             Id = request.Id ?? Guid.NewGuid(),
             Description = request.Description,
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
-            Employee = employee,
         };
+        invitation.AssignEmployee(employee);
 
-        // Add invitation to the organization.
+        // Add the invitation to the organization.
         organization.AddInvitation(invitation);
 
         // Save the changes.

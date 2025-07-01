@@ -1,4 +1,3 @@
-
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
@@ -31,7 +30,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         };
         organization.AssignProperty(property);
 
-        // Persist the changes.
+        // Save the changes.
         await _services.Properties.CreateAsync(property);
         await _services.Organizations.UpdateAsync(organization);
 

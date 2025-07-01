@@ -30,6 +30,7 @@ public class OrganizationInvitation
     public void AssignOrganization(Organization organization)
     {
         if (OrganizationId is not null) throw new BadRequest400Exception("This invitation is already part of a other organization");
+
         OrganizationId = organization.Id;
     }
 
@@ -37,6 +38,14 @@ public class OrganizationInvitation
     {
         if (OrganizationId is null) throw new BadRequest400Exception("This invitation is not part of a any organization");
         if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the invitation doesn't belong to.");
+
         OrganizationId = null;
+    }
+
+    public void AssignEmployee(Employee employee)
+    {
+        if (Employee is not null) throw new BadRequest400Exception("This invitation does already have a employee assigned");
+
+        Employee = employee;
     }
 }

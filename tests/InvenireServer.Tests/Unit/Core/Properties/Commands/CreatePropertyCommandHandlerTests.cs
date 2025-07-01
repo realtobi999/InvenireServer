@@ -47,7 +47,7 @@ public class CreatePropertyCommandHandlerTests
         // Assert that the property is correctly constructed.
         var property = result.Property;
         property.Id.Should().Be(command.Id.ToString());
-        property.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        property.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         property.LastUpdatedAt.Should().BeNull();
 
         // Assert that the property is part of the organization.

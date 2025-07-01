@@ -8,6 +8,7 @@ using InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
 using InvenireServer.Infrastructure.Persistence.Repositories.Users;
 using InvenireServer.Domain.Interfaces.Repositories.Properties;
 using InvenireServer.Infrastructure.Persistence.Repositories.Properties;
+using System.Transactions;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
@@ -43,10 +44,5 @@ public class RepositoryManager : IRepositoryManager
         var affected = await SaveAsync();
 
         if (affected == 0) throw new NoRowsAffectedException();
-    }
-
-    public async Task<ITransaction> BeginTransactionAsync()
-    {
-        return new Transaction(await _context.Database.BeginTransactionAsync());
     }
 }

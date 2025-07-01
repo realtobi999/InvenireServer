@@ -4,6 +4,7 @@ using System.Threading.RateLimiting;
 using InvenireServer.Application;
 using InvenireServer.Application.Behaviors;
 using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
@@ -17,6 +18,7 @@ using InvenireServer.Domain.Exceptions.Common;
 using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Presentation.Middleware;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +40,7 @@ public static class ServiceExtensions
                 builder => { builder.EnableRetryOnFailure(3); }
             );
         });
+        services.AddScoped<ITransactionScope, InvenireTransactionScope>();
     }
 
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)

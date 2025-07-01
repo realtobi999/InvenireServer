@@ -40,7 +40,7 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
         if (_hasher.VerifyHashedPassword(employee, employee.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
         // Update the timestamp of the employee's last login.
-        employee.LastLoginAt = DateTimeOffset.Now;
+        employee.LastLoginAt = DateTimeOffset.UtcNow;
         await _services.Employees.UpdateAsync(employee);
 
         // Create the jwt.

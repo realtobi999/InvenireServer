@@ -23,8 +23,6 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
 
     public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken _)
     {
-        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
         // Retrieves the admin and returns 401 unauthorized if the admin is not found.
         Admin admin;
         try
@@ -43,7 +41,7 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         if (_hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
         // Update the timestamp of the admins's last login.
-        admin.LastLoginAt = DateTimeOffset.Now;
+        admin.LastLoginAt = DateTimeOffset.UtcNow;
         await _services.Admins.UpdateAsync(admin);
 
         // Create the jwt.
@@ -52,8 +50,6 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.TrueString)
         ]);
-
-        scope.Complete();
 
         return new LoginAdminCommandResult
         {

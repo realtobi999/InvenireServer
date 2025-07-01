@@ -51,7 +51,7 @@ public class RegisterEmployeeCommandHandlerTests
         employee.EmailAddress.Should().Be(command.EmailAddress);
         employee.Password.Should().NotBe(password);
         employee.IsVerified.Should().BeFalse();
-        employee.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        employee.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         employee.LastLoginAt.Should().BeNull();
         employee.LastUpdatedAt.Should().BeNull();
 

@@ -18,7 +18,7 @@ public class OrganizationService : IOrganizationService
         _validator = validators.Initiate<Organization>();
         _repositories = repositories;
 
-        Invitations = new OrganizationInvitationService(_repositories, validators.Initiate<OrganizationInvitation>());
+        Invitations = new OrganizationInvitationService(repositories, validators.Initiate<OrganizationInvitation>());
     }
 
     public IOrganizationInvitationService Invitations { get; }

@@ -18,6 +18,4 @@ public interface IRepositoryManager
     Task<int> SaveAsync();
 
     Task SaveOrThrowAsync();
-
-    Task<ITransaction> BeginTransactionAsync();
 }

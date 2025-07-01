@@ -52,7 +52,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
         var invitation = result.Invitation;
         invitation.Id.Should().Be(command.Id.ToString());
         invitation.Description.Should().Be(command.Description);
-        invitation.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        invitation.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         invitation.LastUpdatedAt.Should().BeNull();
         invitation.Employee.Should().NotBeNull();
         invitation.Employee!.Id.Should().Be(employee.Id);
