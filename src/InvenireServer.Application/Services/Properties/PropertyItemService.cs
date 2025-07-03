@@ -15,8 +15,7 @@ public class PropertyItemService : IPropertyItemService
 
     public async Task CreateAsync(PropertyItem item)
     {
-        _repositories.Properties.Items.Create(item);
-        await _repositories.SaveOrThrowAsync();
+        await CreateAsync([item]);
     }
 
     public async Task CreateAsync(IEnumerable<PropertyItem> items)

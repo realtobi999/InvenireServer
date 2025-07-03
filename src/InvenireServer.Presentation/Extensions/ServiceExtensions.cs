@@ -10,9 +10,11 @@ using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Validators;
 using InvenireServer.Application.Validators.Organizations;
+using InvenireServer.Application.Validators.Properties;
 using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Common;
 using InvenireServer.Infrastructure.Authentication.Options;
@@ -88,6 +90,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<IValidator<Admin>, AdminValidator>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
+        services.AddScoped<IValidator<Property>, PropertyValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
         services.AddScoped<IValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
