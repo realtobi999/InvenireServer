@@ -22,14 +22,16 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
         var property = await _services.Properties.GetAsync(p => p.Id == request.PropertyId);
         var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
 
-        if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
-        if (property.Id != organization.Property!.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
+        if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
+        if (property.OrganizationId != organization.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
 
         // Preload all employees.
         var employees = new Dictionary<Guid, Employee>();
         foreach (var id in request.Items.Where(i => i.EmployeeId is not null).Select(i => i.EmployeeId!.Value).ToHashSet())
         {
-            employees[id] = await _services.Employees.GetAsync(e => e.Id == id);
+            var employee = await _services.Employees.GetAsync(e => e.Id == id);
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot assign property to a employee from a another organization.");
+            employees[id] = employee;
         }
 
         // Initialize all the items.

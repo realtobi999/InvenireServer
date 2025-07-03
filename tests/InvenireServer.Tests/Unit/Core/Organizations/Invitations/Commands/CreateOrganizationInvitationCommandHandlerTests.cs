@@ -70,9 +70,6 @@ public class CreateOrganizationInvitationCommandHandlerTests
         var admin = new AdminFaker().Generate();
         var employee = new EmployeeFaker(organization).Generate();
 
-        // Assign a another admin to the organization.
-        organization.Admin = new AdminFaker().Generate();
-
         var command = new CreateOrganizationInvitationCommand
         {
             Id = Guid.NewGuid(),

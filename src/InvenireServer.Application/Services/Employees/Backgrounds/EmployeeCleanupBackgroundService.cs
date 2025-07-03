@@ -26,7 +26,7 @@ public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeClea
 
         await manager.SaveAsync();
 
-        _logger.LogInformation("Unverified employees cleanup completed at {Time}", DateTime.UtcNow);
+        _logger.LogInformation("Unverified employees successful completed at {Time}", DateTime.UtcNow);
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)

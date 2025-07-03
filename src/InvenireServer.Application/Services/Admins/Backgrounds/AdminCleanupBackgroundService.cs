@@ -9,8 +9,8 @@ namespace InvenireServer.Application.Services.Admins.Backgrounds;
 public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(7);
-    private readonly ILogger<AdminCleanupBackgroundService> _logger;
     private readonly IServiceScopeFactory _scope;
+    private readonly ILogger<AdminCleanupBackgroundService> _logger;
 
     public AdminCleanupBackgroundService(IServiceScopeFactory scope, ILogger<AdminCleanupBackgroundService> logger)
     {
@@ -20,13 +20,13 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
 
     public async Task CleanupAsync()
     {
-        var manager = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
+        var repositories = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
 
-        foreach (var admin in await manager.Admins.IndexInactiveAsync()) manager.Admins.Delete(admin);
+        foreach (var admin in await repositories.Admins.IndexInactiveAsync()) repositories.Admins.Delete(admin);
 
-        await manager.SaveAsync();
+        await repositories.SaveAsync();
 
-        _logger.LogInformation("Unverified admins cleanup completed at {Time}", DateTime.UtcNow);
+        _logger.LogInformation("Unverified admins cleanup successful at {Time}", DateTime.UtcNow);
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
