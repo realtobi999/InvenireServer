@@ -42,8 +42,7 @@ public class JwtBuilder : IJwtBuilder
     public static Jwt Parse(string token)
     {
         var parts = token.Split('.');
-        if (parts.Length != 3)
-            throw new ArgumentException("Invalid JWT token format.");
+        if (parts.Length != 3) throw new ArgumentException("Invalid JWT token format.");
 
         var header = ParseJsonToClaims(DecodeBase64Url(parts[0]));
         var payload = ParseJsonToClaims(DecodeBase64Url(parts[1]));

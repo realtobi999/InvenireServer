@@ -91,6 +91,7 @@ public static class ServiceExtensions
         services.AddScoped<IValidator<Admin>, AdminValidator>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
         services.AddScoped<IValidator<Property>, PropertyValidator>();
+        services.AddScoped<IValidator<PropertyItem>, PropertyItemValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
         services.AddScoped<IValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
         services.AddScoped<IValidatorFactory, ValidatorFactory>();

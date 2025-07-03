@@ -50,12 +50,14 @@ public class PropertyItem
     public void AssignProperty(Property property)
     {
         if (PropertyId is not null) throw new BadRequest400Exception("This item is already part of a another property.");
+
         PropertyId = property.Id;
     }
 
     public void AssignEmployee(Employee employee)
     {
         if (EmployeeId is not null) throw new BadRequest400Exception("This item is already assigned to a another employee.");
+
         EmployeeId = employee.Id;
     }
 }

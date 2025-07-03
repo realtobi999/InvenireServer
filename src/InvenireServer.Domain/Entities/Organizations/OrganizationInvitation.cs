@@ -37,6 +37,7 @@ public class OrganizationInvitation
     public void UnassignOrganization(Organization organization)
     {
         if (OrganizationId is null) throw new BadRequest400Exception("This invitation is not part of a any organization");
+
         if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the invitation doesn't belong to.");
 
         OrganizationId = null;

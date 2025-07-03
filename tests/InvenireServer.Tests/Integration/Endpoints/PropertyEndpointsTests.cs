@@ -1,8 +1,10 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using InvenireServer.Presentation;
+using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Extensions.Organizations;
 using InvenireServer.Tests.Integration.Extensions.Properties;
 using InvenireServer.Tests.Integration.Extensions.Users;
@@ -11,16 +13,14 @@ using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
-using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
 public class PropertyEndpointsTests
 {
+    private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly JwtManager _jwt;
-    private readonly ServerFactory<Program> _app;
 
     public PropertyEndpointsTests()
     {
@@ -62,7 +62,7 @@ public class PropertyEndpointsTests
         var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
 
         var items = new List<PropertyItem>();
-        for (int _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -80,7 +80,7 @@ public class PropertyEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new CreatePropertyItemsCommand
         {
-            Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+            Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
         });
     }
 }

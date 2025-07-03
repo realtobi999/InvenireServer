@@ -3,7 +3,6 @@ using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Properties;
 
@@ -19,7 +18,7 @@ public class PropertyService : IPropertyService
         _validator = validators.Initiate<Property>();
         _repositories = repositories;
 
-        Items = new PropertyItemService(repositories);
+        Items = new PropertyItemService(repositories, validators.Initiate<PropertyItem>());
     }
 
     public IPropertyItemService Items { get; }

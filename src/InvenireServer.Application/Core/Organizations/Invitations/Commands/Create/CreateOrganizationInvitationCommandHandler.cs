@@ -28,7 +28,7 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
             Id = request.Id ?? Guid.NewGuid(),
             Description = request.Description,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null,
+            LastUpdatedAt = null
         };
         invitation.AssignEmployee(employee);
         organization.AddInvitation(invitation);

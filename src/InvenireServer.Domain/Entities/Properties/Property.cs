@@ -25,14 +25,15 @@ public class Property
     public void AssignOrganization(Organization organization)
     {
         if (OrganizationId is not null) throw new BadRequest400Exception("This property is already a part of a another organization");
+
         OrganizationId = organization.Id;
     }
 
     public void AddItem(PropertyItem item)
     {
-        if (this.Items.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already a part of this property.");
+        if (Items.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already a part of this property.");
 
-        this.Items.Add(item);
+        Items.Add(item);
 
         item.AssignProperty(this);
     }

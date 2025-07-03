@@ -26,7 +26,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         {
             Id = request.Id ?? Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null,
+            LastUpdatedAt = null
         };
         organization.AssignProperty(property);
 
@@ -36,7 +36,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
 
         return new CreatePropertyCommandResponse
         {
-            Property = property,
+            Property = property
         };
     }
 }

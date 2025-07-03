@@ -1,5 +1,4 @@
 using InvenireServer.Application.Interfaces.Common.Transactions;
-using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Behaviors;
 

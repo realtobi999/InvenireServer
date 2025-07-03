@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Domain.Entities.Users;

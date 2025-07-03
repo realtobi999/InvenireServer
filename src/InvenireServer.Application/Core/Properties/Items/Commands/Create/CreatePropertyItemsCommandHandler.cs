@@ -1,4 +1,3 @@
-
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
@@ -23,6 +22,7 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
         var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
 
         if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
+
         if (property.OrganizationId != organization.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
 
         // Preload all employees.
@@ -31,6 +31,7 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
         {
             var employee = await _services.Employees.GetAsync(e => e.Id == id);
             if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot assign property to a employee from a another organization.");
+
             employees[id] = employee;
         }
 
@@ -51,13 +52,10 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
                 Description = dto.Description,
                 DocumentNumber = dto.DocumentNumber,
                 CreatedAt = DateTimeOffset.UtcNow,
-                LastUpdatedAt = null,
+                LastUpdatedAt = null
             };
 
-            if (dto.EmployeeId is not null && employees.TryGetValue(dto.EmployeeId.Value, out var employee))
-            {
-                employee.AddItem(item);
-            }
+            if (dto.EmployeeId is not null && employees.TryGetValue(dto.EmployeeId.Value, out var employee)) employee.AddItem(item);
 
             items.Add(item);
             property.AddItem(item);

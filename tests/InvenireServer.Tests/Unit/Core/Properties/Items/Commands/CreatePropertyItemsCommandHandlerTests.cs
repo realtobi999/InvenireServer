@@ -14,8 +14,8 @@ namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;
 
 public class CreatePropertyItemsCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
     private readonly CreatePropertyItemsCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public CreatePropertyItemsCommandHandlerTests()
     {
@@ -33,7 +33,7 @@ public class CreatePropertyItemsCommandHandlerTests
         var admin = new AdminFaker(organization).Generate();
 
         var items = new List<PropertyItem>();
-        for (int _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
 
         var command = new CreatePropertyItemsCommand
         {
@@ -54,7 +54,7 @@ public class CreatePropertyItemsCommandHandlerTests
         await _handler.Handle(command, new CancellationToken());
 
         // Assert that the property has the correctly constructed items.
-        for (int i = 0; i < items.Count; i++)
+        for (var i = 0; i < items.Count; i++)
         {
             property.Items[i].Id.Should().Be(items[i].Id);
             property.Items[i].InventoryNumber.Should().Be(items[i].InventoryNumber);
@@ -69,6 +69,7 @@ public class CreatePropertyItemsCommandHandlerTests
             property.Items[i].CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
             property.Items[i].LastUpdatedAt.Should().BeNull();
         }
+
         // Assert that the employee has the assigned items.
         employee.AssignedItems.Select(i => i.Id).Should().Contain(items.Select(i => i.Id));
     }
@@ -131,11 +132,11 @@ public class CreatePropertyItemsCommandHandlerTests
         // Prepare.
         var organization = new OrganizationFaker().Generate();
         var property = new PropertyFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate();  // Organization isn't assigned.
+        var employee = new EmployeeFaker().Generate(); // Organization isn't assigned.
         var admin = new AdminFaker(organization).Generate();
 
         var items = new List<PropertyItem>();
-        for (int _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
 
         var command = new CreatePropertyItemsCommand
         {

@@ -34,36 +34,36 @@ public class Organization
 
     public void AssignAdmin(Admin admin)
     {
-        if (this.Admin is not null) throw new BadRequest400Exception("A admin is already assigned to this organization.");
+        if (Admin is not null) throw new BadRequest400Exception("A admin is already assigned to this organization.");
 
-        this.Admin = admin;
+        Admin = admin;
 
         admin.AssignOrganization(this);
     }
 
     public void AssignProperty(Property property)
     {
-        if (this.Property is not null) throw new BadRequest400Exception("A property is already assigned to this organization");
+        if (Property is not null) throw new BadRequest400Exception("A property is already assigned to this organization");
 
-        this.Property = property;
+        Property = property;
 
         property.AssignOrganization(this);
     }
 
     public void AddEmployee(Employee employee)
     {
-        if (this.Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is already a part of this organization.");
+        if (Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is already a part of this organization.");
 
-        this.Employees.Add(employee);
+        Employees.Add(employee);
 
         employee.AssignOrganization(this);
     }
 
     public void AddInvitation(OrganizationInvitation invitation)
     {
-        if (this.Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
+        if (Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
 
-        this.Invitations.Add(invitation);
+        Invitations.Add(invitation);
 
         invitation.AssignOrganization(this);
     }
