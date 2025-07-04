@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
@@ -17,7 +18,7 @@ public class PropertyItemValidator : IValidator<PropertyItem>
 
     public async Task<(bool isValid, Exception? exception)> ValidateAsync(PropertyItem item)
     {
-        // Last update must be later than creation time, if set.
+        // Date of sale must be later than date of purchase, if set.
         if (item.DateOfSale is not null && item.DateOfPurchase >= item.DateOfSale) return (false, new BadRequest400Exception($"{nameof(PropertyItem.DateOfSale)} must be later than {nameof(PropertyItem.DateOfPurchase)}."));
 
         // Date of purchase cannot be in the future.
@@ -37,9 +38,9 @@ public class PropertyItemValidator : IValidator<PropertyItem>
         if (property is null) return (false, new NotFound404Exception($"The assigned {nameof(Property)} was not found in the system."));
 
         // Employee if set, must exist in the system.
-        var employee = await _repositories.Employees.GetAsync(e => e.Id == item.EmployeeId);
-        if (property is null) return (false, new NotFound404Exception($"The assigned {nameof(Employee)} was not found in the system."));
-
+        if (item.EmployeeId is not null)
+            if (await _repositories.Employees.GetAsync(e => e.Id == item.EmployeeId) is null)
+                return (false, new NotFound404Exception($"The assigned {nameof(Employee)} was not found in the system."));
 
         // Inventory number must be unique within the other property items.
         if (!await _repositories.Properties.Items.IsInventoryNumberUniqueAsync(item, property)) return (false, new BadRequest400Exception($"{nameof(PropertyItem.InventoryNumber)} must be unique."));
