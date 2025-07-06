@@ -60,4 +60,11 @@ public class PropertyItem
 
         EmployeeId = employee.Id;
     }
+
+    public void UnassignEmployee(Employee employee)
+    {
+        if (EmployeeId is null) throw new BadRequest400Exception("This item is isn't assigned to this employee.");
+
+        EmployeeId = null;
+    }
 }

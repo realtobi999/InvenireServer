@@ -1,4 +1,4 @@
-using InvenireServer.Application.Core.Properties.Command.Create;
+using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;

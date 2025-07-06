@@ -1,6 +1,6 @@
 using InvenireServer.Domain.Entities.Properties;
 
-namespace InvenireServer.Application.Core.Properties.Command.Create;
+namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
 public record CreatePropertyCommandResponse
 {

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Common;
 
-namespace InvenireServer.Application.Core.Properties.Command.Create;
+namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
 [JsonRequest]
 public record CreatePropertyCommand : IRequest<CreatePropertyCommandResponse>
