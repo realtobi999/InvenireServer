@@ -2,13 +2,11 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Integration.Extensions.Organizations;
 using InvenireServer.Tests.Integration.Extensions.Users;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 

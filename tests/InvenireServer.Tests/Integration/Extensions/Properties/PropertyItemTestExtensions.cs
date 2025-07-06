@@ -19,7 +19,7 @@ public static class PropertyItemTestExtensions
             DateOfSale = property.DateOfSale,
             Description = property.Description,
             DocumentNumber = property.DocumentNumber,
-            EmployeeId = property.EmployeeId,
+            EmployeeId = property.EmployeeId
         };
 
         return dto;

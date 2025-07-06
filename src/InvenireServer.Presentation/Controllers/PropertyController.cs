@@ -42,7 +42,7 @@ public class PropertyController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             PropertyId = propertyId,
-            OrganizationId = organizationId,
+            OrganizationId = organizationId
         };
         await _mediator.Send(command);
 
@@ -57,7 +57,7 @@ public class PropertyController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             PropertyId = propertyId,
-            OrganizationId = organizationId,
+            OrganizationId = organizationId
         };
         await _mediator.Send(command);
 

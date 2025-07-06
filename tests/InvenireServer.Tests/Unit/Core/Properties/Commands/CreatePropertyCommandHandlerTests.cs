@@ -10,8 +10,8 @@ namespace InvenireServer.Tests.Unit.Core.Properties.Commands;
 
 public class CreatePropertyCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
     private readonly CreatePropertyCommandHandler _handler;
+    private readonly Mock<IServiceManager> _services;
 
     public CreatePropertyCommandHandlerTests()
     {
@@ -33,7 +33,7 @@ public class CreatePropertyCommandHandlerTests
         {
             Id = Guid.NewGuid(),
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -70,7 +70,7 @@ public class CreatePropertyCommandHandlerTests
         {
             Id = Guid.NewGuid(),
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id,
+            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

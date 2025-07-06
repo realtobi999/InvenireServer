@@ -11,8 +11,8 @@ namespace InvenireServer.Tests.Unit.Validators;
 
 public class PropertyValidatorTests
 {
-    private readonly PropertyValidator _validator;
     private readonly Mock<IRepositoryManager> _repositories;
+    private readonly PropertyValidator _validator;
 
     public PropertyValidatorTests()
     {

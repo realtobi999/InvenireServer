@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using InvenireServer.Application.Interfaces.Common.Transactions;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Transactions;
 

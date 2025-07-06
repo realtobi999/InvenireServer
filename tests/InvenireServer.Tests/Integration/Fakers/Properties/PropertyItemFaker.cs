@@ -27,4 +27,3 @@ public class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.EmployeeId, employee?.Id);
     }
 }
-

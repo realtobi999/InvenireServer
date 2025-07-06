@@ -16,8 +16,8 @@ public class ServiceManager : IServiceManager
 {
     private readonly Lazy<IAdminService> _admins;
     private readonly Lazy<IEmployeeService> _employees;
-    private readonly Lazy<IPropertyService> _properties;
     private readonly Lazy<IOrganizationService> _organizations;
+    private readonly Lazy<IPropertyService> _properties;
 
     public ServiceManager(IRepositoryManager repositories, IValidatorFactory validators)
     {

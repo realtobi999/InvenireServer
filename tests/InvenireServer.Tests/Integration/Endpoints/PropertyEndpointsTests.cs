@@ -88,7 +88,6 @@ public class PropertyEndpointsTests
     [Fact]
     public async Task UpdateItems_ReturnsNoContent()
     {
-
         // Prepare.
         var organization = new OrganizationFaker().Generate();
         var admin = new AdminFaker(organization).Generate();
@@ -123,20 +122,23 @@ public class PropertyEndpointsTests
         // Act & Assert.
         var response = await _client.PutAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new UpdatePropertyItemsCommand
         {
-            Items = [.. items.Select(i => new UpdatePropertyItemCommand
-            {
-                Id = i.Id,
-                InventoryNumber = Guid.NewGuid().ToString(),
-                RegistrationNumber = Guid.NewGuid().ToString(),
-                Name = "TEST",
-                Price = 999,
-                SerialNumber = Guid.NewGuid().ToString(),
-                DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
-                DateOfSale = DateTimeOffset.Now.AddYears(-3),
-                Description = "TEST",
-                DocumentNumber = Guid.NewGuid().ToString(),
-                EmployeeId = new Random().NextDouble() < 0.5 ? employee2.Id : null, // 50% chance of changing the employee or removing it.
-            })]
+            Items =
+            [
+                .. items.Select(i => new UpdatePropertyItemCommand
+                {
+                    Id = i.Id,
+                    InventoryNumber = Guid.NewGuid().ToString(),
+                    RegistrationNumber = Guid.NewGuid().ToString(),
+                    Name = "TEST",
+                    Price = 999,
+                    SerialNumber = Guid.NewGuid().ToString(),
+                    DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                    DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Description = "TEST",
+                    DocumentNumber = Guid.NewGuid().ToString(),
+                    EmployeeId = new Random().NextDouble() < 0.5 ? employee2.Id : null // 50% chance of changing the employee or removing it.
+                })
+            ]
         });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }

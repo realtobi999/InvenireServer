@@ -22,7 +22,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
 
         if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
-
         if (property.OrganizationId != organization.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
 
         // Preload all the items.

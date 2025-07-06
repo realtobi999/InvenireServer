@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using InvenireServer.Domain.Entities.Properties;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Properties;

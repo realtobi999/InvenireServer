@@ -1,4 +1,3 @@
-using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Domain.Interfaces.Repositories.Organizations;
 using InvenireServer.Domain.Interfaces.Repositories.Properties;
 using InvenireServer.Domain.Interfaces.Repositories.Users;

@@ -25,7 +25,7 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
             Id = request.Id ?? Guid.NewGuid(),
             Name = request.Name,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null,
+            LastUpdatedAt = null
         };
         organization.AssignAdmin(admin);
 

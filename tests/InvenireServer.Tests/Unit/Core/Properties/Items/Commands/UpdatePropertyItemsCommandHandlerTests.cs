@@ -42,20 +42,23 @@ public class UpdatePropertyItemsCommandHandlerTests
 
         var command = new UpdatePropertyItemsCommand
         {
-            Items = [.. items.Select(i => new UpdatePropertyItemCommand
-            {
-                Id = i.Id,
-                InventoryNumber = Guid.NewGuid().ToString(),
-                RegistrationNumber = Guid.NewGuid().ToString(),
-                Name = "TEST",
-                Price = 999,
-                SerialNumber = Guid.NewGuid().ToString(),
-                DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
-                DateOfSale = DateTimeOffset.Now.AddYears(-3),
-                Description = "TEST",
-                DocumentNumber = Guid.NewGuid().ToString(),
-                EmployeeId = employee2.Id,
-            })],
+            Items =
+            [
+                .. items.Select(i => new UpdatePropertyItemCommand
+                {
+                    Id = i.Id,
+                    InventoryNumber = Guid.NewGuid().ToString(),
+                    RegistrationNumber = Guid.NewGuid().ToString(),
+                    Name = "TEST",
+                    Price = 999,
+                    SerialNumber = Guid.NewGuid().ToString(),
+                    DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                    DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Description = "TEST",
+                    DocumentNumber = Guid.NewGuid().ToString(),
+                    EmployeeId = employee2.Id
+                })
+            ],
             Jwt = new Jwt([], []),
             PropertyId = property.Id,
             OrganizationId = organization.Id
@@ -67,11 +70,11 @@ public class UpdatePropertyItemsCommandHandlerTests
 
         var itemQueue = new Queue<PropertyItem>(items);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>()))
-                 .ReturnsAsync(() => itemQueue.Dequeue());
+            .ReturnsAsync(() => itemQueue.Dequeue());
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>()))
-                 .ReturnsAsync(() => employeeQueue.Dequeue());
+            .ReturnsAsync(() => employeeQueue.Dequeue());
 
         _services.Setup(s => s.Employees.UpdateAsync(It.IsAny<IEnumerable<Employee>>()));
         _services.Setup(s => s.Properties.Items.UpdateAsync(It.IsAny<IEnumerable<PropertyItem>>())).Callback<IEnumerable<PropertyItem>>(arg => items = [.. arg]);
@@ -161,24 +164,27 @@ public class UpdatePropertyItemsCommandHandlerTests
         var employee = new EmployeeFaker(organization).Generate();
         var admin = new AdminFaker(organization).Generate();
 
-        var items = new List<PropertyItem>() { new PropertyItemFaker().Generate() }; // Property isn't assigned.
+        var items = new List<PropertyItem> { new PropertyItemFaker().Generate() }; // Property isn't assigned.
 
         var command = new UpdatePropertyItemsCommand
         {
-            Items = [.. items.Select(i => new UpdatePropertyItemCommand
-            {
-                Id = i.Id,
-                InventoryNumber = Guid.NewGuid().ToString(),
-                RegistrationNumber = Guid.NewGuid().ToString(),
-                Name = "TEST",
-                Price = 999,
-                SerialNumber = Guid.NewGuid().ToString(),
-                DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
-                DateOfSale = DateTimeOffset.Now.AddYears(-3),
-                Description = "TEST",
-                DocumentNumber = Guid.NewGuid().ToString(),
-                EmployeeId = employee.Id,
-            })],
+            Items =
+            [
+                .. items.Select(i => new UpdatePropertyItemCommand
+                {
+                    Id = i.Id,
+                    InventoryNumber = Guid.NewGuid().ToString(),
+                    RegistrationNumber = Guid.NewGuid().ToString(),
+                    Name = "TEST",
+                    Price = 999,
+                    SerialNumber = Guid.NewGuid().ToString(),
+                    DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                    DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Description = "TEST",
+                    DocumentNumber = Guid.NewGuid().ToString(),
+                    EmployeeId = employee.Id
+                })
+            ],
             Jwt = new Jwt([], []),
             PropertyId = property.Id,
             OrganizationId = organization.Id
@@ -206,24 +212,27 @@ public class UpdatePropertyItemsCommandHandlerTests
         var employee2 = new EmployeeFaker().Generate(); // Organization isn't assigned
         var admin = new AdminFaker(organization).Generate();
 
-        var items = new List<PropertyItem>() { new PropertyItemFaker(property, employee1).Generate() };
+        var items = new List<PropertyItem> { new PropertyItemFaker(property, employee1).Generate() };
 
         var command = new UpdatePropertyItemsCommand
         {
-            Items = [.. items.Select(i => new UpdatePropertyItemCommand
-            {
-                Id = i.Id,
-                InventoryNumber = Guid.NewGuid().ToString(),
-                RegistrationNumber = Guid.NewGuid().ToString(),
-                Name = "TEST",
-                Price = 999,
-                SerialNumber = Guid.NewGuid().ToString(),
-                DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
-                DateOfSale = DateTimeOffset.Now.AddYears(-3),
-                Description = "TEST",
-                DocumentNumber = Guid.NewGuid().ToString(),
-                EmployeeId = employee2.Id,
-            })],
+            Items =
+            [
+                .. items.Select(i => new UpdatePropertyItemCommand
+                {
+                    Id = i.Id,
+                    InventoryNumber = Guid.NewGuid().ToString(),
+                    RegistrationNumber = Guid.NewGuid().ToString(),
+                    Name = "TEST",
+                    Price = 999,
+                    SerialNumber = Guid.NewGuid().ToString(),
+                    DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                    DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Description = "TEST",
+                    DocumentNumber = Guid.NewGuid().ToString(),
+                    EmployeeId = employee2.Id
+                })
+            ],
             Jwt = new Jwt([], []),
             PropertyId = property.Id,
             OrganizationId = organization.Id
@@ -236,7 +245,7 @@ public class UpdatePropertyItemsCommandHandlerTests
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>()))
-                 .ReturnsAsync(() => employeeQueue.Dequeue());
+            .ReturnsAsync(() => employeeQueue.Dequeue());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
