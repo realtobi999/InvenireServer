@@ -15,26 +15,23 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
 
     public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken _)
     {
+        // Validate the request.
         var admin = await _services.Admins.GetAsync(request.Jwt!);
         var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
         var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
 
-        // Ensure the admin is the owner of the organization.
-        if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
+        if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
 
-        // Create and associate the invitation.
+        // Create the invitation and assign the employee to it.
         var invitation = new OrganizationInvitation
         {
             Id = request.Id ?? Guid.NewGuid(),
             Description = request.Description,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null,
-            Employee = employee,
-            OrganizationId = organization.Id
+            LastUpdatedAt = null
         };
-
-        // Add invitation to the organization.
-        organization.Invitations?.Add(invitation);
+        invitation.AssignEmployee(employee);
+        organization.AddInvitation(invitation);
 
         // Save the changes.
         await _services.Organizations.Invitations.CreateAsync(invitation);

@@ -11,6 +11,7 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 
     public async Task<IEnumerable<Admin>> IndexInactiveAsync()
     {
-        return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= DateTimeOffset.UtcNow.Add(Admin.INACTIVE_THRESHOLD));
+        var threshold = DateTimeOffset.UtcNow.Add(Admin.INACTIVE_THRESHOLD);
+        return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= threshold);
     }
 }

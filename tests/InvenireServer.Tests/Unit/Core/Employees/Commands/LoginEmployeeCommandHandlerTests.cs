@@ -52,7 +52,7 @@ public class LoginEmployeeCommandHandlerTests
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.TrueString);
 
         // Assert that the employee has updated his last login timestamp.
-        employee.LastLoginAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        employee.LastLoginAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
     }
 
     [Fact]

@@ -22,22 +22,174 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Admin", b =>
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.Organization", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("OrganizationId")
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.OrganizationInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
+
+                    b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins");
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Invitations");
                 });
 
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Employee", b =>
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.Property", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId")
+                        .IsUnique();
+
+                    b.ToTable("Properties");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset>("DateOfPurchase")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date_of_purchase");
+
+                    b.Property<DateTimeOffset?>("DateOfSale")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date_of_sale");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(555)
+                        .HasColumnType("character varying(555)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DocumentNumber")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("document_number");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<string>("InventoryNumber")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("inventory_number");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("name");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision")
+                        .HasColumnName("price");
+
+                    b.Property<Guid?>("PropertyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("property_id");
+
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("registration_number");
+
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("serial_number");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Admin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,10 +206,17 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(155)")
                         .HasColumnName("email_address");
 
-                    b.Property<int>("LoginAttempts")
-                        .HasMaxLength(5)
-                        .HasColumnType("integer")
-                        .HasColumnName("login_attempts");
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_verified");
+
+                    b.Property<DateTimeOffset?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_at");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -69,45 +228,140 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("organization_id");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailAddress")
+                        .IsUnique();
+
+                    b.HasIndex("OrganizationId")
+                        .IsUnique();
+
+                    b.ToTable("Admins");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("email_address");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_verified");
+
+                    b.Property<DateTimeOffset?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_login_at");
+
+                    b.Property<DateTimeOffset?>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_updated_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(155)
+                        .HasColumnType("character varying(155)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("organization_id");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmailAddress")
+                        .IsUnique();
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("InvenireServer.Domain.Core.Entities.Employee", b =>
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.OrganizationInvitation", b =>
                 {
-                    b.OwnsOne("InvenireServer.Domain.Core.Entities.Common.LoginLock", "LoginLock", b1 =>
-                        {
-                            b1.Property<Guid>("EmployeeId")
-                                .HasColumnType("uuid");
+                    b.HasOne("InvenireServer.Domain.Entities.Users.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId");
 
-                            b1.Property<DateTimeOffset?>("ExpirationDate")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("login_lock_expiration_date");
+                    b.HasOne("InvenireServer.Domain.Entities.Organizations.Organization", null)
+                        .WithMany("Invitations")
+                        .HasForeignKey("OrganizationId");
 
-                            b1.Property<bool>("IsSet")
-                                .HasColumnType("boolean")
-                                .HasColumnName("login_lock_is_set");
+                    b.Navigation("Employee");
+                });
 
-                            b1.HasKey("EmployeeId");
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.Property", b =>
+                {
+                    b.HasOne("InvenireServer.Domain.Entities.Organizations.Organization", null)
+                        .WithOne("Property")
+                        .HasForeignKey("InvenireServer.Domain.Entities.Properties.Property", "OrganizationId");
+                });
 
-                            b1.ToTable("Employees");
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyItem", b =>
+                {
+                    b.HasOne("InvenireServer.Domain.Entities.Users.Employee", null)
+                        .WithMany("AssignedItems")
+                        .HasForeignKey("EmployeeId");
 
-                            b1.WithOwner()
-                                .HasForeignKey("EmployeeId");
-                        });
+                    b.HasOne("InvenireServer.Domain.Entities.Properties.Property", null)
+                        .WithMany("Items")
+                        .HasForeignKey("PropertyId");
+                });
 
-                    b.Navigation("LoginLock")
-                        .IsRequired();
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Admin", b =>
+                {
+                    b.HasOne("InvenireServer.Domain.Entities.Organizations.Organization", null)
+                        .WithOne("Admin")
+                        .HasForeignKey("InvenireServer.Domain.Entities.Users.Admin", "OrganizationId");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Employee", b =>
+                {
+                    b.HasOne("InvenireServer.Domain.Entities.Organizations.Organization", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("OrganizationId");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.Organization", b =>
+                {
+                    b.Navigation("Admin");
+
+                    b.Navigation("Employees");
+
+                    b.Navigation("Invitations");
+
+                    b.Navigation("Property");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.Property", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Employee", b =>
+                {
+                    b.Navigation("AssignedItems");
                 });
 #pragma warning restore 612, 618
         }

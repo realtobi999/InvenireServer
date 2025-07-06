@@ -51,7 +51,7 @@ public class RegisterAdminCommandHandlerTests
         admin.EmailAddress.Should().Be(command.EmailAddress);
         admin.Password.Should().NotBe(password);
         admin.IsVerified.Should().BeFalse();
-        admin.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        admin.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         admin.LastLoginAt.Should().BeNull();
         admin.LastUpdatedAt.Should().BeNull();
 

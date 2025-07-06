@@ -49,12 +49,21 @@ public class EmployeeService : IEmployeeService
 
     public async Task UpdateAsync(Employee employee)
     {
-        employee.LastUpdatedAt = DateTimeOffset.UtcNow;
+        await UpdateAsync([employee]);
+    }
 
-        var (valid, exception) = await _validator.ValidateAsync(employee);
-        if (!valid && exception is not null) throw exception;
+    public async Task UpdateAsync(IEnumerable<Employee> employees)
+    {
+        foreach (var employee in employees)
+        {
+            employee.LastUpdatedAt = DateTimeOffset.UtcNow;
 
-        _repositories.Employees.Update(employee);
+            var (valid, exception) = await _validator.ValidateAsync(employee);
+            if (!valid && exception is not null) throw exception;
+
+            _repositories.Employees.Update(employee);
+        }
+
         await _repositories.SaveOrThrowAsync();
     }
 }

@@ -5,7 +5,7 @@ namespace InvenireServer.Tests.Integration.Extensions.Organizations;
 
 public static class OrganizationInvitationTestExtensions
 {
-    public static CreateOrganizationInvitationCommand ToCreateOrganizationInvitationDto(this OrganizationInvitation invitation)
+    public static CreateOrganizationInvitationCommand ToCreateOrganizationInvitationCommand(this OrganizationInvitation invitation)
     {
         var dto = new CreateOrganizationInvitationCommand
         {

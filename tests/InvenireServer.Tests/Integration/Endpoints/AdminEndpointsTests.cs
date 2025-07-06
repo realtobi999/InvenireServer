@@ -25,7 +25,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task Register_Returns201()
+    public async Task Register_ReturnsCreated()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -36,7 +36,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task SendVerification_Returns204()
+    public async Task SendVerification_ReturnsNoContent()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -55,7 +55,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task ConfirmVerification_Returns204()
+    public async Task ConfirmVerification_ReturnsNoContent()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();
@@ -83,7 +83,7 @@ public class AdminEndpointsTests
     }
 
     [Fact]
-    public async Task Login_Returns200()
+    public async Task Login_ReturnsOk()
     {
         // Prepare.
         var admin = new AdminFaker().Generate();

@@ -1,10 +1,8 @@
-using Bogus.Extensions.UnitedKingdom;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Validators.Organizations;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Interfaces.Services.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Users;
 

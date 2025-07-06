@@ -4,19 +4,23 @@ using System.Threading.RateLimiting;
 using InvenireServer.Application;
 using InvenireServer.Application.Behaviors;
 using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Validators;
 using InvenireServer.Application.Validators.Organizations;
+using InvenireServer.Application.Validators.Properties;
 using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Common;
 using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
+using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Presentation.Middleware;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +42,7 @@ public static class ServiceExtensions
                 builder => { builder.EnableRetryOnFailure(3); }
             );
         });
+        services.AddScoped<ITransactionScope, InvenireTransactionScope>();
     }
 
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
@@ -85,6 +90,8 @@ public static class ServiceExtensions
     {
         services.AddScoped<IValidator<Admin>, AdminValidator>();
         services.AddScoped<IValidator<Employee>, EmployeeValidator>();
+        services.AddScoped<IValidator<Property>, PropertyValidator>();
+        services.AddScoped<IValidator<PropertyItem>, PropertyItemValidator>();
         services.AddScoped<IValidator<Organization>, OrganizationValidator>();
         services.AddScoped<IValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
         services.AddScoped<IValidatorFactory, ValidatorFactory>();

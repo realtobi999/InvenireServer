@@ -34,7 +34,7 @@ public class OrganizationValidator : IValidator<Organization>
         if (admin is null) return (false, new NotFound404Exception($"The assigned {nameof(Admin)} was not found in the system."));
 
         // Employees if set, must exist in the system.
-        if (organization.Employees?.Any() == true)
+        if (organization.Employees.Count != 0)
             foreach (var employee in organization.Employees)
                 if (await _repositories.Employees.GetAsync(e => e.Id == employee.Id) is null)
                     return (false, new NotFound404Exception($"The assigned {nameof(Employee)} was not found in the system."));

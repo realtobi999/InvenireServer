@@ -25,7 +25,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task Register_Returns201()
+    public async Task Register_ReturnsCreated()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -37,7 +37,7 @@ public class EmployeeEndpointsTests
 
 
     [Fact]
-    public async Task SendVerification_Returns204()
+    public async Task SendVerification_ReturnsNoContent()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -56,7 +56,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task ConfirmVerification_Returns204()
+    public async Task ConfirmVerification_ReturnsNoContent()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -84,7 +84,7 @@ public class EmployeeEndpointsTests
     }
 
     [Fact]
-    public async Task Login_Returns200()
+    public async Task Login_ReturnsOk()
     {
         // Prepare.
         var employee = new EmployeeFaker().Generate();
@@ -100,13 +100,12 @@ public class EmployeeEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var dto = new LoginEmployeeCommand
+
+        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = employee.Password
-        };
-
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", dto);
+        });
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

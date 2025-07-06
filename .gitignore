@@ -481,3 +481,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+src/InvenireServer.Infrastructure/Persistence/Migrations/InvenireServerContextModelSnapshot.cs
+src/InvenireServer.Infrastructure/Persistence/Migrations/InvenireServerContextModelSnapshot.cs
+src/InvenireServer.Infrastructure/Persistence/Migrations/InvenireServerContextModelSnapshot.cs

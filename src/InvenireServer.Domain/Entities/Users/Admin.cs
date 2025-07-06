@@ -44,12 +44,14 @@ public class Admin
     public void Verify()
     {
         if (IsVerified) throw new BadRequest400Exception("Admin is already verified.");
+
         IsVerified = true;
     }
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("Admin is already a owner of a organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("This admin is already a owner of a another organization");
+
         OrganizationId = organization.Id;
     }
 }

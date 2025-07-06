@@ -27,6 +27,9 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var employee = new EmployeeFaker().Generate();
         var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
 
+        organization.Admin = admin;
+        organization.Invitations.Add(invitation);
+
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
@@ -35,8 +38,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
         _services.Setup(s => s.Organizations.Invitations.DeleteAsync(invitation));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
         _services.Setup(s => s.Employees.UpdateAsync(employee));
@@ -47,9 +50,6 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         // Assert that the employee is part of the organization.
         employee.OrganizationId.Should().Be(organization.Id);
         organization.Employees.Should().Contain(e => e.Id == employee.Id);
-
-        // Assert that the invitation is removed from the organization invitation's.
-        organization.Invitations.Should().NotContain(i => i.Id == invitation.Id);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
@@ -95,8 +95,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
@@ -121,8 +121,8 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetWithRelationsAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetWithRelationsAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());

@@ -19,7 +19,7 @@ public class ServerEndpointsTests
     }
 
     [Fact]
-    public async Task HealthCheck_Returns200()
+    public async Task HealthCheck_ReturnsOk()
     {
         // Act & Assert.
         var response = await _client.GetAsync("/api/server/health-check");
@@ -27,7 +27,7 @@ public class ServerEndpointsTests
     }
 
     [Fact]
-    public async Task AuthCheck_Returns200And401()
+    public async Task AuthCheck_ReturnsOkAndUnauthorized()
     {
         // Prepare.
         var jwt = _jwt.Builder.Build([]);

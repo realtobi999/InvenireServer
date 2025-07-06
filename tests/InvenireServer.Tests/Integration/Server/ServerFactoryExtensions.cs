@@ -24,9 +24,6 @@ public static class ServerFactoryExtensions
     public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services, string name) where TContext : DbContext
     {
         services.RemoveService<IDbContextOptionsConfiguration<TContext>>();
-        services.AddDbContext<TContext>(options =>
-        {
-            options.UseInMemoryDatabase(name).ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning));
-        });
+        services.AddDbContext<TContext>(options => { options.UseInMemoryDatabase(name).ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)); });
     }
 }

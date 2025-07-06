@@ -26,7 +26,7 @@ public class OrganizationEndpointsTests
     }
 
     [Fact]
-    public async Task Create_Returns201()
+    public async Task Create_ReturnsCreated()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -41,12 +41,12 @@ public class OrganizationEndpointsTests
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto());
+        var response = await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]
-    public async Task CreateInvitation_Returns201AndInvitationIsCreated()
+    public async Task CreateInvitation_ReturnsCreated()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -62,15 +62,15 @@ public class OrganizationEndpointsTests
 
         (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationDto());
+        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
     [Fact]
-    public async Task AcceptInvitation_Returns204AndEmployeeIsPartOfOrganization()
+    public async Task AcceptInvitation_ReturnsNoContent()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -86,8 +86,8 @@ public class OrganizationEndpointsTests
 
         (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationDto())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         _client.DefaultRequestHeaders.Remove("Authorization");
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([

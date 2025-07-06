@@ -51,7 +51,7 @@ public class CreateOrganizationCommandHandlerTests
         var organization = result.Organization;
         organization.Id.Should().Be(command.Id.ToString());
         organization.Name.Should().Be(command.Name);
-        organization.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
+        organization.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         organization.LastUpdatedAt.Should().BeNull();
 
         // Assert that the admin is the owner of the organization

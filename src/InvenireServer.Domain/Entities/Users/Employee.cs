@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Users;
@@ -39,6 +41,8 @@ public class Employee
 
     public Guid? OrganizationId { get; set; }
 
+    public Collection<PropertyItem> AssignedItems { get; set; } = [];
+
     // Methods.
 
     public void Verify()
@@ -50,7 +54,35 @@ public class Employee
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("Employee is already part of a organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("This employee is already part of a another organization");
+
         OrganizationId = organization.Id;
+    }
+
+    public void UnassignOrganization(Organization organization)
+    {
+        if (OrganizationId is null) throw new BadRequest400Exception("This employee is not part of a any organization");
+
+        if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the employee doesn't belong to.");
+
+        OrganizationId = null;
+    }
+
+    public void AddItem(PropertyItem item)
+    {
+        if (AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already assigned to another employee.");
+
+        AssignedItems.Add(item);
+
+        item.AssignEmployee(this);
+    }
+
+    public void RemoveItem(PropertyItem item)
+    {
+        if (!AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not assigned to this employee.");
+
+        AssignedItems.Remove(item);
+
+        item.UnassignEmployee(this);
     }
 }

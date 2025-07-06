@@ -19,16 +19,15 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
 
-        // Create the organization and associations.
+        // Create the organization and assign the admin.
         var organization = new Organization
         {
             Id = request.Id ?? Guid.NewGuid(),
             Name = request.Name,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null,
-            Admin = admin
+            LastUpdatedAt = null
         };
-        admin.AssignOrganization(organization);
+        organization.AssignAdmin(admin);
 
         // Save the changes.
         await _services.Organizations.CreateAsync(organization);

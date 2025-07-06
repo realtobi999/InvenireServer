@@ -1,6 +1,8 @@
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Persistence.Configurations.Organizations;
+using InvenireServer.Infrastructure.Persistence.Configurations.Properties;
 using InvenireServer.Infrastructure.Persistence.Configurations.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,10 @@ public class InvenireServerContext : DbContext
 
     public DbSet<OrganizationInvitation> Invitations { get; set; }
 
+    public DbSet<Property> Properties { get; set; }
+
+    public DbSet<PropertyItem> Items { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.
@@ -27,5 +33,7 @@ public class InvenireServerContext : DbContext
         new EmployeeTypeConfiguration().Configure(builder.Entity<Employee>());
         new OrganizationTypeConfiguration().Configure(builder.Entity<Organization>());
         new OrganizationInvitationTypeConfiguration().Configure(builder.Entity<OrganizationInvitation>());
+        new PropertyTypeConfiguration().Configure(builder.Entity<Property>());
+        new PropertyItemTypeConfiguration().Configure(builder.Entity<PropertyItem>());
     }
 }
