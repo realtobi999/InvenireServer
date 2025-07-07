@@ -11,9 +11,9 @@ namespace InvenireServer.Application.Services.Employees;
 public class EmployeeService : IEmployeeService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<Employee> _validator;
+    private readonly IEntityValidator<Employee> _validator;
 
-    public EmployeeService(IRepositoryManager repositories, IValidator<Employee> validator)
+    public EmployeeService(IRepositoryManager repositories, IEntityValidator<Employee> validator)
     {
         _validator = validator;
         _repositories = repositories;

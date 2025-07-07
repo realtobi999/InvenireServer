@@ -1,0 +1,52 @@
+using FluentValidation;
+using InvenireServer.Domain.Entities.Properties;
+
+namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
+
+public class CreatePropertyItemsCommandValidator : AbstractValidator<CreatePropertyItemsCommand>
+{
+    public CreatePropertyItemsCommandValidator()
+    {
+        RuleFor(c => c.Items)
+            .NotEmpty()
+            .WithName("items");
+
+        RuleForEach(c => c.Items)
+            .SetValidator(new CreatePropertyItemCommandValidator());
+    }
+}
+
+public class CreatePropertyItemCommandValidator : AbstractValidator<CreatePropertyItemCommand>
+{
+    public CreatePropertyItemCommandValidator()
+    {
+        RuleFor(c => c.InventoryNumber)
+            .NotEmpty()
+            .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
+            .WithName("inventory_number");
+        RuleFor(c => c.RegistrationNumber)
+            .NotEmpty()
+            .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
+            .WithName("registration_number");
+        RuleFor(c => c.Name)
+            .NotEmpty()
+            .MaximumLength(PropertyItem.MAX_NAME_LENGTH)
+            .WithName("name");
+        RuleFor(c => c.Price)
+            .GreaterThan(0)
+            .WithName("price");
+        RuleFor(c => c.SerialNumber)
+            .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
+            .WithName("serial_number");
+        RuleFor(c => c.DateOfPurchase)
+            .NotEmpty()
+            .WithName("date_of_purchase");
+        RuleFor(c => c.Description)
+            .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
+            .WithName("description");
+        RuleFor(c => c.DocumentNumber)
+            .NotEmpty()
+            .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
+            .WithName("document_number");
+    }
+}

@@ -11,9 +11,9 @@ namespace InvenireServer.Application.Services.Properties;
 public class PropertyService : IPropertyService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<Property> _validator;
+    private readonly IEntityValidator<Property> _validator;
 
-    public PropertyService(IRepositoryManager repositories, IValidatorFactory validators)
+    public PropertyService(IRepositoryManager repositories, IEntityValidatorFactory validators)
     {
         _validator = validators.Initiate<Property>();
         _repositories = repositories;

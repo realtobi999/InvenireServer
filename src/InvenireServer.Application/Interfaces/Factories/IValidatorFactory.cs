@@ -2,7 +2,7 @@ using InvenireServer.Application.Interfaces.Common;
 
 namespace InvenireServer.Application.Interfaces.Factories;
 
-public interface IValidatorFactory
+public interface IEntityValidatorFactory
 {
-    IValidator<TEntity> Initiate<TEntity>();
+    IEntityValidator<TEntity> Initiate<TEntity>();
 }

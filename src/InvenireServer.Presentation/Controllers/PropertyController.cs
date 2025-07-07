@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
@@ -25,9 +27,12 @@ public class PropertyController : ControllerBase
     [HttpPost("/api/properties")]
     public async Task<IActionResult> Create([FromBody] CreatePropertyCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         var result = await _mediator.Send(command);
 
@@ -38,9 +43,12 @@ public class PropertyController : ControllerBase
     [HttpPost("/api/properties/items")]
     public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         await _mediator.Send(command);
 
@@ -51,9 +59,12 @@ public class PropertyController : ControllerBase
     [HttpPut("/api/properties/items")]
     public async Task<IActionResult> UpdateItems([FromBody] UpdatePropertyItemsCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         await _mediator.Send(command);
 
@@ -64,10 +75,13 @@ public class PropertyController : ControllerBase
     [HttpDelete("/api/properties/items")]
     public async Task<IActionResult> DeleteItems([FromQuery] List<Guid> ids)
     {
+        if (ids.Count == 0)
+            throw new ValidationException([new ValidationFailure("ids", "At least one ID must be provided.")]);
+
         await _mediator.Send(new DeletePropertyItemsCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            Ids = ids,
+            Ids = ids
         });
 
         return NoContent();

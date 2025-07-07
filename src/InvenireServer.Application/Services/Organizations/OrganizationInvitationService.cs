@@ -10,9 +10,9 @@ namespace InvenireServer.Application.Services.Organizations;
 public class OrganizationInvitationService : IOrganizationInvitationService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<OrganizationInvitation> _validator;
+    private readonly IEntityValidator<OrganizationInvitation> _validator;
 
-    public OrganizationInvitationService(IRepositoryManager repositories, IValidator<OrganizationInvitation> validator)
+    public OrganizationInvitationService(IRepositoryManager repositories, IEntityValidator<OrganizationInvitation> validator)
     {
         _repositories = repositories;
         _validator = validator;

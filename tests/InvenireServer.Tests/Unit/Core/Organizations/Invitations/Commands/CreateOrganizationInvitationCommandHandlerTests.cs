@@ -35,7 +35,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Id = Guid.NewGuid(),
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -74,7 +74,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Id = Guid.NewGuid(),
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

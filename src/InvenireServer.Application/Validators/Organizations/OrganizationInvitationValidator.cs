@@ -6,7 +6,7 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Validators.Organizations;
 
-public class OrganizationInvitationValidator : IValidator<OrganizationInvitation>
+public class OrganizationInvitationValidator : IEntityValidator<OrganizationInvitation>
 {
     private readonly IRepositoryManager _repositories;
 

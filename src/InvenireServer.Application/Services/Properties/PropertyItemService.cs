@@ -10,9 +10,9 @@ namespace InvenireServer.Application.Services.Properties;
 public class PropertyItemService : IPropertyItemService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<PropertyItem> _validator;
+    private readonly IEntityValidator<PropertyItem> _validator;
 
-    public PropertyItemService(IRepositoryManager repositories, IValidator<PropertyItem> validator)
+    public PropertyItemService(IRepositoryManager repositories, IEntityValidator<PropertyItem> validator)
     {
         _validator = validator;
         _repositories = repositories;

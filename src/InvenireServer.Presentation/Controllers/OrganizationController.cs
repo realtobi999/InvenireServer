@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
@@ -26,6 +28,9 @@ public class OrganizationController : ControllerBase
     [HttpPost("/api/organizations")]
     public async Task<IActionResult> Create([FromBody] CreateOrganizationCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
@@ -40,9 +45,12 @@ public class OrganizationController : ControllerBase
     [HttpPost("/api/organizations/invitations")]
     public async Task<IActionResult> CreateInvitation([FromBody] CreateOrganizationInvitationCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         };
         var result = await _mediator.Send(command);
 

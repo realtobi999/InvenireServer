@@ -120,7 +120,7 @@ public class PropertyEndpointsTests
         })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PutAsJsonAsync($"/api/properties/items", new UpdatePropertyItemsCommand
+        var response = await _client.PutAsJsonAsync("/api/properties/items", new UpdatePropertyItemsCommand
         {
             Items =
             [

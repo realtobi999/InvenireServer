@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FluentValidation;
 using InvenireServer.Application.Dtos.Common;
 using InvenireServer.Domain.Interfaces.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
@@ -13,8 +14,8 @@ public class ExceptionHandler : IExceptionHandler
     {
         switch (exception)
         {
-            case IValidationException:
-                await HandleValidationException(context, (IValidationException)exception, token);
+            case ValidationException:
+                await HandleValidationException(context, (ValidationException)exception, token);
                 break;
 
             case IHttpException:
@@ -29,15 +30,15 @@ public class ExceptionHandler : IExceptionHandler
         return await ValueTask.FromResult(false);
     }
 
-    private static async Task HandleValidationException(HttpContext context, IValidationException exception, CancellationToken token)
+    private static async Task HandleValidationException(HttpContext context, ValidationException exception, CancellationToken token)
     {
         var error = new ErrorMessageDto
         {
-            Status = exception.StatusCode,
-            Type = exception.GetType().Name,
-            Title = exception.Title,
-            Detail = exception.Message,
-            Errors = exception.Errors,
+            Status = (int)HttpStatusCode.BadRequest,
+            Type = nameof(ValidationException),
+            Title = "Bad request",
+            Detail = "One or more validation errors occurred.",
+            Errors = [.. exception.Errors.Select(e => e.ToString())],
             Instance = $"{context.Request.Method} {context.Request.Path}"
         };
 

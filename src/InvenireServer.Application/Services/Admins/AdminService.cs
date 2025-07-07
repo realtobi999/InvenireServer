@@ -11,9 +11,9 @@ namespace InvenireServer.Application.Services.Admins;
 public class AdminService : IAdminService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<Admin> _validator;
+    private readonly IEntityValidator<Admin> _validator;
 
-    public AdminService(IRepositoryManager repositories, IValidator<Admin> validator)
+    public AdminService(IRepositoryManager repositories, IEntityValidator<Admin> validator)
     {
         _validator = validator;
         _repositories = repositories;

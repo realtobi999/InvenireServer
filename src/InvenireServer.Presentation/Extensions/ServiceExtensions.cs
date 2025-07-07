@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Threading.RateLimiting;
+using FluentValidation;
 using InvenireServer.Application;
 using InvenireServer.Application.Behaviors;
 using InvenireServer.Application.Interfaces.Common;
@@ -16,7 +17,6 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Domain.Exceptions.Common;
 using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Presentation.Extensions;
@@ -88,13 +89,13 @@ public static class ServiceExtensions
 
     public static void ConfigureValidators(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<Admin>, AdminValidator>();
-        services.AddScoped<IValidator<Employee>, EmployeeValidator>();
-        services.AddScoped<IValidator<Property>, PropertyValidator>();
-        services.AddScoped<IValidator<PropertyItem>, PropertyItemValidator>();
-        services.AddScoped<IValidator<Organization>, OrganizationValidator>();
-        services.AddScoped<IValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
-        services.AddScoped<IValidatorFactory, ValidatorFactory>();
+        services.AddScoped<IEntityValidator<Admin>, AdminValidator>();
+        services.AddScoped<IEntityValidator<Employee>, EmployeeValidator>();
+        services.AddScoped<IEntityValidator<Property>, PropertyValidator>();
+        services.AddScoped<IEntityValidator<PropertyItem>, PropertyItemValidator>();
+        services.AddScoped<IEntityValidator<Organization>, OrganizationValidator>();
+        services.AddScoped<IEntityValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
+        services.AddScoped<IEntityValidatorFactory, EntityValidatorFactory>();
     }
 
     public static void ConfigureHashing(this IServiceCollection services)
@@ -105,33 +106,7 @@ public static class ServiceExtensions
 
     public static void ConfigureErrorHandling(this IServiceCollection services)
     {
-        // Configure the validation performed by validation attributes.
-        services.Configure<ApiBehaviorOptions>(options =>
-        {
-            options.InvalidModelStateResponseFactory = context =>
-            {
-                var errors = context.ModelState
-                    .Where(e => e.Value?.Errors.Count > 0)
-                    .SelectMany(e => e.Value!.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                if (errors.Any(HasDefaultErrorMessages))
-                    errors =
-                    [
-                        .. errors.Where(err => !HasDefaultErrorMessages(err)),
-                        "Request body is empty or missing fields."
-                    ];
-
-                throw new ValidationException(errors);
-
-                // Filter out default error messages revealing internal info about JSON deserialization or missing DTO fields.
-                static bool HasDefaultErrorMessages(string err)
-                {
-                    return err.Contains("JSON deserialization for type") || err.Contains("The dto field is required");
-                }
-            };
-        });
+        services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
         services.AddExceptionHandler<ExceptionHandler>();
     }
 
@@ -180,10 +155,9 @@ public static class ServiceExtensions
 
     public static void ConfigureMediatR(this IServiceCollection services)
     {
-        services.AddMediatR(options =>
-        {
-            options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly);
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
-        });
+        services.AddMediatR(options => { options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly); });
+        services.AddValidatorsFromAssembly(typeof(ApplicationAssembly).Assembly);
+        services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>)));
+        services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)));
     }
 }

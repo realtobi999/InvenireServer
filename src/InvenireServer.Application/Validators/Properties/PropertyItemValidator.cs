@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
@@ -7,7 +6,7 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Validators.Properties;
 
-public class PropertyItemValidator : IValidator<PropertyItem>
+public class PropertyItemValidator : IEntityValidator<PropertyItem>
 {
     private readonly IRepositoryManager _repositories;
 

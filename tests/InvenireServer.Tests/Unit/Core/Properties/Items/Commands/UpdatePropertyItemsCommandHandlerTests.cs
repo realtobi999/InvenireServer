@@ -60,7 +60,7 @@ public class UpdatePropertyItemsCommandHandlerTests
                     EmployeeId = employee2.Id
                 })
             ],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -113,7 +113,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         var command = new UpdatePropertyItemsCommand
         {
             Items = [],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -137,7 +137,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         var command = new UpdatePropertyItemsCommand
         {
             Items = [],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -180,7 +180,7 @@ public class UpdatePropertyItemsCommandHandlerTests
                     EmployeeId = employee.Id
                 })
             ],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -226,7 +226,7 @@ public class UpdatePropertyItemsCommandHandlerTests
                     EmployeeId = employee2.Id
                 })
             ],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

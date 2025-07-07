@@ -1,5 +1,4 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;

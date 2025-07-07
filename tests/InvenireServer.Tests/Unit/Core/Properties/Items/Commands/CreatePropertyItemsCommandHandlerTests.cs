@@ -39,7 +39,7 @@ public class CreatePropertyItemsCommandHandlerTests
         var command = new CreatePropertyItemsCommand
         {
             Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -84,7 +84,7 @@ public class CreatePropertyItemsCommandHandlerTests
         var command = new CreatePropertyItemsCommand
         {
             Items = [],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -108,7 +108,7 @@ public class CreatePropertyItemsCommandHandlerTests
         var command = new CreatePropertyItemsCommand
         {
             Items = [],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -136,7 +136,7 @@ public class CreatePropertyItemsCommandHandlerTests
         var command = new CreatePropertyItemsCommand
         {
             Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
@@ -27,6 +29,9 @@ public class AdminController : ControllerBase
     [HttpPost("/api/admins/register")]
     public async Task<IActionResult> Register([FromBody] RegisterAdminCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         var result = await _mediator.Send(command);
 
         return Created($"/api/admin/{result.Admin.Id}", result.Token);
@@ -62,6 +67,9 @@ public class AdminController : ControllerBase
     [HttpPost("/api/admins/login")]
     public async Task<IActionResult> Login([FromBody] LoginAdminCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         var result = await _mediator.Send(command);
 
         return Ok(result.Token);

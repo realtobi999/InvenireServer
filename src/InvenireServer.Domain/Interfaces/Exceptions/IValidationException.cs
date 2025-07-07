@@ -1,6 +1,6 @@
 namespace InvenireServer.Domain.Interfaces.Exceptions;
 
-public interface IValidationException : IHttpException
+public interface IHttpValidationException : IHttpException
 {
     List<string> Errors { get; }
 }

@@ -60,5 +60,6 @@ public class RegisterAdminCommandHandlerTests
         jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
         jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == command.Id.ToString());
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);
-    }
+  
+ }
 }

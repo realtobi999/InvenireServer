@@ -2,7 +2,6 @@ using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;

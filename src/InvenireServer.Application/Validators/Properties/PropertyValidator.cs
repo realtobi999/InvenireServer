@@ -6,7 +6,7 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Validators.Properties;
 
-public class PropertyValidator : IValidator<Property>
+public class PropertyValidator : IEntityValidator<Property>
 {
     private readonly IRepositoryManager _repositories;
 

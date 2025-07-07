@@ -30,7 +30,7 @@ public class CreatePropertyCommandHandlerTests
         var command = new CreatePropertyCommand
         {
             Id = Guid.NewGuid(),
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -62,7 +62,7 @@ public class CreatePropertyCommandHandlerTests
         var command = new CreatePropertyCommand
         {
             Id = Guid.NewGuid(),
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);

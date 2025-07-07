@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Core.Employees.Commands.Login;
 using InvenireServer.Application.Core.Employees.Commands.Register;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Confirm;
@@ -27,6 +29,9 @@ public class EmployeeController : ControllerBase
     [HttpPost("/api/employees/register")]
     public async Task<IActionResult> Register([FromBody] RegisterEmployeeCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         var result = await _mediator.Send(command);
 
         return Created($"/api/employee/{result.Employee.Id}", result.Token);
@@ -62,6 +67,9 @@ public class EmployeeController : ControllerBase
     [HttpPost("/api/employees/login")]
     public async Task<IActionResult> Login([FromBody] LoginEmployeeCommand command)
     {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
         var result = await _mediator.Send(command);
 
         return Ok(result.Token);

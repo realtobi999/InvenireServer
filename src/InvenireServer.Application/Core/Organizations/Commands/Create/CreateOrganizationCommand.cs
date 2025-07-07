@@ -1,18 +1,16 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
+[JsonRequest]
 public record CreateOrganizationCommand : IRequest<CreateOrganizationCommandResult>
 {
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }
 
-    [Required]
     [JsonPropertyName("name")]
-    [MaxLength(Organization.MAX_NAME_LENGTH)]
     public required string Name { get; set; }
 
     [JsonIgnore]

@@ -32,7 +32,10 @@ public class Program
                 builder.Services.AddScoped<IJwtManager, JwtManager>();
                 builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-                builder.Services.AddControllers();
+                builder.Services.AddControllers(options =>
+                {
+                    // options.Filters.Add<RequestBodyValidationFilter>();
+                });
                 builder.Services.AddHostedService<AdminCleanupBackgroundService>();
                 builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
             }
@@ -40,7 +43,7 @@ public class Program
             {
                 app.UseSerilogRequestLogging();
 
-                if (app.Environment.IsProduction()) app.UseExceptionHandler(_ => { });
+                app.UseExceptionHandler(_ => { });
 
                 app.ConfigureStatusCodePages();
                 app.UseAuthorization();

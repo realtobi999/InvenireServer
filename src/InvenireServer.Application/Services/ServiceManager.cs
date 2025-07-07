@@ -19,7 +19,7 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IOrganizationService> _organizations;
     private readonly Lazy<IPropertyService> _properties;
 
-    public ServiceManager(IRepositoryManager repositories, IValidatorFactory validators)
+    public ServiceManager(IRepositoryManager repositories, IEntityValidatorFactory validators)
     {
         _admins = new Lazy<IAdminService>(() => new AdminService(repositories, validators.Initiate<Admin>()));
         _employees = new Lazy<IEmployeeService>(() => new EmployeeService(repositories, validators.Initiate<Employee>()));

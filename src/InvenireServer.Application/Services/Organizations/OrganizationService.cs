@@ -11,9 +11,9 @@ namespace InvenireServer.Application.Services.Organizations;
 public class OrganizationService : IOrganizationService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IValidator<Organization> _validator;
+    private readonly IEntityValidator<Organization> _validator;
 
-    public OrganizationService(IRepositoryManager repositories, IValidatorFactory validators)
+    public OrganizationService(IRepositoryManager repositories, IEntityValidatorFactory validators)
     {
         _validator = validators.Initiate<Organization>();
         _repositories = repositories;
