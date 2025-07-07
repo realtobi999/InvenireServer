@@ -64,4 +64,16 @@ public class PropertyItemService : IPropertyItemService
 
         await _repositories.SaveOrThrowAsync();
     }
+
+    public async Task DeleteAsync(PropertyItem item)
+    {
+        await DeleteAsync([item]);
+    }
+
+    public async Task DeleteAsync(IEnumerable<PropertyItem> items)
+    {
+        foreach (var item in items) _repositories.Properties.Items.Delete(item);
+
+        await _repositories.SaveOrThrowAsync();
+    }
 }

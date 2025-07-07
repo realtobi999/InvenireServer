@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
+using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
@@ -139,6 +140,50 @@ public class PropertyEndpointsTests
                     EmployeeId = new Random().NextDouble() < 0.5 ? employee2.Id : null // 50% chance of changing the employee or removing it.
                 })
             ]
+        });
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task DeleteItems_ReturnsNoContent()
+    {
+        // Prepare.
+        var organization = new OrganizationFaker().Generate();
+        var admin = new AdminFaker(organization).Generate();
+        var employee = new EmployeeFaker().Generate();
+        var property = new PropertyFaker(organization).Generate();
+
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Assign the employees to the organization.
+        organization.AddEmployee(employee, _app.GetDatabaseContext());
+
+        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new CreatePropertyItemsCommand
+        {
+            Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
+        })).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.SendAsync(new HttpRequestMessage // Must do it this way, because HttpClient doesnt support DELETE requests with a body.
+        {
+            Method = HttpMethod.Delete,
+            RequestUri = new Uri($"/api/organizations/{organization.Id}/properties/{property.Id}/items", UriKind.Relative),
+            Content = JsonContent.Create(new DeletePropertyItemsCommand
+            {
+                ItemIds = [.. items.Select(i => i.Id)]
+            })
         });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }

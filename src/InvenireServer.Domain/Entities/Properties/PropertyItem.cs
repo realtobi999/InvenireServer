@@ -54,6 +54,13 @@ public class PropertyItem
         PropertyId = property.Id;
     }
 
+    public void UnassignProperty()
+    {
+        if (PropertyId is null) throw new BadRequest400Exception("This item is isn't a part of any property.");
+
+        PropertyId = null;
+    }
+
     public void AssignEmployee(Employee employee)
     {
         if (EmployeeId is not null) throw new BadRequest400Exception("This item is already assigned to a another employee.");
@@ -61,7 +68,7 @@ public class PropertyItem
         EmployeeId = employee.Id;
     }
 
-    public void UnassignEmployee(Employee employee)
+    public void UnassignEmployee()
     {
         if (EmployeeId is null) throw new BadRequest400Exception("This item is isn't assigned to this employee.");
 

@@ -1,5 +1,6 @@
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
+using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
@@ -52,6 +53,21 @@ public class PropertyController : ControllerBase
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/organizations/{organizationId:guid}/properties/{propertyId:guid}/items")]
     public async Task<IActionResult> UpdateItems([FromBody] UpdatePropertyItemsCommand command, Guid organizationId, Guid propertyId)
+    {
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            PropertyId = propertyId,
+            OrganizationId = organizationId
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/organizations/{organizationId:guid}/properties/{propertyId:guid}/items")]
+    public async Task<IActionResult> DeleteItems([FromBody] DeletePropertyItemsCommand command, Guid organizationId, Guid propertyId)
     {
         command = command with
         {

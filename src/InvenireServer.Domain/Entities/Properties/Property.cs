@@ -37,4 +37,13 @@ public class Property
 
         item.AssignProperty(this);
     }
+
+    public void RemoveItem(PropertyItem item)
+    {
+        if (!Items.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not a part of this property.");
+
+        Items.Remove(item);
+
+        item.UnassignProperty();
+    }
 }

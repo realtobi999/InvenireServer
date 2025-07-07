@@ -83,6 +83,6 @@ public class Employee
 
         AssignedItems.Remove(item);
 
-        item.UnassignEmployee(this);
+        item.UnassignEmployee();
     }
 }

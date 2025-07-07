@@ -10,4 +10,6 @@ public interface IPropertyItemService
     Task CreateAsync(IEnumerable<PropertyItem> items);
     Task UpdateAsync(PropertyItem item);
     Task UpdateAsync(IEnumerable<PropertyItem> items);
+    Task DeleteAsync(PropertyItem item);
+    Task DeleteAsync(IEnumerable<PropertyItem> items);
 }
