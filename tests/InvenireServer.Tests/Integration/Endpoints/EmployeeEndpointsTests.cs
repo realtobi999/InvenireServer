@@ -31,7 +31,7 @@ public class EmployeeEndpointsTests
         var employee = new EmployeeFaker().Generate();
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand());
+        var response = await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
@@ -48,10 +48,10 @@ public class EmployeeEndpointsTests
             new Claim("is_verified", bool.FalseString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object());
+        var response = await _client.PostAsJsonAsync("/api/employees/email-verification/send", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
@@ -67,8 +67,8 @@ public class EmployeeEndpointsTests
             new Claim("is_verified", bool.FalseString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         _client.DefaultRequestHeaders.Remove("Authorization");
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
@@ -79,7 +79,7 @@ public class EmployeeEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object());
+        var response = await _client.PostAsJsonAsync("/api/employees/email-verification/confirm", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
@@ -96,12 +96,12 @@ public class EmployeeEndpointsTests
             new Claim("purpose", "email_verification")
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
 
-        var response = await _client.PostAsJsonAsync("/api/auth/employee/login", new LoginEmployeeCommand
+        var response = await _client.PostAsJsonAsync("/api/employees/login", new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = employee.Password

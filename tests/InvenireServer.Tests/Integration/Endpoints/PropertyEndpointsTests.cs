@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
-using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
@@ -45,11 +44,11 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties", property.ToCreatePropertyCommand());
+        var response = await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
@@ -71,15 +70,15 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         organization.AddEmployee(employee, _app.GetDatabaseContext()); // Assign the employee to the organization.
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new CreatePropertyItemsCommand
+        var response = await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
         {
             Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
         });
@@ -105,23 +104,23 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee1.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee2.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee1.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee2.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Assign the employees to the organization.
         organization.AddEmployee(employee1, _app.GetDatabaseContext());
         organization.AddEmployee(employee2, _app.GetDatabaseContext());
 
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new CreatePropertyItemsCommand
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
         {
             Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
         })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PutAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new UpdatePropertyItemsCommand
+        var response = await _client.PutAsJsonAsync($"/api/properties/items", new UpdatePropertyItemsCommand
         {
             Items =
             [
@@ -162,29 +161,21 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Assign the employees to the organization.
         organization.AddEmployee(employee, _app.GetDatabaseContext());
 
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/properties/{property.Id}/items", new CreatePropertyItemsCommand
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
         {
             Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
         })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.SendAsync(new HttpRequestMessage // Must do it this way, because HttpClient doesnt support DELETE requests with a body.
-        {
-            Method = HttpMethod.Delete,
-            RequestUri = new Uri($"/api/organizations/{organization.Id}/properties/{property.Id}/items", UriKind.Relative),
-            Content = JsonContent.Create(new DeletePropertyItemsCommand
-            {
-                ItemIds = [.. items.Select(i => i.Id)]
-            })
-        });
+        var response = await _client.DeleteAsync($"/api/properties/items?ids={string.Join("&ids=", items.Select(i => i.Id))}");
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }

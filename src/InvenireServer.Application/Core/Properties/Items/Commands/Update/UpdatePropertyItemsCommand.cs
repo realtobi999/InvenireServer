@@ -16,12 +16,6 @@ public record UpdatePropertyItemsCommand : IRequest
 
     [JsonIgnore]
     public Jwt? Jwt { get; set; }
-
-    [JsonIgnore]
-    public Guid? PropertyId { get; set; }
-
-    [JsonIgnore]
-    public Guid? OrganizationId { get; set; }
 }
 
 [JsonRequest]

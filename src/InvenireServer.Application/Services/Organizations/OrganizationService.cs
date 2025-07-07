@@ -25,9 +25,16 @@ public class OrganizationService : IOrganizationService
 
     public async Task<Organization> GetAsync(Expression<Func<Organization, bool>> predicate)
     {
-        var organization = await _repositories.Organizations.GetAsync(predicate);
+        var organization = await TryGetAsync(predicate);
 
         if (organization is null) throw new NotFound404Exception($"The requested {nameof(Organization).ToLower()} was not found in the system.");
+
+        return organization;
+    }
+
+    public async Task<Organization?> TryGetAsync(Expression<Func<Organization, bool>> predicate)
+    {
+        var organization = await _repositories.Organizations.GetAsync(predicate);
 
         return organization;
     }

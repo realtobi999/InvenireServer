@@ -43,7 +43,7 @@ Checks if the server's authentication system is working correctly.
 
 ## Employee Endpoints
 
-### `POST - /api/auth/employee/register`
+### `POST - /api/employees/register`
 
 Registers a new employee account.
 
@@ -71,7 +71,7 @@ Registers a new employee account.
 - `201` - Created.
 - `400` - Bad Request.
 
-### `POST - /api/auth/employee/login`
+### `POST - /api/employees/login`
 
 Authenticates an employee and returns a JWT on successful login.
 
@@ -106,7 +106,7 @@ Authenticates an employee and returns a JWT on successful login.
 - `401` - Unauthorized.
 - `429` - Too Many Requests.
 
-### `POST /api/auth/employee/email-verification/send`
+### `POST /api/employees/email-verification/send`
 
 Sends an email verification link to the authenticated employee.
 
@@ -124,7 +124,7 @@ Sends an email verification link to the authenticated employee.
 - `400` - Bad Request.
 - `401` - Unauthorized.
 
-### `GET /api/auth/employee/email-verification/confirm`
+### `GET /api/employees/email-verification/confirm`
 
 Confirms the employee's email verification using the provided token.
 

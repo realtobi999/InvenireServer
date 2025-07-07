@@ -16,17 +16,13 @@ public class DeletePropertyItemsCommandHandler : IRequestHandler<DeletePropertyI
 
     public async Task Handle(DeletePropertyItemsCommand request, CancellationToken _)
     {
-        // Validate the request.
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var property = await _services.Properties.GetAsync(p => p.Id == request.PropertyId);
-        var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
-
-        if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
-        if (property.OrganizationId != organization.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
+        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
+        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
 
         // Preload all the items.
         var items = new List<PropertyItem>();
-        foreach (var id in request.ItemIds)
+        foreach (var id in request.Ids)
         {
             var item = await _services.Properties.Items.GetAsync(i => i.Id == id);
             if (item.PropertyId != property.Id) throw new BadRequest400Exception("Cannot update a item from a property you do not own.");

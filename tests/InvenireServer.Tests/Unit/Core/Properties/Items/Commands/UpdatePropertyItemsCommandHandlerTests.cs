@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
@@ -60,13 +61,11 @@ public class UpdatePropertyItemsCommandHandlerTests
                 })
             ],
             Jwt = new Jwt([], []),
-            PropertyId = property.Id,
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Properties.GetAsync(p => p.Id == command.PropertyId)).ReturnsAsync(property);
-        _services.Setup(s => s.Organizations.GetAsync(p => p.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
 
         var itemQueue = new Queue<PropertyItem>(items);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>()))
@@ -104,7 +103,7 @@ public class UpdatePropertyItemsCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenAdminIsNotTheOwner()
+    public async Task Handle_ThrowsExceptionWhenAdminDoesntOwnAnOrganization()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -115,22 +114,20 @@ public class UpdatePropertyItemsCommandHandlerTests
         {
             Items = [],
             Jwt = new Jwt([], []),
-            PropertyId = property.Id,
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Properties.GetAsync(p => p.Id == command.PropertyId)).ReturnsAsync(property);
-        _services.Setup(s => s.Organizations.GetAsync(p => p.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>();
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must create an organization before modifying your property.");
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenPropertyIsNotOfOrganization()
+    public async Task Handle_ThrowsExceptionWhenPropertyIsNotCreated()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -141,18 +138,16 @@ public class UpdatePropertyItemsCommandHandlerTests
         {
             Items = [],
             Jwt = new Jwt([], []),
-            PropertyId = property.Id,
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Properties.GetAsync(p => p.Id == command.PropertyId)).ReturnsAsync(property);
-        _services.Setup(s => s.Organizations.GetAsync(p => p.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("This property doesnt belong to your organization.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created a property. You must create a property before modifying its items.");
     }
 
     [Fact]
@@ -186,13 +181,11 @@ public class UpdatePropertyItemsCommandHandlerTests
                 })
             ],
             Jwt = new Jwt([], []),
-            PropertyId = property.Id,
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Properties.GetAsync(p => p.Id == command.PropertyId)).ReturnsAsync(property);
-        _services.Setup(s => s.Organizations.GetAsync(p => p.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(items.First());
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(employee);
 
@@ -234,13 +227,11 @@ public class UpdatePropertyItemsCommandHandlerTests
                 })
             ],
             Jwt = new Jwt([], []),
-            PropertyId = property.Id,
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Properties.GetAsync(p => p.Id == command.PropertyId)).ReturnsAsync(property);
-        _services.Setup(s => s.Organizations.GetAsync(p => p.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(items.First());
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);

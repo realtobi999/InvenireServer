@@ -7,5 +7,6 @@ public interface IPropertyService
 {
     IPropertyItemService Items { get; }
     Task<Property> GetAsync(Expression<Func<Property, bool>> predicate);
+    Task<Property?> TryGetAsync(Expression<Func<Property, bool>> predicate);
     Task CreateAsync(Property property);
 }

@@ -24,7 +24,7 @@ public class AdminController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpPost("/api/auth/admin/register")]
+    [HttpPost("/api/admins/register")]
     public async Task<IActionResult> Register([FromBody] RegisterAdminCommand command)
     {
         var result = await _mediator.Send(command);
@@ -34,34 +34,32 @@ public class AdminController : ControllerBase
 
     [EnableRateLimiting("SendVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_ADMIN)]
-    [HttpPost("/api/auth/admin/email-verification/send")]
+    [HttpPost("/api/admins/email-verification/send")]
     public async Task<IActionResult> SendVerification()
     {
-        var command = new SendVerificationAdminCommand
+        await _mediator.Send(new SendVerificationAdminCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
-        };
-        await _mediator.Send(command);
+        });
 
         return NoContent();
     }
 
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_ADMIN)]
-    [HttpPost("/api/auth/admin/email-verification/confirm")]
+    [HttpPost("/api/admins/email-verification/confirm")]
     public async Task<IActionResult> ConfirmVerification()
     {
-        var command = new ConfirmVerificationAdminCommand
+        await _mediator.Send(new ConfirmVerificationAdminCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
-        };
-        await _mediator.Send(command);
+        });
 
         return NoContent();
     }
 
     [EnableRateLimiting("LoginPolicy")]
-    [HttpPost("/api/auth/admin/login")]
+    [HttpPost("/api/admins/login")]
     public async Task<IActionResult> Login([FromBody] LoginAdminCommand command)
     {
         var result = await _mediator.Send(command);

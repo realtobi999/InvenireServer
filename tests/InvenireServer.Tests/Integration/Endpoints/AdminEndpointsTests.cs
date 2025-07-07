@@ -31,7 +31,7 @@ public class AdminEndpointsTests
         var admin = new AdminFaker().Generate();
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand());
+        var response = await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
@@ -47,10 +47,10 @@ public class AdminEndpointsTests
             new Claim("is_verified", bool.FalseString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/email-verification/send", new object());
+        var response = await _client.PostAsJsonAsync("/api/admins/email-verification/send", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
@@ -66,8 +66,8 @@ public class AdminEndpointsTests
             new Claim("is_verified", bool.FalseString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/email-verification/send", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         _client.DefaultRequestHeaders.Remove("Authorization");
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
@@ -78,7 +78,7 @@ public class AdminEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object());
+        var response = await _client.PostAsJsonAsync("/api/admins/email-verification/confirm", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
@@ -95,11 +95,11 @@ public class AdminEndpointsTests
             new Claim("purpose", "email_verification")
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/auth/admin/login", new LoginAdminCommand
+        var response = await _client.PostAsJsonAsync("/api/admins/login", new LoginAdminCommand
         {
             EmailAddress = admin.EmailAddress,
             Password = admin.Password

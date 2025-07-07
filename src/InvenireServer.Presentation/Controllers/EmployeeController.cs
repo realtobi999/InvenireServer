@@ -24,7 +24,7 @@ public class EmployeeController : ControllerBase
         _configuration = configuration;
     }
 
-    [HttpPost("/api/auth/employee/register")]
+    [HttpPost("/api/employees/register")]
     public async Task<IActionResult> Register([FromBody] RegisterEmployeeCommand command)
     {
         var result = await _mediator.Send(command);
@@ -34,34 +34,32 @@ public class EmployeeController : ControllerBase
 
     [EnableRateLimiting("SendVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
-    [HttpPost("/api/auth/employee/email-verification/send")]
+    [HttpPost("/api/employees/email-verification/send")]
     public async Task<IActionResult> SendVerification()
     {
-        var command = new SendVerificationEmployeeCommand
+        await _mediator.Send(new SendVerificationEmployeeCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
-        };
-        await _mediator.Send(command);
+        });
 
         return NoContent();
     }
 
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
-    [HttpPost("/api/auth/employee/email-verification/confirm")]
+    [HttpPost("/api/employees/email-verification/confirm")]
     public async Task<IActionResult> ConfirmVerification()
     {
-        var command = new ConfirmVerificationEmployeeCommand
+        await _mediator.Send(new ConfirmVerificationEmployeeCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
-        };
-        await _mediator.Send(command);
+        });
 
         return NoContent();
     }
 
     [EnableRateLimiting("LoginPolicy")]
-    [HttpPost("/api/auth/employee/login")]
+    [HttpPost("/api/employees/login")]
     public async Task<IActionResult> Login([FromBody] LoginEmployeeCommand command)
     {
         var result = await _mediator.Send(command);

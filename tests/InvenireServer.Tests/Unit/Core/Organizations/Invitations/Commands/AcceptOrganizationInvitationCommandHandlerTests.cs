@@ -1,6 +1,7 @@
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Users;
@@ -33,13 +34,12 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            InvitationId = invitation.Id,
             OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
         _services.Setup(s => s.Organizations.Invitations.DeleteAsync(invitation));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
         _services.Setup(s => s.Employees.UpdateAsync(employee));
@@ -64,18 +64,17 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            InvitationId = invitation.Id,
             OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The invitation does not belong to the specified organization.");
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
     }
 
     [Fact]
@@ -90,18 +89,17 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            InvitationId = invitation.Id,
             OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>();
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
     }
 
     [Fact]
@@ -116,17 +114,16 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            InvitationId = invitation.Id,
             OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Employee is already a part of an organization.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("This employee is already part of a another organization");
     }
 }

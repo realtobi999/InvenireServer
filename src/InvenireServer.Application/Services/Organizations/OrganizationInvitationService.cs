@@ -20,14 +20,19 @@ public class OrganizationInvitationService : IOrganizationInvitationService
 
     public async Task<OrganizationInvitation> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
     {
-        var invitation = await _repositories.Organizations.Invitations.GetAsync(predicate);
+        var invitation = await TryGetAsync(predicate);
 
         if (invitation is null) throw new NotFound404Exception($"The requested {nameof(OrganizationInvitation).ToLower()} was not found in the system.");
 
         return invitation;
     }
 
-    //
+    public async Task<OrganizationInvitation?> TryGetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        var invitation = await _repositories.Organizations.Invitations.GetAsync(predicate);
+
+        return invitation;
+    }
 
     public async Task CreateAsync(OrganizationInvitation invitation)
     {

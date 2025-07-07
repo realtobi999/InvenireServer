@@ -16,13 +16,9 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
 
     public async Task Handle(UpdatePropertyItemsCommand request, CancellationToken _)
     {
-        // Validate the request.
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var property = await _services.Properties.GetAsync(p => p.Id == request.PropertyId);
-        var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
-
-        if (admin.OrganizationId != organization.Id) throw new Unauthorized401Exception();
-        if (property.OrganizationId != organization.Id) throw new BadRequest400Exception("This property doesnt belong to your organization.");
+        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
+        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
 
         // Preload all the items.
         var items = new Dictionary<PropertyItem, UpdatePropertyItemCommand>();
@@ -30,7 +26,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         {
             var item = await _services.Properties.Items.GetAsync(i => i.Id == id);
             if (item.PropertyId != property.Id) throw new BadRequest400Exception("Cannot update a item from a property you do not own.");
-
             items[item] = request.Items.FirstOrDefault(i => i.Id == item.Id)!;
         }
 
@@ -41,7 +36,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             var employee = await _services.Employees.GetAsync(e => e.Id == id);
             if (employee.OrganizationId != organization.Id)
                 throw new BadRequest400Exception("Cannot assign property item to an employee from a another organization.");
-
             employees[id] = employee;
         }
 
@@ -61,7 +55,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             if (item.EmployeeId != command.EmployeeId)
             {
                 if (item.EmployeeId.HasValue && employees.TryGetValue(item.EmployeeId.Value, out var originalEmployee)) originalEmployee.RemoveItem(item);
-
                 if (command.EmployeeId.HasValue && employees.TryGetValue(command.EmployeeId.Value, out var newEmployee)) newEmployee.AddItem(item);
             }
         }

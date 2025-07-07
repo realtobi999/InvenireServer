@@ -22,28 +22,25 @@ public class PropertyController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpPost("/api/organizations/{organizationId:guid}/properties")]
-    public async Task<IActionResult> Create([FromBody] CreatePropertyCommand command, Guid organizationId)
+    [HttpPost("/api/properties")]
+    public async Task<IActionResult> Create([FromBody] CreatePropertyCommand command)
     {
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            OrganizationId = organizationId
         };
         var result = await _mediator.Send(command);
 
-        return Created($"/api/organizations/{organizationId}/properties/{result.Property.Id}", null);
+        return Created($"/api/properties/{result.Property.Id}", null);
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpPost("/api/organizations/{organizationId:guid}/properties/{propertyId:guid}/items")]
-    public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command, Guid organizationId, Guid propertyId)
+    [HttpPost("/api/properties/items")]
+    public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command)
     {
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            PropertyId = propertyId,
-            OrganizationId = organizationId
         };
         await _mediator.Send(command);
 
@@ -51,14 +48,12 @@ public class PropertyController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpPut("/api/organizations/{organizationId:guid}/properties/{propertyId:guid}/items")]
-    public async Task<IActionResult> UpdateItems([FromBody] UpdatePropertyItemsCommand command, Guid organizationId, Guid propertyId)
+    [HttpPut("/api/properties/items")]
+    public async Task<IActionResult> UpdateItems([FromBody] UpdatePropertyItemsCommand command)
     {
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            PropertyId = propertyId,
-            OrganizationId = organizationId
         };
         await _mediator.Send(command);
 
@@ -66,16 +61,14 @@ public class PropertyController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpDelete("/api/organizations/{organizationId:guid}/properties/{propertyId:guid}/items")]
-    public async Task<IActionResult> DeleteItems([FromBody] DeletePropertyItemsCommand command, Guid organizationId, Guid propertyId)
+    [HttpDelete("/api/properties/items")]
+    public async Task<IActionResult> DeleteItems([FromQuery] List<Guid> ids)
     {
-        command = command with
+        await _mediator.Send(new DeletePropertyItemsCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            PropertyId = propertyId,
-            OrganizationId = organizationId
-        };
-        await _mediator.Send(command);
+            Ids = ids,
+        });
 
         return NoContent();
     }

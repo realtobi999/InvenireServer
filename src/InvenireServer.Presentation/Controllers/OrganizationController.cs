@@ -37,13 +37,12 @@ public class OrganizationController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpPost("/api/organizations/{organizationId:guid}/invitations")]
-    public async Task<IActionResult> CreateInvitation(Guid organizationId, [FromBody] CreateOrganizationInvitationCommand command)
+    [HttpPost("/api/organizations/invitations")]
+    public async Task<IActionResult> CreateInvitation([FromBody] CreateOrganizationInvitationCommand command)
     {
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            OrganizationId = organizationId
         };
         var result = await _mediator.Send(command);
 
@@ -51,16 +50,14 @@ public class OrganizationController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
-    [HttpPost("/api/organizations/{organizationId:guid}/invitations/{invitationId:guid}/accept")]
-    public async Task<IActionResult> AcceptInvitation(Guid organizationId, Guid invitationId)
+    [HttpPost("/api/organizations/{organizationId:guid}/invitations/accept")]
+    public async Task<IActionResult> AcceptInvitation(Guid organizationId)
     {
-        var command = new AcceptOrganizationInvitationCommand
+        await _mediator.Send(new AcceptOrganizationInvitationCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            InvitationId = invitationId,
             OrganizationId = organizationId
-        };
-        await _mediator.Send(command);
+        });
 
         return NoContent();
     }

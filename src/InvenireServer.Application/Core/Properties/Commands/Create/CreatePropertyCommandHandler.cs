@@ -1,4 +1,5 @@
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
@@ -15,11 +16,9 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
 
     public async Task<CreatePropertyCommandResponse> Handle(CreatePropertyCommand request, CancellationToken _)
     {
+        // Get the admin and his organization.
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
-
-        // Ensure the admin is the owner of the organization.
-        if (admin.Id != organization.Admin!.Id) throw new Unauthorized401Exception();
+        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before adding a property.");
 
         // Create the property and assign it to the organization.
         var property = new Property

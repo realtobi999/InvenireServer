@@ -1,6 +1,7 @@
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
@@ -26,18 +27,14 @@ public class CreatePropertyCommandHandlerTests
         var organization = new OrganizationFaker().Generate();
         var admin = new AdminFaker(organization).Generate();
 
-        // Assign the admin to the organization.
-        organization.Admin = admin;
-
         var command = new CreatePropertyCommand
         {
             Id = Guid.NewGuid(),
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.CreateAsync(It.IsAny<Property>()));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
@@ -57,28 +54,23 @@ public class CreatePropertyCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenTheAdminIsNotOwner()
+    public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-
-        // Assign a another admin to the organization.
-        organization.Admin = new AdminFaker().Generate();
+        var admin = new AdminFaker().Generate();
 
         var command = new CreatePropertyCommand
         {
             Id = Guid.NewGuid(),
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>();
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before adding a property.");
     }
 }

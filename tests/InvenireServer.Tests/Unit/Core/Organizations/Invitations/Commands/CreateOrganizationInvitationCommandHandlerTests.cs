@@ -36,12 +36,11 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
@@ -63,7 +62,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenTheAdminIsNotTheOwner()
+    public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
@@ -76,18 +75,17 @@ public class CreateOrganizationInvitationCommandHandlerTests
             Description = new Faker().Lorem.Sentences(3),
             EmployeeId = employee.Id,
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
         _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>();
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before creating invitations.");
     }
 }

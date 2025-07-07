@@ -25,9 +25,16 @@ public class PropertyService : IPropertyService
 
     public async Task<Property> GetAsync(Expression<Func<Property, bool>> predicate)
     {
-        var property = await _repositories.Properties.GetAsync(predicate);
+        var property = await TryGetAsync(predicate);
 
         if (property is null) throw new NotFound404Exception($"The requested {nameof(Property).ToLower()} was not found in the system.");
+
+        return property;
+    }
+
+    public async Task<Property?> TryGetAsync(Expression<Func<Property, bool>> predicate)
+    {
+        var property = await _repositories.Properties.GetAsync(predicate);
 
         return property;
     }

@@ -38,7 +38,7 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand());
@@ -60,12 +60,12 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationCommand());
+        var response = await _client.PostAsJsonAsync($"/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
@@ -84,10 +84,10 @@ public class OrganizationEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/auth/employee/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/auth/admin/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync($"/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         _client.DefaultRequestHeaders.Remove("Authorization");
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
@@ -97,7 +97,7 @@ public class OrganizationEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations/{invitation.Id}/accept", new object());
+        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations/accept", new object());
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }

@@ -12,7 +12,4 @@ public record CreatePropertyCommand : IRequest<CreatePropertyCommandResponse>
 
     [JsonIgnore]
     public Jwt? Jwt { get; set; }
-
-    [JsonIgnore]
-    public Guid? OrganizationId { get; set; }
 }
