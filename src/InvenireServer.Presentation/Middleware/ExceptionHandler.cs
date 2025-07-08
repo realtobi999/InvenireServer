@@ -1,10 +1,13 @@
+using System.Data.SqlTypes;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using InvenireServer.Application.Dtos.Common;
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Presentation.Middleware;
 
@@ -20,6 +23,10 @@ public class ExceptionHandler : IExceptionHandler
 
             case IHttpException:
                 await HandleHttpException(context, (IHttpException)exception, token);
+                break;
+
+            case DbUpdateException or DbUpdateConcurrencyException:
+                await HandleHttpException(context, new Conflict409Exception(), token);
                 break;
 
             default:

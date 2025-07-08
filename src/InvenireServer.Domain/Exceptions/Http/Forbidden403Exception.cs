@@ -9,7 +9,7 @@ public class Forbidden403Exception : Exception, IHttpException
     {
     }
 
-    public Forbidden403Exception(string? message) : base(message)
+    public Forbidden403Exception(string message) : base(message)
     {
     }
 
