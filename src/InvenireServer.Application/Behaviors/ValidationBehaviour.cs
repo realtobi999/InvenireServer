@@ -24,7 +24,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             .ToList();
 
         if (errors.Count != 0)
-            throw new ValidationException(errors);
+            throw new ValidationException("One or more request validation errors occurred", errors);
 
         return await next(token);
     }

@@ -1,20 +1,20 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Common;
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Properties;
+using InvenireServer.Domain.Validators.Properties;
 
 namespace InvenireServer.Application.Services.Properties;
 
 public class PropertyItemService : IPropertyItemService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IEntityValidator<PropertyItem> _validator;
 
-    public PropertyItemService(IRepositoryManager repositories, IEntityValidator<PropertyItem> validator)
+    public PropertyItemService(IRepositoryManager repositories)
     {
-        _validator = validator;
         _repositories = repositories;
     }
 
@@ -36,8 +36,8 @@ public class PropertyItemService : IPropertyItemService
     {
         foreach (var item in items)
         {
-            var (valid, exception) = await _validator.ValidateAsync(item);
-            if (!valid && exception is not null) throw exception;
+            var result = new ValidationResult(PropertyItemEntityValidator.Validate(item));
+            if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(PropertyItem).ToLower()} (ID: {item.Id}).", result.Errors);
 
             _repositories.Properties.Items.Create(item);
         }
@@ -56,8 +56,8 @@ public class PropertyItemService : IPropertyItemService
         {
             item.LastUpdatedAt = DateTimeOffset.UtcNow;
 
-            var (valid, exception) = await _validator.ValidateAsync(item);
-            if (!valid && exception is not null) throw exception;
+            var result = new ValidationResult(PropertyItemEntityValidator.Validate(item));
+            if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(PropertyItem).ToLower()} (ID: {item.Id}).", result.Errors);
 
             _repositories.Properties.Items.Update(item);
         }

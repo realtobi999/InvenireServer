@@ -1,5 +1,6 @@
 using InvenireServer.Application.Core.Employees.Commands.Register;
 using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Infrastructure.Persistence;
 
 namespace InvenireServer.Tests.Integration.Extensions.Users;
 
@@ -17,5 +18,11 @@ public static class EmployeeTestExtensions
         };
 
         return dto;
+    }
+
+    public static void SetAsVerified(this Employee employee, InvenireServerContext context)
+    {
+        context.Employees.FirstOrDefault(e => e.Id == employee.Id)!.Verify();
+        context.SaveChanges();
     }
 }

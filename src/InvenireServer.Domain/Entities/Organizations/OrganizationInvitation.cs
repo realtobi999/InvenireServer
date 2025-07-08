@@ -21,9 +21,9 @@ public class OrganizationInvitation
 
     // Navigational properties.
 
-    public Guid? OrganizationId { get; set; }
+    public Guid? OrganizationId { get; private set; }
 
-    public Employee? Employee { get; set; }
+    public Employee? Employee { get; private set; }
 
     // Methods.
 
@@ -34,11 +34,9 @@ public class OrganizationInvitation
         OrganizationId = organization.Id;
     }
 
-    public void UnassignOrganization(Organization organization)
+    public void UnassignOrganization()
     {
         if (OrganizationId is null) throw new BadRequest400Exception("This invitation is not part of a any organization");
-
-        if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the invitation doesn't belong to.");
 
         OrganizationId = null;
     }

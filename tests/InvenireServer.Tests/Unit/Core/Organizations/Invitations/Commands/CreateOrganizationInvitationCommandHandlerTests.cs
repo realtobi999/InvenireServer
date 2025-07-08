@@ -24,11 +24,10 @@ public class CreateOrganizationInvitationCommandHandlerTests
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
+        var admin = new AdminFaker().Generate(); // we will assign it later.
         var employee = new EmployeeFaker(organization).Generate();
 
-        // Assign the admin to the organization.
-        organization.Admin = admin;
+        organization.AssignAdmin(admin);
 
         var command = new CreateOrganizationInvitationCommand
         {

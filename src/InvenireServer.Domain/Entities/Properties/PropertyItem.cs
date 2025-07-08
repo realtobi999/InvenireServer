@@ -41,9 +41,9 @@ public class PropertyItem
 
     // Navigational properties.
 
-    public Guid? PropertyId { get; set; }
+    public Guid? PropertyId { get; private set; }
 
-    public Guid? EmployeeId { get; set; }
+    public Guid? EmployeeId { get; private set; }
 
     // Methods.
 

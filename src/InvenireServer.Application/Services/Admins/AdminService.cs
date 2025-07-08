@@ -1,21 +1,21 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Common;
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Admins;
+using InvenireServer.Domain.Validators.Users;
 
 namespace InvenireServer.Application.Services.Admins;
 
 public class AdminService : IAdminService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IEntityValidator<Admin> _validator;
 
-    public AdminService(IRepositoryManager repositories, IEntityValidator<Admin> validator)
+    public AdminService(IRepositoryManager repositories)
     {
-        _validator = validator;
         _repositories = repositories;
     }
 
@@ -40,8 +40,8 @@ public class AdminService : IAdminService
 
     public async Task CreateAsync(Admin admin)
     {
-        var (valid, exception) = await _validator.ValidateAsync(admin);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(AdminEntityValidator.Validate(admin));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Admin).ToLower()} (ID: {admin.Id}).", result.Errors);
 
         _repositories.Admins.Create(admin);
         await _repositories.SaveOrThrowAsync();
@@ -51,8 +51,8 @@ public class AdminService : IAdminService
     {
         admin.LastUpdatedAt = DateTimeOffset.UtcNow;
 
-        var (valid, exception) = await _validator.ValidateAsync(admin);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(AdminEntityValidator.Validate(admin));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Admin).ToLower()} (ID: {admin.Id}).", result.Errors);
 
         _repositories.Admins.Update(admin);
         await _repositories.SaveOrThrowAsync();

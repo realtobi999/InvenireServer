@@ -4,15 +4,9 @@ using System.Threading.RateLimiting;
 using FluentValidation;
 using InvenireServer.Application;
 using InvenireServer.Application.Behaviors;
-using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Application.Interfaces.Factories;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Validators;
-using InvenireServer.Application.Validators.Organizations;
-using InvenireServer.Application.Validators.Properties;
-using InvenireServer.Application.Validators.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
@@ -85,17 +79,6 @@ public static class ServiceExtensions
                 policy.RequireRole(Jwt.Roles.ADMIN);
                 policy.RequireClaim("is_verified", bool.FalseString);
             });
-    }
-
-    public static void ConfigureValidators(this IServiceCollection services)
-    {
-        services.AddScoped<IEntityValidator<Admin>, AdminValidator>();
-        services.AddScoped<IEntityValidator<Employee>, EmployeeValidator>();
-        services.AddScoped<IEntityValidator<Property>, PropertyValidator>();
-        services.AddScoped<IEntityValidator<PropertyItem>, PropertyItemValidator>();
-        services.AddScoped<IEntityValidator<Organization>, OrganizationValidator>();
-        services.AddScoped<IEntityValidator<OrganizationInvitation>, OrganizationInvitationValidator>();
-        services.AddScoped<IEntityValidatorFactory, EntityValidatorFactory>();
     }
 
     public static void ConfigureHashing(this IServiceCollection services)

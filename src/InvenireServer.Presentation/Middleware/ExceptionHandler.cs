@@ -44,7 +44,7 @@ public class ExceptionHandler : IExceptionHandler
             Status = (int)HttpStatusCode.BadRequest,
             Type = nameof(ValidationException),
             Title = "Bad request",
-            Detail = "One or more validation errors occurred.",
+            Detail = exception.Message,
             Errors = [.. exception.Errors.Select(e => e.ToString())],
             Instance = $"{context.Request.Method} {context.Request.Path}"
         };

@@ -39,9 +39,9 @@ public class Employee
 
     // Navigational Properties.
 
-    public Guid? OrganizationId { get; set; }
+    public Guid? OrganizationId { get; private set; }
 
-    public Collection<PropertyItem> AssignedItems { get; set; } = [];
+    public Collection<PropertyItem> AssignedItems { get; private set; } = [];
 
     // Methods.
 
@@ -59,11 +59,9 @@ public class Employee
         OrganizationId = organization.Id;
     }
 
-    public void UnassignOrganization(Organization organization)
+    public void UnassignOrganization()
     {
         if (OrganizationId is null) throw new BadRequest400Exception("This employee is not part of a any organization");
-
-        if (OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot unassign a organization that the employee doesn't belong to.");
 
         OrganizationId = null;
     }

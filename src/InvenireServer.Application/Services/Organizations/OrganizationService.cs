@@ -1,24 +1,23 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Common;
-using InvenireServer.Application.Interfaces.Factories;
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Organizations;
+using InvenireServer.Domain.Validators.Organizations;
 
 namespace InvenireServer.Application.Services.Organizations;
 
 public class OrganizationService : IOrganizationService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IEntityValidator<Organization> _validator;
 
-    public OrganizationService(IRepositoryManager repositories, IEntityValidatorFactory validators)
+    public OrganizationService(IRepositoryManager repositories)
     {
-        _validator = validators.Initiate<Organization>();
         _repositories = repositories;
 
-        Invitations = new OrganizationInvitationService(repositories, validators.Initiate<OrganizationInvitation>());
+        Invitations = new OrganizationInvitationService(repositories);
     }
 
     public IOrganizationInvitationService Invitations { get; }
@@ -41,8 +40,8 @@ public class OrganizationService : IOrganizationService
 
     public async Task CreateAsync(Organization organization)
     {
-        var (valid, exception) = await _validator.ValidateAsync(organization);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(OrganizationEntityValidator.Validate(organization));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Organization).ToLower()} (ID: {organization.Id}).", result.Errors);
 
         _repositories.Organizations.Create(organization);
         await _repositories.SaveOrThrowAsync();
@@ -52,8 +51,8 @@ public class OrganizationService : IOrganizationService
     {
         organization.LastUpdatedAt = DateTimeOffset.UtcNow;
 
-        var (valid, exception) = await _validator.ValidateAsync(organization);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(OrganizationEntityValidator.Validate(organization));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Organization).ToLower()} (ID: {organization.Id}).", result.Errors);
 
         _repositories.Organizations.Update(organization);
         await _repositories.SaveOrThrowAsync();

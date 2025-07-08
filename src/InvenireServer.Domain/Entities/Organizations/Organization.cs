@@ -22,13 +22,13 @@ public class Organization
 
     // Navigational properties.
 
-    public Admin? Admin { get; set; }
+    public Admin? Admin { get; private set; }
 
-    public Property? Property { get; set; }
+    public Property? Property { get; private set; }
 
-    public ICollection<Employee> Employees { get; set; } = [];
+    public ICollection<Employee> Employees { get; private set; } = [];
 
-    public ICollection<OrganizationInvitation> Invitations { get; set; } = [];
+    public ICollection<OrganizationInvitation> Invitations { get; private set; } = [];
 
     // Methods.
 

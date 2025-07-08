@@ -1,5 +1,6 @@
 using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Infrastructure.Persistence;
 
 namespace InvenireServer.Tests.Integration.Extensions.Users;
 
@@ -17,5 +18,11 @@ public static class AdminTestExtensions
         };
 
         return dto;
+    }
+
+    public static void SetAsVerified(this Admin admin, InvenireServerContext context)
+    {
+        context.Admins.FirstOrDefault(a => a.Id == admin.Id)!.Verify();
+        context.SaveChanges();
     }
 }

@@ -23,7 +23,6 @@ public class Program
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureHashing();
                 builder.Services.ConfigureMediatR();
-                builder.Services.ConfigureValidators();
                 builder.Services.ConfigureRareLimiters();
                 builder.Services.ConfigureEmailService(builder.Configuration);
                 builder.Services.ConfigureErrorHandling();

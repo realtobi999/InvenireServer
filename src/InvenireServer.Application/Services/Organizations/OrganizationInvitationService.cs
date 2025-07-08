@@ -1,21 +1,21 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Common;
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Organizations;
+using InvenireServer.Domain.Validators.Organizations;
 
 namespace InvenireServer.Application.Services.Organizations;
 
 public class OrganizationInvitationService : IOrganizationInvitationService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IEntityValidator<OrganizationInvitation> _validator;
 
-    public OrganizationInvitationService(IRepositoryManager repositories, IEntityValidator<OrganizationInvitation> validator)
+    public OrganizationInvitationService(IRepositoryManager repositories)
     {
         _repositories = repositories;
-        _validator = validator;
     }
 
     public async Task<OrganizationInvitation> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
@@ -36,8 +36,8 @@ public class OrganizationInvitationService : IOrganizationInvitationService
 
     public async Task CreateAsync(OrganizationInvitation invitation)
     {
-        var (valid, exception) = await _validator.ValidateAsync(invitation);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(OrganizationInvitationEntityValidator.Validate(invitation));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(OrganizationInvitation).ToLower()} (ID: {invitation.Id}).", result.Errors);
 
         _repositories.Organizations.Invitations.Create(invitation);
         await _repositories.SaveOrThrowAsync();
@@ -45,9 +45,6 @@ public class OrganizationInvitationService : IOrganizationInvitationService
 
     public async Task DeleteAsync(OrganizationInvitation invitation)
     {
-        var (valid, exception) = await _validator.ValidateAsync(invitation);
-        if (!valid && exception is not null) throw exception;
-
         _repositories.Organizations.Invitations.Delete(invitation);
         await _repositories.SaveOrThrowAsync();
     }

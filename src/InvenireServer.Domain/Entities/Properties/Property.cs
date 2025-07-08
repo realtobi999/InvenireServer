@@ -16,15 +16,15 @@ public class Property
 
     // Navigational properties.
 
-    public Guid? OrganizationId { get; set; }
+    public Guid? OrganizationId { get; private set; }
 
-    public Collection<PropertyItem> Items { get; set; } = [];
+    public Collection<PropertyItem> Items { get; private set; } = [];
 
     // Methods.
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("This property is already a part of a another organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("This property is already a part of another organization");
 
         OrganizationId = organization.Id;
     }

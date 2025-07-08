@@ -24,12 +24,13 @@ public class AcceptOrganizationInvitationCommandHandlerTests
     {
         // Prepare.
         var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
+        var admin = new AdminFaker().Generate(); // We assign it later.
         var employee = new EmployeeFaker().Generate();
-        var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
+        var invitation = new OrganizationInvitationFaker().Generate(); // We assign it later.
 
-        organization.Admin = admin;
-        organization.Invitations.Add(invitation);
+        organization.AssignAdmin(admin);
+        organization.AddInvitation(invitation);
+        invitation.AssignEmployee(employee);
 
         var command = new AcceptOrganizationInvitationCommand
         {

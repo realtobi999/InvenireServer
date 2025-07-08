@@ -1,21 +1,21 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Common;
+using FluentValidation;
+using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Employees;
+using InvenireServer.Domain.Validators.Users;
 
 namespace InvenireServer.Application.Services.Employees;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly IRepositoryManager _repositories;
-    private readonly IEntityValidator<Employee> _validator;
 
-    public EmployeeService(IRepositoryManager repositories, IEntityValidator<Employee> validator)
+    public EmployeeService(IRepositoryManager repositories)
     {
-        _validator = validator;
         _repositories = repositories;
     }
 
@@ -40,8 +40,8 @@ public class EmployeeService : IEmployeeService
 
     public async Task CreateAsync(Employee employee)
     {
-        var (valid, exception) = await _validator.ValidateAsync(employee);
-        if (!valid && exception is not null) throw exception;
+        var result = new ValidationResult(EmployeeEntityValidator.Validate(employee));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Employee).ToLower()} (ID: {employee.Id}).", result.Errors);
 
         _repositories.Employees.Create(employee);
         await _repositories.SaveOrThrowAsync();
@@ -58,8 +58,8 @@ public class EmployeeService : IEmployeeService
         {
             employee.LastUpdatedAt = DateTimeOffset.UtcNow;
 
-            var (valid, exception) = await _validator.ValidateAsync(employee);
-            if (!valid && exception is not null) throw exception;
+            var result = new ValidationResult(EmployeeEntityValidator.Validate(employee));
+            if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Employee).ToLower()} (ID: {employee.Id}).", result.Errors);
 
             _repositories.Employees.Update(employee);
         }
