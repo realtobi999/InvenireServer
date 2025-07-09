@@ -1,12 +1,17 @@
 using FluentValidation;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
 public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmployeeCommand>
 {
-    public RegisterEmployeeCommandValidator()
+    private readonly IRepositoryManager _repositories;
+
+    public RegisterEmployeeCommandValidator(IRepositoryManager repositories)
     {
+        _repositories = repositories;
+
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(Employee.MAX_NAME_LENGTH)
@@ -14,6 +19,7 @@ public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmploy
         RuleFor(c => c.EmailAddress)
             .NotEmpty()
             .EmailAddress()
+            .MustAsync(BeUniqueEmail).WithMessage("'email_address' mut be unique among all employees.")
             .MaximumLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)
             .WithName("email_address");
         RuleFor(c => c.Password)
@@ -26,5 +32,10 @@ public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmploy
             .NotEmpty()
             .Equal(c => c.Password).WithMessage("'password_confirm' must match 'password'.")
             .WithName("password_confirm");
+    }
+
+    private async Task<bool> BeUniqueEmail(string email, CancellationToken _)
+    {
+        return await _repositories.Employees.GetAsync(e => e.EmailAddress == email) is null;
     }
 }

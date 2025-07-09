@@ -1,12 +1,17 @@
 using FluentValidation;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
 public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminCommand>
 {
-    public RegisterAdminCommandValidator()
+    private readonly IRepositoryManager _repositories;
+
+    public RegisterAdminCommandValidator(IRepositoryManager repositories)
     {
+        _repositories = repositories;
+
         RuleFor(c => c.Name)
             .NotEmpty()
             .MaximumLength(Admin.MAX_NAME_LENGTH)
@@ -14,6 +19,7 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
         RuleFor(c => c.EmailAddress)
             .NotEmpty()
             .EmailAddress()
+            .MustAsync(BeUniqueEmail).WithMessage("'email_address' mut be unique among all admins.")
             .MaximumLength(Admin.MAX_EMAIL_ADDRESS_LENGTH)
             .WithName("email_address");
         RuleFor(c => c.Password)
@@ -26,5 +32,10 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
             .NotEmpty()
             .Equal(c => c.Password).WithMessage("'password_confirm' must match 'password'.")
             .WithName("password_confirm");
+    }
+
+    private async Task<bool> BeUniqueEmail(string email, CancellationToken _)
+    {
+        return await _repositories.Admins.GetAsync(e => e.EmailAddress == email) is null;
     }
 }
