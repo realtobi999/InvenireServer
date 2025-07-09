@@ -5,7 +5,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Organizations;
 
 public class OrganizationInvitationFaker : Faker<OrganizationInvitation>
 {
-    public OrganizationInvitationFaker()
+    private OrganizationInvitationFaker()
     {
         RuleFor(i => i.Id, f => f.Random.Guid());
         RuleFor(i => i.Description, f => f.Company.CompanyName());
@@ -13,9 +13,12 @@ public class OrganizationInvitationFaker : Faker<OrganizationInvitation>
         RuleFor(i => i.LastUpdatedAt, f => f.Date.RecentOffset(30));
     }
 
-    public OrganizationInvitationFaker(Organization organization, Employee employee) : this()
+    public static OrganizationInvitation Fake(Employee? employee = null)
     {
-        RuleFor(i => i.Employee, _ => employee);
-        RuleFor(i => i.OrganizationId, _ => organization.Id);
+        var invitation = new OrganizationInvitationFaker().Generate();
+
+        if (employee is not null) invitation.AssignEmployee(employee);
+
+        return invitation;
     }
 }

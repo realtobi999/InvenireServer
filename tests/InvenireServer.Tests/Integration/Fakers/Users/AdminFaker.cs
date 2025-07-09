@@ -6,7 +6,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Users;
 
 public class AdminFaker : Faker<Admin>
 {
-    public AdminFaker()
+    private AdminFaker()
     {
         RuleFor(e => e.Id, f => f.Random.Guid());
         RuleFor(e => e.Name, f => f.Name.FullName());
@@ -18,8 +18,8 @@ public class AdminFaker : Faker<Admin>
         RuleFor(e => e.LastLoginAt, f => f.Date.RecentOffset(10));
     }
 
-    public AdminFaker(Organization organization) : this()
+    public static Admin Fake()
     {
-        RuleFor(e => e.OrganizationId, _ => organization.Id);
+        return new AdminFaker().Generate();
     }
 }

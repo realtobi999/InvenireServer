@@ -13,8 +13,6 @@ public static class OrganizationTextExtensions
         {
             Id = organization.Id,
             Name = organization.Name,
-            Jwt = null,
-            FrontendBaseUrl = null
         };
 
         return dto;
@@ -22,7 +20,7 @@ public static class OrganizationTextExtensions
 
     public static void AddEmployee(this Organization organization, Employee employee, InvenireServerContext context)
     {
-        context.Organizations.FirstOrDefault(o => o.Id == organization.Id)!.AddEmployee(employee);
+        context.Organizations.FirstOrDefault(o => o.Id == organization.Id)!.AddEmployee(context.Employees.FirstOrDefault(e => e.Id == employee.Id)!);
         context.SaveChanges();
     }
 }

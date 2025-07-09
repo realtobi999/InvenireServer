@@ -1,4 +1,5 @@
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Tests.Integration.Extensions;
 
@@ -6,7 +7,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Users;
 
 public sealed class EmployeeFaker : Faker<Employee>
 {
-    public EmployeeFaker()
+    private EmployeeFaker()
     {
         RuleFor(e => e.Id, f => f.Random.Guid());
         RuleFor(e => e.Name, f => f.Name.FullName());
@@ -18,8 +19,12 @@ public sealed class EmployeeFaker : Faker<Employee>
         RuleFor(e => e.LastLoginAt, f => f.Date.RecentOffset(10));
     }
 
-    public EmployeeFaker(Organization organization) : this()
+    public static Employee Fake(IEnumerable<PropertyItem>? items = null)
     {
-        RuleFor(e => e.OrganizationId, _ => organization.Id);
+        var employee = new EmployeeFaker().Generate();
+
+        if (items is not null) employee.AddItems(items);
+
+        return employee;
     }
 }

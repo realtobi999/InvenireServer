@@ -28,13 +28,19 @@ public class CreatePropertyItemsCommandHandlerTests
     public async Task Handle_AssignsCorrectItemsToProperty()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-        var employee = new EmployeeFaker(organization).Generate();
-        var admin = new AdminFaker(organization).Generate();
 
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+
+        // We cant add the items to the employee because that is  the  point  of
+        // this test. We must only assign the id of the employee to the item  so
+        // it can be passed to the command.
+        foreach (var item in items) item.AssignEmployee(employee);
 
         var command = new CreatePropertyItemsCommand
         {
@@ -77,9 +83,9 @@ public class CreatePropertyItemsCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAdminDoesntOwnAnOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-        var admin = new AdminFaker().Generate(); // Organization isn't assigned.
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: null, property: property);
 
         var command = new CreatePropertyItemsCommand
         {
@@ -101,9 +107,9 @@ public class CreatePropertyItemsCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenPropertyIsNotCreated()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var property = new PropertyFaker().Generate(); // Organization isn't assigned.
-        var admin = new AdminFaker(organization).Generate();
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, property: null);
 
         var command = new CreatePropertyItemsCommand
         {
@@ -125,13 +131,13 @@ public class CreatePropertyItemsCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenEmployeeIsNotInOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate(); // Organization isn't assigned.
-        var admin = new AdminFaker(organization).Generate();
-
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake(items: items);
+        var employee = EmployeeFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: null);
 
         var command = new CreatePropertyItemsCommand
         {

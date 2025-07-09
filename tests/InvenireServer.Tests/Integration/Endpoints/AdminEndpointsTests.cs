@@ -28,7 +28,7 @@ public class AdminEndpointsTests
     public async Task Register_ReturnsCreated()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand());
@@ -39,7 +39,7 @@ public class AdminEndpointsTests
     public async Task SendVerification_ReturnsNoContent()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -58,7 +58,7 @@ public class AdminEndpointsTests
     public async Task ConfirmVerification_ReturnsNoContent()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -86,7 +86,7 @@ public class AdminEndpointsTests
     public async Task Login_ReturnsOk()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),

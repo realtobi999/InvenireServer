@@ -23,11 +23,9 @@ public class CreateOrganizationInvitationCommandHandlerTests
     public async Task Handle_ReturnsCorrectInvitationInstance()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker().Generate(); // we will assign it later.
-        var employee = new EmployeeFaker(organization).Generate();
-
-        organization.AssignAdmin(admin);
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
 
         var command = new CreateOrganizationInvitationCommand
         {
@@ -64,9 +62,9 @@ public class CreateOrganizationInvitationCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker().Generate();
-        var employee = new EmployeeFaker(organization).Generate();
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: null);
 
         var command = new CreateOrganizationInvitationCommand
         {

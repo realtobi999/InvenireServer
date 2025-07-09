@@ -38,6 +38,11 @@ public class Property
         item.AssignProperty(this);
     }
 
+    public void AddItems(IEnumerable<PropertyItem> items)
+    {
+        foreach (var item in items) AddItem(item);
+    }
+
     public void RemoveItem(PropertyItem item)
     {
         if (!Items.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not a part of this property.");

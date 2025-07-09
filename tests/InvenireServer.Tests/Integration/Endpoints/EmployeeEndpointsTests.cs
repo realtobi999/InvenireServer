@@ -28,7 +28,7 @@ public class EmployeeEndpointsTests
     public async Task Register_ReturnsCreated()
     {
         // Prepare.
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand());
@@ -40,7 +40,7 @@ public class EmployeeEndpointsTests
     public async Task SendVerification_ReturnsNoContent()
     {
         // Prepare.
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
@@ -59,7 +59,7 @@ public class EmployeeEndpointsTests
     public async Task ConfirmVerification_ReturnsNoContent()
     {
         // Prepare.
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),
@@ -87,7 +87,7 @@ public class EmployeeEndpointsTests
     public async Task Login_ReturnsOk()
     {
         // Prepare.
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.EMPLOYEE),

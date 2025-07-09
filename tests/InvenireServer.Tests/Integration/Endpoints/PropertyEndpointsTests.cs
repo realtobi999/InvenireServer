@@ -34,9 +34,9 @@ public class PropertyEndpointsTests
     public async Task Create_ReturnsCreated()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-        var admin = new AdminFaker(organization).Generate();
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -57,13 +57,13 @@ public class PropertyEndpointsTests
     public async Task CreateItems_ReturnsCreated()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -78,7 +78,8 @@ public class PropertyEndpointsTests
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
-        organization.AddEmployee(employee, _app.GetDatabaseContext()); // Assign the employee to the organization.
+        // Assign the employee to the organization.
+        organization.AddEmployee(employee, _app.GetDatabaseContext());
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
@@ -92,14 +93,15 @@ public class PropertyEndpointsTests
     public async Task UpdateItems_ReturnsNoContent()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee1 = new EmployeeFaker().Generate();
-        var employee2 = new EmployeeFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee1).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var employee1 = EmployeeFaker.Fake(items: items);
+        var employee2 = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -153,13 +155,13 @@ public class PropertyEndpointsTests
     public async Task DeleteItems_ReturnsNoContent()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate();
-        var property = new PropertyFaker(organization).Generate();
-
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(new PropertyItemFaker(property, employee).Generate());
+        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),

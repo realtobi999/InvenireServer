@@ -30,7 +30,7 @@ public class SendVerificationEmployeeCommandHandlerTests
     public async Task Handle_BuildsCorrectToken()
     {
         // Prepare.
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
         var command = new SendVerificationEmployeeCommand
         {
             Jwt = new Jwt([], []),

@@ -32,7 +32,7 @@ public class EmployeeCleanupBackgroundServiceTests
         // Create employees that are categorized for deletion.
         for (var i = 0; i < 2; i++)
         {
-            var employee = new EmployeeFaker().Generate();
+            var employee = EmployeeFaker.Fake();
 
             employee.IsVerified = false;
             employee.CreatedAt = now.AddDays(-8);

@@ -75,6 +75,11 @@ public class Employee
         item.AssignEmployee(this);
     }
 
+    public void AddItems(IEnumerable<PropertyItem> items)
+    {
+        foreach (var item in items) AddItem(item);
+    }
+
     public void RemoveItem(PropertyItem item)
     {
         if (!AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not assigned to this employee.");

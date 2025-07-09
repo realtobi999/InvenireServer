@@ -26,7 +26,7 @@ public class CreateOrganizationCommandHandlerTests
     public async Task Handle_ReturnsCorrectOrganizationInstanceAndEmailDto()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
         var faker = new Faker();
         var command = new CreateOrganizationCommand
         {

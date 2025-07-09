@@ -29,7 +29,7 @@ public class LoginAdminCommandHandlerTests
     public async Task Handle_ReturnsCorrectToken()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         var command = new LoginAdminCommand
         {
@@ -59,7 +59,7 @@ public class LoginAdminCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAdminIsNotFound()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         var command = new LoginAdminCommand
         {
@@ -82,7 +82,7 @@ public class LoginAdminCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenIncorrectPassword()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         var command = new LoginAdminCommand
         {
@@ -105,7 +105,7 @@ public class LoginAdminCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAdminIsNotVerified()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         var command = new LoginAdminCommand
         {

@@ -32,12 +32,12 @@ public class AdminCleanupBackgroundServiceTests
         // Create admins that are categorized for deletion.
         for (var i = 0; i < 2; i++)
         {
-            var employee = new AdminFaker().Generate();
+            var admin = AdminFaker.Fake();
 
-            employee.IsVerified = false;
-            employee.CreatedAt = now.AddDays(-8);
+            admin.IsVerified = false;
+            admin.CreatedAt = now.AddDays(-8);
 
-            admins.Add(employee);
+            admins.Add(admin);
         }
 
         _mockRepositoryManager

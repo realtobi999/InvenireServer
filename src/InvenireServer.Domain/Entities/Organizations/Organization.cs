@@ -59,6 +59,11 @@ public class Organization
         employee.AssignOrganization(this);
     }
 
+    public void AddEmployees(IEnumerable<Employee> employees)
+    {
+        foreach (var employee in employees) AddEmployee(employee);
+    }
+
     public void AddInvitation(OrganizationInvitation invitation)
     {
         if (Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
@@ -66,5 +71,10 @@ public class Organization
         Invitations.Add(invitation);
 
         invitation.AssignOrganization(this);
+    }
+
+    public void AddInvitations(IEnumerable<OrganizationInvitation> invitations)
+    {
+        foreach (var invitation in invitations) AddInvitation(invitation);
     }
 }

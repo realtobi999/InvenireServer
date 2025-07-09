@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
@@ -22,13 +22,14 @@ public class ConfirmVerificationAdminCommandHandlerTests
     public async Task Handle_ReturnsVerifiedAdmin()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
-        admin.IsVerified = false;
+        var admin = AdminFaker.Fake();
 
         var command = new ConfirmVerificationAdminCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
+
+        admin.IsVerified = false;
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Admins.UpdateAsync(admin));
@@ -59,13 +60,14 @@ public class ConfirmVerificationAdminCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAdminIsAlreadyVerified()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
-        admin.IsVerified = true; // Set the admin as verified.
+        var admin = AdminFaker.Fake();
 
         var command = new ConfirmVerificationAdminCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
+
+        admin.IsVerified = true; // Set the admin as verified.
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
 

@@ -29,8 +29,8 @@ public class OrganizationEndpointsTests
     public async Task Create_ReturnsCreated()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -50,10 +50,10 @@ public class OrganizationEndpointsTests
     public async Task CreateInvitation_ReturnsCreated()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker(organization).Generate();
-        var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -76,10 +76,10 @@ public class OrganizationEndpointsTests
     public async Task AcceptInvitation_ReturnsNoContent()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker(organization).Generate();
-        var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),

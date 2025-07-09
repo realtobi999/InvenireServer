@@ -23,14 +23,10 @@ public class AcceptOrganizationInvitationCommandHandlerTests
     public async Task Handle_JoinsEmployeeToOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker().Generate(); // We assign it later.
-        var employee = new EmployeeFaker().Generate();
-        var invitation = new OrganizationInvitationFaker().Generate(); // We assign it later.
-
-        organization.AssignAdmin(admin);
-        organization.AddInvitation(invitation);
-        invitation.AssignEmployee(employee);
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: [invitation]);
 
         var command = new AcceptOrganizationInvitationCommand
         {
@@ -57,10 +53,10 @@ public class AcceptOrganizationInvitationCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheInvitationDoesntBelowToTheProvidedOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate();
-        var invitation = new OrganizationInvitationFaker(new OrganizationFaker().Generate(), employee).Generate(); // Assign to a different organization.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: []);
 
         var command = new AcceptOrganizationInvitationCommand
         {
@@ -82,10 +78,10 @@ public class AcceptOrganizationInvitationCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheInvitationDoesntBelowToTheProvidedEmployee()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker().Generate();
-        var invitation = new OrganizationInvitationFaker(organization, new EmployeeFaker().Generate()).Generate(); // Assign to a different employee.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: EmployeeFaker.Fake());
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: [invitation]);
 
         var command = new AcceptOrganizationInvitationCommand
         {
@@ -107,20 +103,21 @@ public class AcceptOrganizationInvitationCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheEmployeeIsAlreadyAPartOfOrganization()
     {
         // Prepare.
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
-        var employee = new EmployeeFaker(new OrganizationFaker().Generate()).Generate(); // Assign to a different organization.
-        var invitation = new OrganizationInvitationFaker(organization, employee).Generate();
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization1 = OrganizationFaker.Fake(admin: admin, invitations: [invitation]);
+        var organization2 = OrganizationFaker.Fake(employees: [employee]);
 
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
+            OrganizationId = organization1.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization1);
+        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization1.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());

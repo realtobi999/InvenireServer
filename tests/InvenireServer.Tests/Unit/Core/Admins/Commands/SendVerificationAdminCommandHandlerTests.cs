@@ -30,7 +30,7 @@ public class SendVerificationAdminCommandHandlerTests
     public async Task Handle_BuildsCorrectToken()
     {
         // Prepare.
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
         var command = new SendVerificationAdminCommand
         {
             Jwt = new Jwt([], []),

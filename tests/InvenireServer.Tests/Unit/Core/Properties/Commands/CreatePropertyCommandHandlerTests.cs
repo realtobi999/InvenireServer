@@ -24,8 +24,8 @@ public class CreatePropertyCommandHandlerTests
     public async Task Handle_ReturnsCorrectPropertyInstance()
     {
         // Prepare
-        var organization = new OrganizationFaker().Generate();
-        var admin = new AdminFaker(organization).Generate();
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
 
         var command = new CreatePropertyCommand
         {
@@ -57,7 +57,7 @@ public class CreatePropertyCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare
-        var admin = new AdminFaker().Generate();
+        var admin = AdminFaker.Fake();
 
         var command = new CreatePropertyCommand
         {

@@ -29,7 +29,7 @@ public class LoginEmployeeCommandHandlerTests
     public async Task Handle_ReturnsCorrectToken()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         var command = new LoginEmployeeCommand
         {
@@ -59,7 +59,7 @@ public class LoginEmployeeCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenEmployeeIsNotFound()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         var command = new LoginEmployeeCommand
         {
@@ -82,7 +82,7 @@ public class LoginEmployeeCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenIncorrectPassword()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         var command = new LoginEmployeeCommand
         {
@@ -105,7 +105,7 @@ public class LoginEmployeeCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenEmployeeIsNotVerified()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
+        var employee = EmployeeFaker.Fake();
 
         var command = new LoginEmployeeCommand
         {

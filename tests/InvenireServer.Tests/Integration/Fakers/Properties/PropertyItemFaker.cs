@@ -5,7 +5,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Properties;
 
 public class PropertyItemFaker : Faker<PropertyItem>
 {
-    public PropertyItemFaker()
+    private PropertyItemFaker()
     {
         RuleFor(i => i.Id, f => Guid.NewGuid());
         RuleFor(i => i.InventoryNumber, f => f.Commerce.Ean13());
@@ -21,9 +21,8 @@ public class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.LastUpdatedAt, f => f.Date.RecentOffset(30));
     }
 
-    public PropertyItemFaker(Property property, Employee? employee = null) : this()
+    public static PropertyItem Fake()
     {
-        RuleFor(i => i.PropertyId, property.Id);
-        RuleFor(i => i.EmployeeId, employee?.Id);
+        return new PropertyItemFaker().Generate();
     }
 }

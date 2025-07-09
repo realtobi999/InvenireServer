@@ -22,13 +22,14 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
     public async Task Handle_ReturnsVerifiedEmployee()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
-        employee.IsVerified = false;
+        var employee = EmployeeFaker.Fake();
 
         var command = new ConfirmVerificationEmployeeCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
+
+        employee.IsVerified = false;
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _services.Setup(s => s.Employees.UpdateAsync(employee));
@@ -59,13 +60,14 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenEmployeeIsAlreadyVerified()
     {
         // Prepare
-        var employee = new EmployeeFaker().Generate();
-        employee.IsVerified = true; // Set the employee as verified.
+        var employee = EmployeeFaker.Fake();
 
         var command = new ConfirmVerificationEmployeeCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
+
+        employee.IsVerified = true; // Set the employee as verified.
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
 
