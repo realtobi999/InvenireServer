@@ -10,6 +10,8 @@ public class Organization
 
     public const int MAX_NAME_LENGTH = 155;
 
+    public const int MAX_AMOUNT_OF_INVITATIONS = 100;
+
     // Core properties.
 
     public required Guid Id { get; set; }

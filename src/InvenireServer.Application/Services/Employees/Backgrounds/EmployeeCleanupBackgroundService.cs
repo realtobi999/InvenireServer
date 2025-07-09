@@ -1,3 +1,4 @@
+using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Interfaces.Services.Employees;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,9 +9,9 @@ namespace InvenireServer.Application.Services.Employees.Backgrounds;
 
 public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeCleanupService
 {
-    private readonly TimeSpan _interval = TimeSpan.FromDays(7);
-    private readonly ILogger<EmployeeCleanupBackgroundService> _logger;
+    private readonly TimeSpan _interval = TimeSpan.FromDays(1);
     private readonly IServiceScopeFactory _scope;
+    private readonly ILogger<EmployeeCleanupBackgroundService> _logger;
 
     public EmployeeCleanupBackgroundService(IServiceScopeFactory scope, ILogger<EmployeeCleanupBackgroundService> logger)
     {
@@ -20,13 +21,20 @@ public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeClea
 
     public async Task CleanupAsync()
     {
-        var manager = _scope.CreateScope().ServiceProvider.GetRequiredService<IRepositoryManager>();
+        var services = _scope.CreateScope().ServiceProvider;
+        var manager = services.GetRequiredService<IServiceManager>();
+        var transaction = services.GetRequiredService<ITransactionScope>();
 
-        foreach (var employee in await manager.Employees.IndexInactiveAsync()) manager.Employees.Delete(employee);
+        var employees = await manager.Employees.IndexInactiveAsync();
+        if (employees.Any())
+        {
+            await transaction.ExecuteAsync(async () =>
+            {
+                await manager.Employees.DeleteAsync(employees);
+            });
+        }
 
-        await manager.SaveAsync();
-
-        _logger.LogInformation("Unverified employees successful completed at {Time}", DateTime.UtcNow);
+        _logger.LogInformation("Unverified employees cleanup successfully completed at {Time}. Deleted employees: {@DeletedEmployeeIds}", DateTime.UtcNow, employees.Select(a => a.Id));
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)

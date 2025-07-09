@@ -19,6 +19,11 @@ public class EmployeeService : IEmployeeService
         _repositories = repositories;
     }
 
+    public Task<IEnumerable<Employee>> IndexInactiveAsync()
+    {
+        return _repositories.Employees.IndexInactiveAsync();
+    }
+
     public async Task<Employee> GetAsync(Jwt jwt)
     {
         var claim = jwt.Payload.FirstOrDefault(c => c.Type == "employee_id" && !string.IsNullOrWhiteSpace(c.Value));
@@ -64,6 +69,12 @@ public class EmployeeService : IEmployeeService
             _repositories.Employees.Update(employee);
         }
 
+        await _repositories.SaveOrThrowAsync();
+    }
+
+    public async Task DeleteAsync(IEnumerable<Employee> employees)
+    {
+        foreach (var employee in employees) _repositories.Employees.Delete(employee);
         await _repositories.SaveOrThrowAsync();
     }
 }

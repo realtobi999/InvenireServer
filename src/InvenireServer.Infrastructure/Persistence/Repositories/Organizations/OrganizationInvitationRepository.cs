@@ -10,6 +10,12 @@ public class OrganizationInvitationRepository : RepositoryBase<OrganizationInvit
     {
     }
 
+    public Task<IEnumerable<OrganizationInvitation>> IndexExpiredAsync()
+    {
+        var threshold = DateTimeOffset.UtcNow - OrganizationInvitation.EXPIRATION_TIME;
+        return IndexAsync(i => i.CreatedAt <= threshold);
+    }
+
     protected override IQueryable<OrganizationInvitation> GetQueryable()
     {
         return base.GetQueryable().Include(i => i.Employee);

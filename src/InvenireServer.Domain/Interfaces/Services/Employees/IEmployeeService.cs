@@ -6,9 +6,11 @@ namespace InvenireServer.Domain.Interfaces.Services.Employees;
 
 public interface IEmployeeService
 {
+    Task<IEnumerable<Employee>> IndexInactiveAsync();
     Task<Employee> GetAsync(Jwt jwt);
     Task<Employee> GetAsync(Expression<Func<Employee, bool>> predicate);
     Task CreateAsync(Employee employee);
     Task UpdateAsync(Employee employee);
     Task UpdateAsync(IEnumerable<Employee> employees);
+    Task DeleteAsync(IEnumerable<Employee> employees);
 }

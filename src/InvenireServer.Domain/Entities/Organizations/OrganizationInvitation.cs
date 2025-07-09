@@ -9,6 +9,8 @@ public class OrganizationInvitation
 
     public const int MAX_DESCRIPTION_LENGTH = 555;
 
+    public static readonly TimeSpan EXPIRATION_TIME = TimeSpan.FromDays(30);
+
     // Core properties.
 
     public required Guid Id { get; set; }

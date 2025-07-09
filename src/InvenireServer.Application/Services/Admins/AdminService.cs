@@ -19,6 +19,11 @@ public class AdminService : IAdminService
         _repositories = repositories;
     }
 
+    public Task<IEnumerable<Admin>> IndexInactiveAsync()
+    {
+        return _repositories.Admins.IndexInactiveAsync();
+    }
+
     public async Task<Admin> GetAsync(Jwt jwt)
     {
         var claim = jwt.Payload.FirstOrDefault(c => c.Type == "admin_id" && !string.IsNullOrWhiteSpace(c.Value));
@@ -55,6 +60,12 @@ public class AdminService : IAdminService
         if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Admin).ToLower()} (ID: {admin.Id}).", result.Errors);
 
         _repositories.Admins.Update(admin);
+        await _repositories.SaveOrThrowAsync();
+    }
+
+    public async Task DeleteAsync(IEnumerable<Admin> admins)
+    {
+        foreach (var admin in admins) _repositories.Admins.Delete(admin);
         await _repositories.SaveOrThrowAsync();
     }
 }

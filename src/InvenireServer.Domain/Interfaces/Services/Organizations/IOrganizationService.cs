@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Interfaces.Services.Organizations.Invitations;
 
 namespace InvenireServer.Domain.Interfaces.Services.Organizations;
 
