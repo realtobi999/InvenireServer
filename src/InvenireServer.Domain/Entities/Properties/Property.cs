@@ -51,4 +51,9 @@ public class Property
 
         item.UnassignProperty();
     }
+
+    public void RemoveItems(IEnumerable<PropertyItem> items)
+    {
+        foreach (var item in items) RemoveItem(item);
+    }
 }

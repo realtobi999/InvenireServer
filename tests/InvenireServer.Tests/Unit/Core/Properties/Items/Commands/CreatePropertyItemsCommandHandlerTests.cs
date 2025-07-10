@@ -28,7 +28,6 @@ public class CreatePropertyItemsCommandHandlerTests
     public async Task Handle_AssignsCorrectItemsToProperty()
     {
         // Prepare.
-
         var items = new List<PropertyItem>();
         for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
 

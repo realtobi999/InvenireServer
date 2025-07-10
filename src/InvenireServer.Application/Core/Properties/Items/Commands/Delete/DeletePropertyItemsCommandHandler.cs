@@ -28,7 +28,10 @@ public class DeletePropertyItemsCommandHandler : IRequestHandler<DeletePropertyI
             items.Add(item);
         }
 
-        // Delete the items.
+        property.RemoveItems(items);
+
+        // Save changes to the database.
         await _services.Properties.Items.DeleteAsync(items);
+        await _services.Properties.UpdateAsync(property);
     }
 }

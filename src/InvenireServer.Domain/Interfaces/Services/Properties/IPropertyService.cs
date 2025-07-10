@@ -9,4 +9,5 @@ public interface IPropertyService
     Task<Property> GetAsync(Expression<Func<Property, bool>> predicate);
     Task<Property?> TryGetAsync(Expression<Func<Property, bool>> predicate);
     Task CreateAsync(Property property);
+    Task UpdateAsync(Property property);
 }

@@ -63,12 +63,10 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
 
         var itemQueue = new Queue<PropertyItem>(items);
-        _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>()))
-            .ReturnsAsync(() => itemQueue.Dequeue());
+        _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);
-        _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>()))
-            .ReturnsAsync(() => employeeQueue.Dequeue());
+        _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(() => employeeQueue.Dequeue());
 
         _services.Setup(s => s.Employees.UpdateAsync(It.IsAny<IEnumerable<Employee>>()));
         _services.Setup(s => s.Properties.Items.UpdateAsync(It.IsAny<IEnumerable<PropertyItem>>())).Callback<IEnumerable<PropertyItem>>(arg => items = [.. arg]);
@@ -229,8 +227,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(items.First());
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);
-        _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>()))
-            .ReturnsAsync(() => employeeQueue.Dequeue());
+        _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(() => employeeQueue.Dequeue());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, new CancellationToken());

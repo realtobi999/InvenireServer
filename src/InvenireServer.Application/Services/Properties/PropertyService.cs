@@ -46,4 +46,15 @@ public class PropertyService : IPropertyService
         _repositories.Properties.Create(property);
         await _repositories.SaveOrThrowAsync();
     }
+
+    public async Task UpdateAsync(Property property)
+    {
+        property.LastUpdatedAt = DateTimeOffset.UtcNow;
+
+        var result = new ValidationResult(PropertyEntityValidator.Validate(property));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(Property).ToLower()} (ID: {property.Id}).", result.Errors);
+
+        _repositories.Properties.Update(property);
+        await _repositories.SaveOrThrowAsync();
+    }
 }
