@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
+using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
@@ -65,6 +66,19 @@ public class OrganizationController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             OrganizationId = organizationId
+        });
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/organizations/invitations/{invitationId:guid}")]
+    public async Task<IActionResult> DeleteInvitation(Guid invitationId)
+    {
+        await _mediator.Send(new DeleteOrganizationInvitationCommand
+        {
+            Id = invitationId,
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
         });
 
         return NoContent();

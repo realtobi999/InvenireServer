@@ -79,4 +79,13 @@ public class Organization
     {
         foreach (var invitation in invitations) AddInvitation(invitation);
     }
+
+    public void RemoveInvitation(OrganizationInvitation invitation)
+    {
+        if (!Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is not a part of this organization.");
+
+        Invitations.Remove(invitation);
+
+        invitation.UnassignOrganization();
+    }
 }
