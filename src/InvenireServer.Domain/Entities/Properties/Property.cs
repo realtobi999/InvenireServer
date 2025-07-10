@@ -18,7 +18,7 @@ public class Property
 
     public Guid? OrganizationId { get; private set; }
 
-    public Collection<PropertyItem> Items { get; private set; } = [];
+    public Collection<PropertyItem> Items { get; } = [];
 
     // Methods.
 
@@ -45,7 +45,7 @@ public class Property
 
     public void RemoveItem(PropertyItem item)
     {
-        if (!Items.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not a part of this property.");
+        if (Items.All(i => i.Id != item.Id)) throw new BadRequest400Exception("This item is not a part of this property.");
 
         Items.Remove(item);
 

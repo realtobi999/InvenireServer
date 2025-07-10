@@ -45,7 +45,7 @@ public class CreateOrganizationCommandHandlerTests
         _email.Setup(e => e.Sender.SendEmailAsync(It.IsAny<MailMessage>()));
 
         // Act & Assert.
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the organization is correctly constructed.
         var organization = result.Organization;

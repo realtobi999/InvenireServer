@@ -2,7 +2,7 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Integration.Fakers.Properties;
 
-public class PropertyFaker : Faker<Property>
+public sealed class PropertyFaker : Faker<Property>
 {
     private PropertyFaker()
     {

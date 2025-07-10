@@ -8,8 +8,6 @@ using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication.Options;
 using InvenireServer.Infrastructure.Email;

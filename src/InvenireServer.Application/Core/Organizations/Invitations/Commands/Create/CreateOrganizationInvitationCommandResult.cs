@@ -4,6 +4,6 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Cre
 
 public record CreateOrganizationInvitationCommandResult
 {
-    public required Organization Organization { get; set; }
-    public required OrganizationInvitation Invitation { get; set; }
+    public required Organization Organization { get; init; }
+    public required OrganizationInvitation Invitation { get; init; }
 }

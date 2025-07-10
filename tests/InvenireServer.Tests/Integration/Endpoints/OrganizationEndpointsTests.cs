@@ -21,7 +21,7 @@ public class OrganizationEndpointsTests
     public OrganizationEndpointsTests()
     {
         _app = new ServerFactory<Program>();
-        _jwt = new JwtManagerFaker().Initiate();
+        _jwt = JwtManagerFaker.Initiate();
         _client = _app.CreateDefaultClient();
     }
 

@@ -4,7 +4,7 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Fakers.Organizations;
 
-public class OrganizationFaker : Faker<Organization>
+public sealed class OrganizationFaker : Faker<Organization>
 {
     private OrganizationFaker()
     {

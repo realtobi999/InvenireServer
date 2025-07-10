@@ -35,7 +35,7 @@ public class ConfirmVerificationAdminCommandHandlerTests
         _services.Setup(s => s.Admins.UpdateAsync(admin));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the admin is verified.
         admin.IsVerified.Should().BeTrue();
@@ -51,7 +51,7 @@ public class ConfirmVerificationAdminCommandHandlerTests
         };
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Indication that the token is used for email verification is missing.");
     }
@@ -72,7 +72,7 @@ public class ConfirmVerificationAdminCommandHandlerTests
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Admin is already verified.");
     }

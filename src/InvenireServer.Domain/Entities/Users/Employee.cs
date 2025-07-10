@@ -41,7 +41,7 @@ public class Employee
 
     public Guid? OrganizationId { get; private set; }
 
-    public Collection<PropertyItem> AssignedItems { get; private set; } = [];
+    public Collection<PropertyItem> AssignedItems { get; } = [];
 
     // Methods.
 
@@ -82,7 +82,7 @@ public class Employee
 
     public void RemoveItem(PropertyItem item)
     {
-        if (!AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is not assigned to this employee.");
+        if (AssignedItems.All(i => i.Id != item.Id)) throw new BadRequest400Exception("This item is not assigned to this employee.");
 
         AssignedItems.Remove(item);
 

@@ -1,6 +1,6 @@
 namespace InvenireServer.Application.Dtos.Admins.Email;
 
-public record class AdminVerificationEmailDto
+public record AdminVerificationEmailDto
 {
     public required string AdminAddress { get; init; }
 

@@ -52,11 +52,10 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             item.Description = command.Description;
             item.DocumentNumber = command.DocumentNumber;
 
-            if (item.EmployeeId != command.EmployeeId)
-            {
-                if (item.EmployeeId.HasValue && employees.TryGetValue(item.EmployeeId.Value, out var originalEmployee)) originalEmployee.RemoveItem(item);
-                if (command.EmployeeId.HasValue && employees.TryGetValue(command.EmployeeId.Value, out var newEmployee)) newEmployee.AddItem(item);
-            }
+            if (item.EmployeeId == command.EmployeeId) continue;
+
+            if (item.EmployeeId.HasValue && employees.TryGetValue(item.EmployeeId.Value, out var originalEmployee)) originalEmployee.RemoveItem(item);
+            if (command.EmployeeId.HasValue && employees.TryGetValue(command.EmployeeId.Value, out var newEmployee)) newEmployee.AddItem(item);
         }
 
         // Save changes to the database.

@@ -78,7 +78,7 @@ public class OrganizationController : ControllerBase
         await _mediator.Send(new DeleteOrganizationInvitationCommand
         {
             Id = invitationId,
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         });
 
         return NoContent();

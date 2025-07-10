@@ -39,7 +39,7 @@ public class CreatePropertyCommandHandlerTests
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
         // Act & Assert.
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the property is correctly constructed.
         var property = result.Property;
@@ -69,7 +69,7 @@ public class CreatePropertyCommandHandlerTests
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before adding a property.");
     }

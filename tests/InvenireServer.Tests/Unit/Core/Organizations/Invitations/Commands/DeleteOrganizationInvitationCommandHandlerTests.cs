@@ -30,7 +30,7 @@ public class DeleteOrganizationInvitationCommandHandlerTests
         var command = new DeleteOrganizationInvitationCommand
         {
             Id = invitation.Id,
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -40,7 +40,7 @@ public class DeleteOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the organization is missing the invitation.
         organization.Invitations.Should().NotContain(i => i.Id == invitation.Id);
@@ -57,14 +57,14 @@ public class DeleteOrganizationInvitationCommandHandlerTests
         var command = new DeleteOrganizationInvitationCommand
         {
             Id = invitation.Id,
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before deleting any invitations.");
     }
@@ -80,7 +80,7 @@ public class DeleteOrganizationInvitationCommandHandlerTests
         var command = new DeleteOrganizationInvitationCommand
         {
             Id = invitation.Id,
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -88,7 +88,7 @@ public class DeleteOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.Id == command.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The specified invitation does not exist or may have already been deleted.");
     }

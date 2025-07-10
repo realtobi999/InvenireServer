@@ -37,7 +37,7 @@ public class DeletePropertyItemsCommandHandlerTests
         var command = new DeletePropertyItemsCommand
         {
             Ids = [.. items.Select(i => i.Id)],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -51,7 +51,7 @@ public class DeletePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.UpdateAsync(property));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the property is missing the deleted items.
         property.Items.Select(i => i.Id).Should().NotContain(items.Select(i => i.Id));
@@ -72,14 +72,14 @@ public class DeletePropertyItemsCommandHandlerTests
         var command = new DeletePropertyItemsCommand
         {
             Ids = [.. items.Select(i => i.Id)],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must create an organization before modifying your property.");
     }
@@ -99,7 +99,7 @@ public class DeletePropertyItemsCommandHandlerTests
         var command = new DeletePropertyItemsCommand
         {
             Ids = [.. items.Select(i => i.Id)],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -107,7 +107,7 @@ public class DeletePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created a property. You must create a property before modifying its items.");
     }
@@ -127,7 +127,7 @@ public class DeletePropertyItemsCommandHandlerTests
         var command = new DeletePropertyItemsCommand
         {
             Ids = [.. items.Select(i => i.Id)],
-            Jwt = new Jwt([], []),
+            Jwt = new Jwt([], [])
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -138,7 +138,7 @@ public class DeletePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Cannot update a item from a property you do not own.");
     }

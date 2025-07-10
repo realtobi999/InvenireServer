@@ -1,9 +1,8 @@
 using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Integration.Fakers.Properties;
 
-public class PropertyItemFaker : Faker<PropertyItem>
+public sealed class PropertyItemFaker : Faker<PropertyItem>
 {
     private PropertyItemFaker()
     {

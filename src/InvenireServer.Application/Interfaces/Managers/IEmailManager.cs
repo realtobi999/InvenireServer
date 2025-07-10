@@ -19,7 +19,7 @@ public interface IEmailBuilderGroup
 
 public class EmailBuilderGroup : IEmailBuilderGroup
 {
-    public required IAdminEmailBuilder Admin { get; set; }
+    public required IAdminEmailBuilder Admin { get; init; }
 
-    public required IEmployeeEmailBuilder Employee { get; set; }
+    public required IEmployeeEmailBuilder Employee { get; init; }
 }

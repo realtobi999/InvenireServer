@@ -35,7 +35,7 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.UpdateAsync(employee));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the employee is verified.
         employee.IsVerified.Should().BeTrue();
@@ -51,7 +51,7 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
         };
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Indication that the token is used for email verification is missing.");
     }
@@ -72,7 +72,7 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Employee is already verified.");
     }

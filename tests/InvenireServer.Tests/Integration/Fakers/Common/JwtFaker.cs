@@ -7,7 +7,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Common;
 
 public class JwtManagerFaker
 {
-    public JwtManager Initiate()
+    public static JwtManager Initiate()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())

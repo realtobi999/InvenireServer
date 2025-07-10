@@ -12,16 +12,12 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 public class RegisterAdminCommandHandlerTests
 {
     private readonly RegisterAdminCommandHandler _handler;
-    private readonly PasswordHasher<Admin> _hasher;
-    private readonly IJwtManager _jwt;
     private readonly Mock<IServiceManager> _services;
 
     public RegisterAdminCommandHandlerTests()
     {
-        _jwt = new JwtManagerFaker().Initiate();
-        _hasher = new PasswordHasher<Admin>();
         _services = new Mock<IServiceManager>();
-        _handler = new RegisterAdminCommandHandler(_services.Object, _hasher, _jwt);
+        _handler = new RegisterAdminCommandHandler(_services.Object, new PasswordHasher<Admin>(), new JwtManagerFaker().Initiate());
     }
 
     [Fact]
@@ -42,7 +38,7 @@ public class RegisterAdminCommandHandlerTests
         _services.Setup(s => s.Admins.CreateAsync(It.IsAny<Admin>()));
 
         // Act & Assert.
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the admin is correctly constructed.
         var admin = result.Admin;

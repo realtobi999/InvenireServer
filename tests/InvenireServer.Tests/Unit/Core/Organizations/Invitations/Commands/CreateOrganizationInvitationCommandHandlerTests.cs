@@ -42,7 +42,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
         // Act & Assert.
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the invitation is correctly constructed.
         var invitation = result.Invitation;
@@ -81,7 +81,7 @@ public class CreateOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before creating invitations.");
     }
@@ -107,20 +107,20 @@ public class CreateOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
 
         // Act & Assert.
-        for (int i = 0; i <= Organization.MAX_AMOUNT_OF_INVITATIONS; i++)
+        for (var i = 0; i <= Organization.MAX_AMOUNT_OF_INVITATIONS; i++)
         {
             command = command with
             {
                 Id = Guid.NewGuid()
             };
-            await _handler.Handle(command, new CancellationToken());
+            await _handler.Handle(command, CancellationToken.None);
         }
 
         command = command with
         {
             Id = Guid.NewGuid()
         };
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Maximum number of invitations reached.");
     }

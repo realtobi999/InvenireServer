@@ -4,11 +4,11 @@ namespace InvenireServer.Application.Behaviors;
 
 public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
-    private readonly ITransactionScope transaction;
+    private readonly ITransactionScope _transaction;
 
     public TransactionBehavior(ITransactionScope transaction)
     {
-        this.transaction = transaction;
+        this._transaction = transaction;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken token)
@@ -16,6 +16,6 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         // Only apply transaction to commands, not queries.
         if (!typeof(TRequest).Name.EndsWith("Command")) return await next(token);
 
-        return await transaction.ExecuteAsync(() => next(token));
+        return await _transaction.ExecuteAsync(() => next(token));
     }
 }

@@ -11,11 +11,11 @@ public record CreateOrganizationCommand : IRequest<CreateOrganizationCommandResu
     public Guid? Id { get; init; }
 
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 
     [JsonIgnore]
-    public string? FrontendBaseUrl { get; set; }
+    public string? FrontendBaseUrl { get; init; }
 }

@@ -12,7 +12,7 @@ public static class OrganizationTextExtensions
         var dto = new CreateOrganizationCommand
         {
             Id = organization.Id,
-            Name = organization.Name,
+            Name = organization.Name
         };
 
         return dto;

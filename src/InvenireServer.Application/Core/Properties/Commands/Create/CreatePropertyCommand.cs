@@ -8,8 +8,8 @@ namespace InvenireServer.Application.Core.Properties.Commands.Create;
 public record CreatePropertyCommand : IRequest<CreatePropertyCommandResponse>
 {
     [JsonPropertyName("id")]
-    public Guid? Id { get; set; }
+    public Guid? Id { get; init; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 }

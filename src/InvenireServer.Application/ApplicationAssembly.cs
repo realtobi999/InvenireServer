@@ -1,5 +1,3 @@
 namespace InvenireServer.Application;
 
-public class ApplicationAssembly
-{
-}
+public class ApplicationAssembly;

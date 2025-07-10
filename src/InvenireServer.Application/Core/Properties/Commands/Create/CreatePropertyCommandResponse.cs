@@ -4,5 +4,5 @@ namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
 public record CreatePropertyCommandResponse
 {
-    public required Property Property { get; set; }
+    public required Property Property { get; init; }
 }

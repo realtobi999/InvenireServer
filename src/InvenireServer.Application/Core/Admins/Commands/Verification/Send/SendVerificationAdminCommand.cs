@@ -4,6 +4,6 @@ namespace InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 
 public record SendVerificationAdminCommand : IRequest
 {
-    public required Jwt Jwt { get; set; }
-    public required string FrontendBaseUrl { get; set; }
+    public required Jwt Jwt { get; init; }
+    public required string FrontendBaseUrl { get; init; }
 }

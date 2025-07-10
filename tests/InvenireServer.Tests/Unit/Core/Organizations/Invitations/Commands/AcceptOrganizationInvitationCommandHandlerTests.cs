@@ -42,7 +42,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Employees.UpdateAsync(employee));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the employee is part of the organization.
         employee.OrganizationId.Should().Be(organization.Id);
@@ -69,7 +69,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
     }
@@ -94,7 +94,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
     }
@@ -120,7 +120,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization1.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("This employee is already part of a another organization");
     }

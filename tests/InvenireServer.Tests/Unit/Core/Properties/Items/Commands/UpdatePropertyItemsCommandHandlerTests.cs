@@ -72,7 +72,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.Items.UpdateAsync(It.IsAny<IEnumerable<PropertyItem>>())).Callback<IEnumerable<PropertyItem>>(arg => items = [.. arg]);
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the property has the correctly updated items.
         for (var i = 0; i < items.Count; i++)
@@ -112,7 +112,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must create an organization before modifying your property.");
     }
@@ -135,7 +135,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created a property. You must create a property before modifying its items.");
     }
@@ -181,7 +181,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(employee);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Cannot update a item from a property you do not own.");
     }
@@ -230,7 +230,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(() => employeeQueue.Dequeue());
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Cannot assign property item to an employee from a another organization.");
     }

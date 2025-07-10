@@ -28,9 +28,9 @@ public class Organization
 
     public Property? Property { get; private set; }
 
-    public ICollection<Employee> Employees { get; private set; } = [];
+    public ICollection<Employee> Employees { get; } = [];
 
-    public ICollection<OrganizationInvitation> Invitations { get; private set; } = [];
+    public ICollection<OrganizationInvitation> Invitations { get; } = [];
 
     // Methods.
 
@@ -83,7 +83,7 @@ public class Organization
 
     public void RemoveInvitation(OrganizationInvitation invitation)
     {
-        if (!Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is not a part of this organization.");
+        if (Invitations.All(i => i.Id != invitation.Id)) throw new BadRequest400Exception("This invitation is not a part of this organization.");
 
         Invitations.Remove(invitation);
 

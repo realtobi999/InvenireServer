@@ -12,16 +12,12 @@ namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 public class RegisterEmployeeCommandHandlerTests
 {
     private readonly RegisterEmployeeCommandHandler _handler;
-    private readonly PasswordHasher<Employee> _hasher;
-    private readonly IJwtManager _jwt;
     private readonly Mock<IServiceManager> _services;
 
     public RegisterEmployeeCommandHandlerTests()
     {
-        _jwt = new JwtManagerFaker().Initiate();
-        _hasher = new PasswordHasher<Employee>();
         _services = new Mock<IServiceManager>();
-        _handler = new RegisterEmployeeCommandHandler(_services.Object, _hasher, _jwt);
+        _handler = new RegisterEmployeeCommandHandler(_services.Object, new PasswordHasher<Employee>(), new JwtManagerFaker().Initiate());
     }
 
     [Fact]
@@ -42,7 +38,7 @@ public class RegisterEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.CreateAsync(It.IsAny<Employee>()));
 
         // Act & Assert.
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the employee is correctly constructed.
         var employee = result.Employee;

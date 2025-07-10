@@ -14,16 +14,14 @@ public class SendVerificationAdminCommandHandlerTests
 {
     private readonly Mock<IEmailManager> _email;
     private readonly SendVerificationAdminCommandHandler _handler;
-    private readonly IJwtManager _jwt;
     private readonly Mock<IServiceManager> _services;
 
     public SendVerificationAdminCommandHandlerTests()
     {
-        _jwt = new JwtManagerFaker().Initiate();
         _email = new Mock<IEmailManager>();
         _services = new Mock<IServiceManager>();
 
-        _handler = new SendVerificationAdminCommandHandler(_services.Object, _email.Object, _jwt);
+        _handler = new SendVerificationAdminCommandHandler(_services.Object, _email.Object, new JwtManagerFaker().Initiate());
     }
 
     [Fact]
@@ -44,7 +42,7 @@ public class SendVerificationAdminCommandHandlerTests
         _email.Setup(e => e.Sender.SendEmailAsync(It.IsAny<MailMessage>()));
 
         // Act & Assert
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the email dto is correctly build.
         dto.Should().NotBeNull();

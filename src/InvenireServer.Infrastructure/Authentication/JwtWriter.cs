@@ -13,12 +13,12 @@ public class JwtWriter : IJwtWriter
         SigningKey = key;
     }
 
-    public string SigningKey { get; set; }
+    public string SigningKey { get; }
 
     public string Write(Jwt jwt)
     {
-        var headerJson = JsonSerializer.Serialize(jwt.Header.ToDictionary(c => c.Type, c => (object)c.Value));
-        var payloadJson = JsonSerializer.Serialize(jwt.Payload.ToDictionary(c => c.Type, c => (object)c.Value));
+        var headerJson = JsonSerializer.Serialize(jwt.Header.ToDictionary(c => c.Type, object (c) => c.Value));
+        var payloadJson = JsonSerializer.Serialize(jwt.Payload.ToDictionary(c => c.Type, object (c) => c.Value));
 
         var encodedHeader = EncodeBase64Url(Encoding.UTF8.GetBytes(headerJson));
         var encodedPayload = EncodeBase64Url(Encoding.UTF8.GetBytes(payloadJson));
@@ -29,6 +29,7 @@ public class JwtWriter : IJwtWriter
     }
 
     /** -------------------------------------------------------------------------- **/
+
     private string ComputeHmacSha256(string message)
     {
         using var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(SigningKey));

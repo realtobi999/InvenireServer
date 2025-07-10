@@ -16,9 +16,9 @@ public class JwtBuilder : IJwtBuilder
         ExpirationTime = TimeSpan.FromMinutes(expiration);
     }
 
-    public string Issuer { get; set; }
+    public string Issuer { get; }
 
-    public TimeSpan ExpirationTime { get; set; }
+    public TimeSpan ExpirationTime { get; }
 
     public Jwt Build(List<Claim>? claims = null)
     {
@@ -54,12 +54,7 @@ public class JwtBuilder : IJwtBuilder
     private static List<Claim> ParseJsonToClaims(string json)
     {
         var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
-        if (dict == null) return [];
-
-        var claims = new List<Claim>();
-        foreach (var kvp in dict) claims.Add(new Claim(kvp.Key, kvp.Value.ToString()));
-
-        return claims;
+        return dict == null ? [] : dict.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
     }
 
     private static string DecodeBase64Url(string input)

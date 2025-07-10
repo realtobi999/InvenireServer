@@ -55,7 +55,7 @@ public class CreatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Employees.UpdateAsync(It.IsAny<IEnumerable<Employee>>()));
 
         // Act & Assert.
-        await _handler.Handle(command, new CancellationToken());
+        await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the property has the correctly constructed items.
         for (var i = 0; i < items.Count; i++)
@@ -97,7 +97,7 @@ public class CreatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.GetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must create an organization before modifying your property.");
     }
@@ -121,7 +121,7 @@ public class CreatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created a property. You must create a property before creating its items.");
     }
@@ -150,7 +150,7 @@ public class CreatePropertyItemsCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(employee);
 
         // Act & Assert.
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Cannot assign property to a employee from a another organization.");
     }

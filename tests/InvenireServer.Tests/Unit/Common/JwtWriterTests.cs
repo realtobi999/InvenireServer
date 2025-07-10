@@ -13,6 +13,7 @@ public class JwtWriterTests
         _writer = new JwtWriter("test");
     }
 
+    [Fact]
     public void Write_ReturnsACorrectStringJwtRepresentation()
     {
         // Prepare.

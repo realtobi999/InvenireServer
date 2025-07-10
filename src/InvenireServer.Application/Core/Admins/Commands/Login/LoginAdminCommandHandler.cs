@@ -54,6 +54,6 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         {
             Token = _jwt.Writer.Write(jwt)
         };
-  
- }
+
+    }
 }

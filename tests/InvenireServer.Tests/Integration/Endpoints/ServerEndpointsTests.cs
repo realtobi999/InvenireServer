@@ -14,7 +14,7 @@ public class ServerEndpointsTests
     public ServerEndpointsTests()
     {
         _app = new ServerFactory<Program>();
-        _jwt = new JwtManagerFaker().Initiate();
+        _jwt = JwtManagerFaker.Initiate();
         _client = _app.CreateDefaultClient();
     }
 

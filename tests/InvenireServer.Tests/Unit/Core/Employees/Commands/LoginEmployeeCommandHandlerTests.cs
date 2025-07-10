@@ -14,15 +14,13 @@ public class LoginEmployeeCommandHandlerTests
 {
     private readonly LoginEmployeeCommandHandler _handler;
     private readonly PasswordHasher<Employee> _hasher;
-    private readonly IJwtManager _jwt;
     private readonly Mock<IServiceManager> _services;
 
     public LoginEmployeeCommandHandlerTests()
     {
-        _jwt = new JwtManagerFaker().Initiate();
         _hasher = new PasswordHasher<Employee>();
         _services = new Mock<IServiceManager>();
-        _handler = new LoginEmployeeCommandHandler(_services.Object, _hasher, _jwt);
+        _handler = new LoginEmployeeCommandHandler(_services.Object, _hasher, new JwtManagerFaker().Initiate());
     }
 
     [Fact]
@@ -43,7 +41,7 @@ public class LoginEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
 
         // Act & Assert
-        var result = await _handler.Handle(command, new CancellationToken());
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert that the token has all the necessary claims.
         var jwt = JwtBuilder.Parse(result.Token);
@@ -73,7 +71,7 @@ public class LoginEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ThrowsAsync(new NotFound404Exception());
 
         // Act & Assert
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Invalid credentials.");
     }
@@ -96,7 +94,7 @@ public class LoginEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
 
         // Act & Assert
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Invalid credentials.");
     }
@@ -119,7 +117,7 @@ public class LoginEmployeeCommandHandlerTests
         _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
 
         // Act & Assert
-        var action = async () => await _handler.Handle(command, new CancellationToken());
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification required to proceed.");
     }

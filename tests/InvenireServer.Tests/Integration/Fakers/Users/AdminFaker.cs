@@ -1,10 +1,9 @@
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Tests.Integration.Extensions;
 
 namespace InvenireServer.Tests.Integration.Fakers.Users;
 
-public class AdminFaker : Faker<Admin>
+public sealed class AdminFaker : Faker<Admin>
 {
     private AdminFaker()
     {
