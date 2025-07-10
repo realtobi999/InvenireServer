@@ -66,6 +66,15 @@ public class Organization
         foreach (var employee in employees) AddEmployee(employee);
     }
 
+    public void RemoveEmployee(Employee employee)
+    {
+        if (!Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is not a part of this organization.");
+
+        Employees.Remove(employee);
+
+        employee.UnassignOrganization();
+    }
+
     public void AddInvitation(OrganizationInvitation invitation)
     {
         if (Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
@@ -83,7 +92,7 @@ public class Organization
 
     public void RemoveInvitation(OrganizationInvitation invitation)
     {
-        if (Invitations.All(i => i.Id != invitation.Id)) throw new BadRequest400Exception("This invitation is not a part of this organization.");
+        if (Invitations.All(i => i.Id != invitation.Id)) throw new BadRequest400Exception("This invitation is not part of this organization.");
 
         Invitations.Remove(invitation);
 

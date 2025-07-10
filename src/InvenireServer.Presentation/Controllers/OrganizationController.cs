@@ -1,23 +1,24 @@
+using MediatR;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using InvenireServer.Application.Core.Organizations.Commands.Remove;
 
 namespace InvenireServer.Presentation.Controllers;
 
 [ApiController]
 public class OrganizationController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
     public OrganizationController(IMediator mediator, IConfiguration configuration)
     {
@@ -79,6 +80,19 @@ public class OrganizationController : ControllerBase
         {
             Id = invitationId,
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        });
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/organizations/employees/{employeeId:guid}")]
+    public async Task<IActionResult> RemoveEmployee(Guid employeeId)
+    {
+        await _mediator.Send(new RemoveOrganizationEmployeeCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            EmployeeId = employeeId
         });
 
         return NoContent();

@@ -20,7 +20,7 @@ public class LoginAdminCommandHandlerTests
     {
         _hasher = new PasswordHasher<Admin>();
         _services = new Mock<IServiceManager>();
-        _handler = new LoginAdminCommandHandler(_services.Object, _hasher, new JwtManagerFaker().Initiate());
+        _handler = new LoginAdminCommandHandler(_services.Object, _hasher, JwtManagerFaker.Initiate());
     }
 
     [Fact]

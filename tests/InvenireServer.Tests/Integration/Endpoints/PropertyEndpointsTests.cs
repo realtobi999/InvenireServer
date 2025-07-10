@@ -26,7 +26,7 @@ public class PropertyEndpointsTests
     public PropertyEndpointsTests()
     {
         _app = new ServerFactory<Program>();
-        _jwt = new JwtManagerFaker().Initiate();
+        _jwt = JwtManagerFaker.Initiate();
         _client = _app.CreateDefaultClient();
     }
 

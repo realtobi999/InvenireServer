@@ -17,7 +17,7 @@ public class RegisterAdminCommandHandlerTests
     public RegisterAdminCommandHandlerTests()
     {
         _services = new Mock<IServiceManager>();
-        _handler = new RegisterAdminCommandHandler(_services.Object, new PasswordHasher<Admin>(), new JwtManagerFaker().Initiate());
+        _handler = new RegisterAdminCommandHandler(_services.Object, new PasswordHasher<Admin>(), JwtManagerFaker.Initiate());
     }
 
     [Fact]

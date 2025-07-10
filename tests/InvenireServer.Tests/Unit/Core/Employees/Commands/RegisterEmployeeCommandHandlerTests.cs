@@ -17,7 +17,7 @@ public class RegisterEmployeeCommandHandlerTests
     public RegisterEmployeeCommandHandlerTests()
     {
         _services = new Mock<IServiceManager>();
-        _handler = new RegisterEmployeeCommandHandler(_services.Object, new PasswordHasher<Employee>(), new JwtManagerFaker().Initiate());
+        _handler = new RegisterEmployeeCommandHandler(_services.Object, new PasswordHasher<Employee>(), JwtManagerFaker.Initiate());
     }
 
     [Fact]

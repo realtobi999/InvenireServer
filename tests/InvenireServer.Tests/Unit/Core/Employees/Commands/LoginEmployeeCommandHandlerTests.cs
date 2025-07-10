@@ -20,7 +20,7 @@ public class LoginEmployeeCommandHandlerTests
     {
         _hasher = new PasswordHasher<Employee>();
         _services = new Mock<IServiceManager>();
-        _handler = new LoginEmployeeCommandHandler(_services.Object, _hasher, new JwtManagerFaker().Initiate());
+        _handler = new LoginEmployeeCommandHandler(_services.Object, _hasher, JwtManagerFaker.Initiate());
     }
 
     [Fact]

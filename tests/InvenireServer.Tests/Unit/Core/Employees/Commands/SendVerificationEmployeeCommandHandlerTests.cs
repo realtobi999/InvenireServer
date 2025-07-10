@@ -21,7 +21,7 @@ public class SendVerificationEmployeeCommandHandlerTests
         _email = new Mock<IEmailManager>();
         _services = new Mock<IServiceManager>();
 
-        _handler = new SendVerificationEmployeeCommandHandler(_services.Object, _email.Object, new JwtManagerFaker().Initiate());
+        _handler = new SendVerificationEmployeeCommandHandler(_services.Object, _email.Object, JwtManagerFaker.Initiate());
     }
 
     [Fact]
