@@ -69,6 +69,7 @@ public class Organization
     public void AddInvitation(OrganizationInvitation invitation)
     {
         if (Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
+        if (Invitations.Count > MAX_AMOUNT_OF_INVITATIONS) throw new BadRequest400Exception("Maximum number of invitations reached.");
 
         Invitations.Add(invitation);
 

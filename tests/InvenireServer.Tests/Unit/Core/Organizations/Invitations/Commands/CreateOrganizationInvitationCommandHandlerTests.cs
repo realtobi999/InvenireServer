@@ -85,4 +85,43 @@ public class CreateOrganizationInvitationCommandHandlerTests
 
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before creating invitations.");
     }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheNumberOfInvitationsExceedsMaximum()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
+
+        var command = new CreateOrganizationInvitationCommand
+        {
+            EmployeeId = employee.Id,
+            Jwt = new Jwt([], [])
+        };
+
+        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.UpdateAsync(It.IsAny<Organization>()));
+        _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
+
+        // Act & Assert.
+        for (int i = 0; i <= Organization.MAX_AMOUNT_OF_INVITATIONS; i++)
+        {
+            command = command with
+            {
+                Id = Guid.NewGuid()
+            };
+            await _handler.Handle(command, new CancellationToken());
+        }
+
+        command = command with
+        {
+            Id = Guid.NewGuid()
+        };
+        var action = async () => await _handler.Handle(command, new CancellationToken());
+
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Maximum number of invitations reached.");
+    }
 }
