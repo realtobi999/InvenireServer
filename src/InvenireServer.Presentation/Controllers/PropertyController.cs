@@ -7,6 +7,7 @@ using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
@@ -169,13 +170,30 @@ public class PropertyController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/suggestions/{suggestionId:guid}/accept")]
-    public async Task<IActionResult> AcceptItemsSuggestion(Guid suggestionId)
+    public async Task<IActionResult> AcceptSuggestion(Guid suggestionId)
     {
         await _mediator.Send(new AcceptPropertySuggestionCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             SuggestionId = suggestionId
         });
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/suggestions/{suggestionId:guid}/decline")]
+    public async Task<IActionResult> DeclineSuggestion([FromBody] DeclinePropertySuggestionCommand command, Guid suggestionId)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            SuggestionId = suggestionId
+        };
+        await _mediator.Send(command);
 
         return NoContent();
     }

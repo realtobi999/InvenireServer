@@ -26,7 +26,7 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
             Name = request.Name,
             Description = request.Description,
             Feedback = null,
-            IsCompleted = null,
+            Status = PropertySuggestionStatus.PENDING,
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
             RequestBody = request.RequestBody,

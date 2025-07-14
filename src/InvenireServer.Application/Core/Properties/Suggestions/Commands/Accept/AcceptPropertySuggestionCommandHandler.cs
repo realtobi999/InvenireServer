@@ -1,9 +1,9 @@
-
 using System.Text.Json;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
@@ -27,10 +27,11 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
         var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
 
         if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception();
+        if (suggestion.Status != PropertySuggestionStatus.PENDING) throw new BadRequest400Exception();
 
         switch (suggestion.RequestType)
         {
-            case Domain.Entities.Properties.PropertySuggestionRequestType.CREATE:
+            case PropertySuggestionRequestType.CREATE:
                 await _mediator.Send(new CreatePropertyItemsCommand
                 {
                     Items = JsonSerializer.Deserialize<List<CreatePropertyItemCommand>>(suggestion.RequestBody)!,
@@ -38,7 +39,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
                 }, _);
 
                 break;
-            case Domain.Entities.Properties.PropertySuggestionRequestType.UPDATE:
+            case PropertySuggestionRequestType.UPDATE:
                 await _mediator.Send(new UpdatePropertyItemsCommand
                 {
                     Items = JsonSerializer.Deserialize<List<UpdatePropertyItemCommand>>(suggestion.RequestBody)!,
@@ -46,7 +47,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
                 }, _);
 
                 break;
-            case Domain.Entities.Properties.PropertySuggestionRequestType.DELETE:
+            case PropertySuggestionRequestType.DELETE:
                 await _mediator.Send(new DeletePropertyItemsCommand
                 {
                     Ids = JsonSerializer.Deserialize<List<Guid>>(suggestion.RequestBody)!,
@@ -56,7 +57,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
                 break;
         }
 
-        suggestion.IsCompleted = true;
+        suggestion.Status = PropertySuggestionStatus.APPROVED;
 
         await _services.Properties.Suggestion.UpdateAsync(suggestion);
     }

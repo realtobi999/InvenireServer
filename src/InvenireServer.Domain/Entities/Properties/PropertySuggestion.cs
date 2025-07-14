@@ -20,7 +20,7 @@ public class PropertySuggestion
 
     public required string? Feedback { get; set; }
 
-    public required bool? IsCompleted { get; set; }
+    public required PropertySuggestionStatus Status { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; }
 
@@ -42,4 +42,11 @@ public enum PropertySuggestionRequestType
     CREATE,
     UPDATE,
     DELETE
+}
+
+public enum PropertySuggestionStatus
+{
+    APPROVED,
+    PENDING,
+    DECLINED,
 }
