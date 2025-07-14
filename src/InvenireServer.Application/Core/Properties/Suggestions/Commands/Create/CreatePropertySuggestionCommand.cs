@@ -26,7 +26,7 @@ public record CreatePropertySuggestionCommand : IRequest<CreatePropertySuggestio
 public abstract record BasePropertySuggestionRequest
 {
     [JsonPropertyName("id")]
-    public required Guid? Id { get; set; }
+    public Guid? Id { get; set; }
 
     [JsonPropertyName("name")]
     public required string Name { get; set; }

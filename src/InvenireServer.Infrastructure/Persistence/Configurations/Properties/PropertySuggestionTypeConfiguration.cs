@@ -29,8 +29,9 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
             .HasColumnName("feedback")
             .HasMaxLength(PropertySuggestion.MAX_FEEDBACK_LENGTH);
 
-        builder.Property(s => s.IsCompleted)
-            .HasColumnName("is_completed");
+        builder.Property(s => s.Status)
+            .HasColumnName("status")
+            .IsRequired();
 
         builder.Property(s => s.CreatedAt)
             .HasColumnName("created_at")
