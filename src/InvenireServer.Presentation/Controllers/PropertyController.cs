@@ -1,10 +1,14 @@
+using System.Text.Json;
 using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
 using MediatR;
@@ -82,6 +86,95 @@ public class PropertyController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             Ids = ids
+        });
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpPost("/api/properties/suggestions/items")]
+    public async Task<IActionResult> CreateItemsSuggestion([FromBody] PostPropertySuggestionRequest request)
+    {
+        if (request is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        var validator = new CreatePropertyItemCommandValidator();
+        foreach (var command in request.RequestBody)
+        {
+            var validation = validator.Validate(command);
+            if (!validation.IsValid)
+                throw new ValidationException(validation.Errors);
+        }
+
+        var result = await _mediator.Send(new CreatePropertySuggestionCommand
+        {
+            Id = request.Id,
+            Name = request.Name,
+            Description = request.Description,
+            RequestBody = JsonSerializer.Serialize(request.RequestBody),
+            RequestType = PropertySuggestionRequestType.CREATE,
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return Created($"/api/properties/suggestions/{result.Suggestion.Id}", null);
+    }
+
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpPut("/api/properties/suggestions/items")]
+    public async Task<IActionResult> UpdateItemsSuggestion([FromBody] PutPropertySuggestionRequest request)
+    {
+        if (request is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        var validator = new UpdatePropertyItemCommandValidator();
+        foreach (var command in request.RequestBody)
+        {
+            var validation = validator.Validate(command);
+            if (!validation.IsValid)
+                throw new ValidationException(validation.Errors);
+        }
+
+        var result = await _mediator.Send(new CreatePropertySuggestionCommand
+        {
+            Id = request.Id,
+            Name = request.Name,
+            Description = request.Description,
+            RequestBody = JsonSerializer.Serialize(request.RequestBody),
+            RequestType = PropertySuggestionRequestType.UPDATE,
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return Created($"/api/properties/suggestions/{result.Suggestion.Id}", null);
+    }
+
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpDelete("/api/properties/suggestions/items")]
+    public async Task<IActionResult> DeleteItemsSuggestion([FromBody] DeletePropertySuggestionRequest request)
+    {
+        if (request is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        var result = await _mediator.Send(new CreatePropertySuggestionCommand
+        {
+            Id = request.Id,
+            Name = request.Name,
+            Description = request.Description,
+            RequestBody = JsonSerializer.Serialize(request.RequestBody),
+            RequestType = PropertySuggestionRequestType.DELETE,
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return Created($"/api/properties/suggestions/{result.Suggestion.Id}", null);
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/suggestions/{suggestionId:guid}/accept")]
+    public async Task<IActionResult> AcceptItemsSuggestion(Guid suggestionId)
+    {
+        await _mediator.Send(new AcceptPropertySuggestionCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            SuggestionId = suggestionId
         });
 
         return NoContent();

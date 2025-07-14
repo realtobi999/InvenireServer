@@ -9,6 +9,7 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
     public void Configure(EntityTypeBuilder<Property> builder)
     {
         // Properties.
+
         builder.Property(p => p.Id)
             .HasColumnName("id")
             .IsRequired();
@@ -22,8 +23,13 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
             .HasColumnName("last_updated_at");
 
         // Relationships.
+
         builder.HasMany(p => p.Items)
             .WithOne()
             .HasForeignKey(i => i.PropertyId);
+
+        builder.HasMany(p => p.Suggestions)
+            .WithOne()
+            .HasForeignKey(s => s.PropertyId);
     }
 }

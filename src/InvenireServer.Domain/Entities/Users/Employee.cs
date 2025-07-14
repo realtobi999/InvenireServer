@@ -43,6 +43,8 @@ public class Employee
 
     public Collection<PropertyItem> AssignedItems { get; } = [];
 
+    public Collection<PropertySuggestion> Suggestions { get; } = [];
+
     // Methods.
 
     public void Verify()
@@ -68,7 +70,7 @@ public class Employee
 
     public void AddItem(PropertyItem item)
     {
-        if (AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already assigned to another employee.");
+        if (AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already assigned to this employee.");
 
         AssignedItems.Add(item);
 
@@ -87,5 +89,12 @@ public class Employee
         AssignedItems.Remove(item);
 
         item.UnassignEmployee();
+    }
+
+    public void AddSuggestion(PropertySuggestion suggestion)
+    {
+        if (Suggestions.Any(s => s.Id == suggestion.Id)) throw new BadRequest400Exception("This suggestion was already assigned to this employee.");
+
+        Suggestions.Add(suggestion);
     }
 }

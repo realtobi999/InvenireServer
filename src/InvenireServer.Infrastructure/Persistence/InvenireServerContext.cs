@@ -26,6 +26,8 @@ public class InvenireServerContext : DbContext
 
     public DbSet<PropertyItem> Items { get; set; }
 
+    public DbSet<PropertySuggestion> Suggestions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.
@@ -35,5 +37,6 @@ public class InvenireServerContext : DbContext
         new OrganizationInvitationTypeConfiguration().Configure(builder.Entity<OrganizationInvitation>());
         new PropertyTypeConfiguration().Configure(builder.Entity<Property>());
         new PropertyItemTypeConfiguration().Configure(builder.Entity<PropertyItem>());
+        new PropertySuggestionTypeConfiguration().Configure(builder.Entity<PropertySuggestion>());
     }
 }

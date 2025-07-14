@@ -32,6 +32,7 @@ public class Program
                 builder.Services.AddScoped<IJwtManager, JwtManager>();
                 builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+                builder.Services.AddSwaggerGen();
                 builder.Services.AddControllers();
                 builder.Services.AddHostedService<AdminCleanupBackgroundService>();
                 builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
@@ -40,8 +41,13 @@ public class Program
             var app = builder.Build();
             {
                 app.UseSerilogRequestLogging();
-
                 app.UseExceptionHandler(_ => { });
+
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
 
                 app.ConfigureStatusCodePages();
                 app.UseAuthorization();

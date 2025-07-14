@@ -9,6 +9,7 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         // Properties.
+
         builder.Property(e => e.Id)
             .HasColumnName("id")
             .IsRequired();
@@ -48,8 +49,13 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
             .HasColumnName("last_login_at");
 
         // Relationships
+
         builder.HasMany(e => e.AssignedItems)
             .WithOne()
             .HasForeignKey(i => i.EmployeeId);
+
+        builder.HasMany(e => e.Suggestions)
+            .WithOne()
+            .HasForeignKey(s => s.EmployeeId);
     }
 }

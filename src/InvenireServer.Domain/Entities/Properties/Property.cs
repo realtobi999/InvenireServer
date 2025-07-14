@@ -20,6 +20,8 @@ public class Property
 
     public Collection<PropertyItem> Items { get; } = [];
 
+    public Collection<PropertySuggestion> Suggestions { get; } = [];
+
     // Methods.
 
     public void AssignOrganization(Organization organization)
