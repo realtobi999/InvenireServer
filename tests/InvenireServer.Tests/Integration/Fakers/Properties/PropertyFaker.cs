@@ -11,7 +11,7 @@ public sealed class PropertyFaker : Faker<Property>
         RuleFor(p => p.LastUpdatedAt, f => f.Date.RecentOffset(30));
     }
 
-    public static Property Fake(IEnumerable<PropertyItem>? items = null, IEnumerable<PropertySuggestion>? suggestions = null)
+    public static Property Fake(IEnumerable<PropertyItem>? items = null, IEnumerable<PropertyScan>? scans = null, IEnumerable<PropertySuggestion>? suggestions = null)
     {
         var property = new PropertyFaker().Generate();
 
@@ -21,6 +21,14 @@ public sealed class PropertyFaker : Faker<Property>
             {
                 property.Items.Add(i);
                 i.PropertyId = property.Id;
+            }
+        }
+        if (scans is not null)
+        {
+            foreach (var s in scans)
+            {
+                property.Scans.Add(s);
+                s.PropertyId = property.Id;
             }
         }
         if (suggestions is not null)

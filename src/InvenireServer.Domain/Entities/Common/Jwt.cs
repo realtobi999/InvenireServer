@@ -14,6 +14,14 @@ public sealed class Jwt
 
     public List<Claim> Payload { get; }
 
+    public string GetRole()
+    {
+        var claim = Payload.FirstOrDefault(c => c.Type == "role") ?? throw new NullReferenceException("No 'role' claim is present in the token.");
+
+        return claim.Value;
+    }
+
+
     public static class Policies
     {
         public const string EMPLOYEE = "EMPLOYEE_POLICY";

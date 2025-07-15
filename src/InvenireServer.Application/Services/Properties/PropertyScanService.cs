@@ -25,9 +25,16 @@ public class PropertyScanService : IPropertyScanService
 
     public async Task<PropertyScan> GetAsync(Expression<Func<PropertyScan, bool>> predicate)
     {
-        var scan = await _repositories.Properties.Scans.GetAsync(predicate);
+        var scan = await TryGetAsync(predicate);
 
         if (scan is null) throw new NotFound404Exception($"The requested {nameof(PropertyScan).ToLower()} was not found in the system");
+
+        return scan;
+    }
+
+    public async Task<PropertyScan?> TryGetAsync(Expression<Func<PropertyScan, bool>> predicate)
+    {
+        var scan = await _repositories.Properties.Scans.GetAsync(predicate);
 
         return scan;
     }

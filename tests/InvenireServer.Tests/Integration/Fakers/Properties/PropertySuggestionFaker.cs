@@ -4,7 +4,7 @@ namespace InvenireServer.Tests.Integration.Fakers.Properties;
 
 public class PropertySuggestionFaker : Faker<PropertySuggestion>
 {
-    public PropertySuggestionFaker()
+    private PropertySuggestionFaker()
     {
         RuleFor(s => s.Id, f => Guid.NewGuid());
         RuleFor(s => s.Name, f => f.Lorem.Sentence(3));

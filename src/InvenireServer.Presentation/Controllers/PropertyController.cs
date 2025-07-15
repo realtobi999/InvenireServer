@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Items.Commands.Scan;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
@@ -213,5 +214,18 @@ public class PropertyController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Created($"/api/properties/scans/{result.Scan.Id}", null);
+    }
+
+    [Authorize]
+    [HttpPost("/api/properties/items/{itemId:guid}/scan")]
+    public async Task<IActionResult> ScanItem(Guid itemId)
+    {
+        await _mediator.Send(new ScanPropertyItemCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            ItemId = itemId,
+        });
+
+        return NoContent();
     }
 }
