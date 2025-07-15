@@ -5,6 +5,7 @@ using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
@@ -196,5 +197,21 @@ public class PropertyController : ControllerBase
         await _mediator.Send(command);
 
         return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/scans")]
+    public async Task<IActionResult> CreateScan([FromBody] CreatePropertyScanCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        };
+        var result = await _mediator.Send(command);
+
+        return Created($"/api/properties/scans/{result.Scan.Id}", null);
     }
 }

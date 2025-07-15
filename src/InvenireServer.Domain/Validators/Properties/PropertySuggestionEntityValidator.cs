@@ -78,6 +78,16 @@ public static class PropertySuggestionEntityValidator
         if (!Enum.IsDefined(suggestion.RequestType))
             errors.Add(new ValidationFailure(nameof(suggestion.RequestType), "Request type must be a valid enum value."));
 
+        // EmployeeId.
+
+        if (suggestion.EmployeeId is null)
+            errors.Add(new ValidationFailure(nameof(suggestion.EmployeeId), $"Employee must be assigned."));
+
+        // PropertyId.
+
+        if (suggestion.PropertyId is null)
+            errors.Add(new ValidationFailure(nameof(suggestion.PropertyId), $"Property must be assigned."));
+
         return errors;
     }
 }

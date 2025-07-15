@@ -26,6 +26,8 @@ public class InvenireServerContext : DbContext
 
     public DbSet<PropertyItem> Items { get; set; }
 
+    public DbSet<PropertyScan> Scans { get; set; }
+
     public DbSet<PropertySuggestion> Suggestions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -37,6 +39,7 @@ public class InvenireServerContext : DbContext
         new OrganizationInvitationTypeConfiguration().Configure(builder.Entity<OrganizationInvitation>());
         new PropertyTypeConfiguration().Configure(builder.Entity<Property>());
         new PropertyItemTypeConfiguration().Configure(builder.Entity<PropertyItem>());
+        new PropertyScanTypeConfiguration().Configure(builder.Entity<PropertyScan>());
         new PropertySuggestionTypeConfiguration().Configure(builder.Entity<PropertySuggestion>());
     }
 }

@@ -17,12 +17,15 @@ public class PropertyService : IPropertyService
     {
         _repositories = repositories;
 
-        Items = new PropertyItemService(repositories);
-        Suggestion = new PropertySuggestionService(repositories);
+        Items = new PropertyItemService(_repositories);
+        Scans = new PropertyScanService(_repositories);
+        Suggestion = new PropertySuggestionService(_repositories);
     }
 
     public IPropertyItemService Items { get; }
+    public IPropertyScanService Scans { get; }
     public IPropertySuggestionService Suggestion { get; }
+
 
     public async Task<Property> GetAsync(Expression<Func<Property, bool>> predicate)
     {

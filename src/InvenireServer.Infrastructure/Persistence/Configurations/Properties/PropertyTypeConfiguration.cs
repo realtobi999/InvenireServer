@@ -28,6 +28,10 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
             .WithOne()
             .HasForeignKey(i => i.PropertyId);
 
+        builder.HasMany(p => p.Scans)
+            .WithOne()
+            .HasForeignKey(i => i.PropertyId);
+
         builder.HasMany(p => p.Suggestions)
             .WithOne()
             .HasForeignKey(s => s.PropertyId);

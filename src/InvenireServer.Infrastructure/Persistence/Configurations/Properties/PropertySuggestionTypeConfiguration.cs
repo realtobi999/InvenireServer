@@ -10,11 +10,10 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
     {
         // Properties.
 
-        builder.HasKey(s => s.Id);
-
         builder.Property(s => s.Id)
             .HasColumnName("id")
             .IsRequired();
+        builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Name)
             .HasColumnName("name")
