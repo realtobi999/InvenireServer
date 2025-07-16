@@ -28,6 +28,10 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
             .HasColumnName("feedback")
             .HasMaxLength(PropertySuggestion.MAX_FEEDBACK_LENGTH);
 
+        builder.Property(s => s.RequestBody)
+            .HasColumnName("request_body")
+            .IsRequired();
+
         builder.Property(s => s.Status)
             .HasColumnName("status")
             .IsRequired();
@@ -38,14 +42,6 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
 
         builder.Property(s => s.LastUpdatedAt)
             .HasColumnName("last_updated_at");
-
-        builder.Property(s => s.RequestBody)
-            .HasColumnName("request_body")
-            .IsRequired();
-
-        builder.Property(s => s.RequestType)
-            .HasColumnName("request_type")
-            .IsRequired();
     }
 }
 

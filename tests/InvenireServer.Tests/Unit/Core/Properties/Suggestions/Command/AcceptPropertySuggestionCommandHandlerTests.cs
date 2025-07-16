@@ -3,6 +3,7 @@ using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
@@ -43,8 +44,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {
@@ -80,21 +85,24 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => new UpdatePropertyItemCommand
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
         {
-            Id = i.Id,
-            InventoryNumber = Guid.NewGuid().ToString(),
-            RegistrationNumber = Guid.NewGuid().ToString(),
-            Name = "TEST",
-            Price = 999,
-            SerialNumber = Guid.NewGuid().ToString(),
-            DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
-            DateOfSale = DateTimeOffset.Now.AddYears(-3),
-            Description = "TEST",
-            DocumentNumber = Guid.NewGuid().ToString(),
-        }).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.UPDATE;
-
+            DeleteCommands = [],
+            UpdateCommands = [.. items.Select(i => new UpdatePropertyItemCommand
+            {
+                Id = i.Id,
+                InventoryNumber = Guid.NewGuid().ToString(),
+                RegistrationNumber = Guid.NewGuid().ToString(),
+                Name = "TEST",
+                Price = 999,
+                SerialNumber = Guid.NewGuid().ToString(),
+                DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                Description = "TEST",
+                DocumentNumber = Guid.NewGuid().ToString(),
+            })],
+            CreateCommands = []
+        });
         var command = new AcceptPropertySuggestionCommand
         {
             Jwt = new Jwt([], []),
@@ -129,8 +137,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.Id).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.DELETE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [.. items.Select(i => i.Id)],
+            UpdateCommands = [],
+            CreateCommands = [],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {
@@ -166,8 +178,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: null, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.Id).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.DELETE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [.. items.Select(i => i.Id)],
+            UpdateCommands = [],
+            CreateCommands = [],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {
@@ -197,8 +213,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: null, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.Id).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.DELETE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [.. items.Select(i => i.Id)],
+            UpdateCommands = [],
+            CreateCommands = [],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {
@@ -230,8 +250,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.Id).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.DELETE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [.. items.Select(i => i.Id)],
+            UpdateCommands = [],
+            CreateCommands = [],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {
@@ -264,8 +288,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.DECLINED;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.Id).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.DELETE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [.. items.Select(i => i.Id)],
+            UpdateCommands = [],
+            CreateCommands = [],
+        });
 
         var command = new AcceptPropertySuggestionCommand
         {

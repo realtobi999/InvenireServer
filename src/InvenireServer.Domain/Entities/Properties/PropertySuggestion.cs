@@ -20,28 +20,19 @@ public class PropertySuggestion
 
     public required string? Feedback { get; set; }
 
+    public required string RequestBody { get; set; }
+
     public required PropertySuggestionStatus Status { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; }
 
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
-    public required string RequestBody { get; set; }
-
-    public required PropertySuggestionRequestType RequestType { get; set; }
-
     // Navigational properties.
 
     public Guid? EmployeeId { get; set; }
 
     public Guid? PropertyId { get; set; }
-}
-
-public enum PropertySuggestionRequestType
-{
-    CREATE,
-    UPDATE,
-    DELETE
 }
 
 public enum PropertySuggestionStatus

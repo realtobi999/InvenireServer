@@ -5,6 +5,7 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Tests.Integration.Extensions.Properties;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Users;
@@ -39,8 +40,12 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            RequestBody = JsonSerializer.Serialize(items),
-            RequestType = PropertySuggestionRequestType.CREATE,
+            Body = new CreatePropertySuggestionCommand.RequestBody
+            {
+                CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+                DeleteCommands = [],
+                UpdateCommands = []
+            },
             Jwt = new Jwt([], [])
         };
 
@@ -60,8 +65,7 @@ public class CreatePropertySuggestionCommandHandlerTests
         result.Suggestion.Status.Should().Be(PropertySuggestionStatus.PENDING);
         result.Suggestion.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         result.Suggestion.LastUpdatedAt.Should().BeNull();
-        result.Suggestion.RequestBody.Should().Be(command.RequestBody);
-        result.Suggestion.RequestType.Should().Be(command.RequestType);
+        result.Suggestion.RequestBody.Should().Be(JsonSerializer.Serialize(command.Body));
         result.Suggestion.PropertyId.Should().Be(property.Id);
         result.Suggestion.EmployeeId.Should().Be(employee.Id);
     }
@@ -82,8 +86,12 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            RequestBody = JsonSerializer.Serialize(items),
-            RequestType = PropertySuggestionRequestType.CREATE,
+            Body = new CreatePropertySuggestionCommand.RequestBody
+            {
+                CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+                DeleteCommands = [],
+                UpdateCommands = []
+            },
             Jwt = new Jwt([], [])
         };
 
@@ -112,8 +120,12 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            RequestBody = JsonSerializer.Serialize(items),
-            RequestType = PropertySuggestionRequestType.CREATE,
+            Body = new CreatePropertySuggestionCommand.RequestBody
+            {
+                CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+                DeleteCommands = [],
+                UpdateCommands = []
+            },
             Jwt = new Jwt([], [])
         };
 

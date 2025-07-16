@@ -8,7 +8,6 @@ public class DeclinePropertySuggestionCommandValidator : AbstractValidator<Decli
     public DeclinePropertySuggestionCommandValidator()
     {
         RuleFor(c => c.Feedback)
-            .NotEmpty()
             .MaximumLength(PropertySuggestion.MAX_FEEDBACK_LENGTH)
             .WithName("feedback");
     }

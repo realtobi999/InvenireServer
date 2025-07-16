@@ -8,7 +8,7 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Declin
 public record DeclinePropertySuggestionCommand : IRequest
 {
     [JsonPropertyName("feedback")]
-    public required string Feedback { get; set; }
+    public string? Feedback { get; set; }
 
     [JsonIgnore]
     public Guid? SuggestionId { get; set; }

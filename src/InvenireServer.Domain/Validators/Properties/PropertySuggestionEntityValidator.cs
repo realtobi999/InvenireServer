@@ -47,6 +47,14 @@ public static class PropertySuggestionEntityValidator
                 errors.Add(new ValidationFailure(nameof(suggestion.Description), $"Feedback must not exceed {PropertySuggestion.MAX_FEEDBACK_LENGTH} characters."));
         }
 
+        // RequestBody.
+
+        if (string.IsNullOrWhiteSpace(suggestion.RequestBody))
+            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not be empty."));
+
+        if (suggestion.RequestBody != suggestion.RequestBody.Trim())
+            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not start or end with whitespace."));
+
         // Status.
 
         if (!Enum.IsDefined(suggestion.Status))
@@ -64,19 +72,6 @@ public static class PropertySuggestionEntityValidator
 
         if (suggestion.LastUpdatedAt.HasValue && suggestion.LastUpdatedAt > DateTimeOffset.UtcNow)
             errors.Add(new ValidationFailure(nameof(suggestion.LastUpdatedAt), "Last update date cannot be in the future."));
-
-        // RequestBody.
-
-        if (string.IsNullOrWhiteSpace(suggestion.RequestBody))
-            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not be empty."));
-
-        if (suggestion.RequestBody != suggestion.RequestBody.Trim())
-            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not start or end with whitespace."));
-
-        // RequestType.
-
-        if (!Enum.IsDefined(suggestion.RequestType))
-            errors.Add(new ValidationFailure(nameof(suggestion.RequestType), "Request type must be a valid enum value."));
 
         // EmployeeId.
 

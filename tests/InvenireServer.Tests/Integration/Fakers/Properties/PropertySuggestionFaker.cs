@@ -14,7 +14,6 @@ public class PropertySuggestionFaker : Faker<PropertySuggestion>
         RuleFor(s => s.CreatedAt, f => f.Date.PastOffset(5));
         RuleFor(s => s.LastUpdatedAt, f => f.Date.RecentOffset(30));
         RuleFor(s => s.RequestBody, f => f.Lorem.Paragraphs(1));
-        RuleFor(s => s.RequestType, f => f.PickRandom<PropertySuggestionRequestType>());
     }
 
     public static PropertySuggestion Fake()

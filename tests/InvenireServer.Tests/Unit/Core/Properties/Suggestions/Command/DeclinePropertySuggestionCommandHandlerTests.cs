@@ -1,4 +1,5 @@
 using System.Text.Json;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -24,7 +25,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_AcceptsSuggestionAndCreatesItems()
+    public async Task Handle_DeclinesSuggestion()
     {
         // Prepare.
         var items = new List<PropertyItem>();
@@ -37,8 +38,12 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new DeclinePropertySuggestionCommand
         {
@@ -75,8 +80,12 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new DeclinePropertySuggestionCommand
         {
@@ -107,8 +116,12 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: null, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new DeclinePropertySuggestionCommand
         {
@@ -144,8 +157,12 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new DeclinePropertySuggestionCommand
         {
@@ -179,8 +196,12 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.APPROVED;
-        suggestion.RequestBody = JsonSerializer.Serialize(items.Select(i => i.ToCreatePropertyItemCommand()).ToList());
-        suggestion.RequestType = PropertySuggestionRequestType.CREATE;
+        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        {
+            DeleteCommands = [],
+            UpdateCommands = [],
+            CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
+        });
 
         var command = new DeclinePropertySuggestionCommand
         {
