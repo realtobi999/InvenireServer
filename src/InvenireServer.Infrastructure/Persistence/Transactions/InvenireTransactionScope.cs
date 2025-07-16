@@ -18,6 +18,8 @@ public class InvenireTransactionScope : ITransactionScope
 
         return await strategy.ExecuteAsync(async () =>
         {
+            if (_context.Database.CurrentTransaction is not null) return await action();
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
             var result = await action();
             await transaction.CommitAsync();
@@ -32,6 +34,8 @@ public class InvenireTransactionScope : ITransactionScope
 
         await strategy.ExecuteAsync(async () =>
         {
+            if (_context.Database.CurrentTransaction is not null) await action();
+
             await using var transaction = await _context.Database.BeginTransactionAsync();
             await action();
             await transaction.CommitAsync();
