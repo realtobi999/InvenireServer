@@ -12,7 +12,7 @@ public class OrganizationInvitationRepository : RepositoryBase<OrganizationInvit
 
     public Task<IEnumerable<OrganizationInvitation>> IndexExpiredAsync()
     {
-        var threshold = DateTimeOffset.UtcNow - OrganizationInvitation.EXPIRATION_TIME;
+        var threshold = DateTimeOffset.UtcNow.Add(-OrganizationInvitation.EXPIRATION_TIME);
         return IndexAsync(i => i.CreatedAt <= threshold);
     }
 

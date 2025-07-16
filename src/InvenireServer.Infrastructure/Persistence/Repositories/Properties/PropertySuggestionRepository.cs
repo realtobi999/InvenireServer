@@ -8,4 +8,10 @@ public class PropertySuggestionRepository : RepositoryBase<PropertySuggestion>, 
     public PropertySuggestionRepository(InvenireServerContext context) : base(context)
     {
     }
+
+    public async Task<IEnumerable<PropertySuggestion>> IndexClosedAsync()
+    {
+        var threshold = DateTimeOffset.UtcNow.Add(-PropertySuggestion.DECLINED_THRESHOLD);
+        return await IndexAsync(s => s.Status == PropertySuggestionStatus.DECLINED && s.CreatedAt <= threshold);
+    }
 }

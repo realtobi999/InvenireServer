@@ -34,7 +34,7 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
             });
         }
 
-        _logger.LogInformation("Expired invitations cleanup completed at {Time}. Deleted invitations: {@DeletedInvitationIds}", DateTime.UtcNow, invitations.Select(i => i.Id));
+        _logger.LogInformation("Expired organizations invitations cleanup completed at {Time}. Deleted invitations: {@DeletedInvitationIds}", DateTime.UtcNow, invitations.Select(i => i.Id));
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
@@ -47,7 +47,7 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred during invitation cleanup.");
+                _logger.LogError(ex, "An error occurred during organization invitations cleanup.");
             }
 
             try
