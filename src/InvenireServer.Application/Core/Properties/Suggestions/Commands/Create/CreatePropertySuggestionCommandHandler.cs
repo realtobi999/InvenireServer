@@ -27,10 +27,11 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
             Name = request.Name,
             Description = request.Description,
             Feedback = null,
+            RequestBody = JsonSerializer.Serialize(request.Body),
             Status = PropertySuggestionStatus.PENDING,
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
-            RequestBody = JsonSerializer.Serialize(request.Body),
+            ResolvedAt = null,
             PropertyId = property.Id,
             EmployeeId = employee.Id,
         };

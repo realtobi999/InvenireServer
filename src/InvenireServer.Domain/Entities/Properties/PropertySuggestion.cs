@@ -10,6 +10,8 @@ public class PropertySuggestion
 
     public const int MAX_FEEDBACK_LENGTH = 555;
 
+    public readonly static TimeSpan EXPIRATION_TIME = TimeSpan.FromDays(182);
+
     // Core properties.
 
     public required Guid Id { get; set; }
@@ -25,6 +27,8 @@ public class PropertySuggestion
     public required PropertySuggestionStatus Status { get; set; }
 
     public required DateTimeOffset CreatedAt { get; set; }
+
+    public required DateTimeOffset? ResolvedAt { get; set; }
 
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 

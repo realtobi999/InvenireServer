@@ -40,6 +40,9 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
             .HasColumnName("created_at")
             .IsRequired();
 
+        builder.Property(s => s.ResolvedAt)
+            .HasColumnName("resolved_at");
+
         builder.Property(s => s.LastUpdatedAt)
             .HasColumnName("last_updated_at");
     }

@@ -2,9 +2,11 @@ using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Services.Properties.Suggestions;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Properties;
+using InvenireServer.Domain.Interfaces.Services.Properties.Suggestions;
 using InvenireServer.Domain.Validators.Properties;
 
 namespace InvenireServer.Application.Services.Properties;

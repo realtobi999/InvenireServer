@@ -61,8 +61,9 @@ public class DeclinePropertySuggestionCommandHandlerTests
         // Act & Assert.
         await _handler.Handle(command, CancellationToken.None);
 
-        suggestion.Status.Should().Be(PropertySuggestionStatus.DECLINED);
         suggestion.Feedback.Should().Be(command.Feedback);
+        suggestion.Status.Should().Be(PropertySuggestionStatus.DECLINED);
+        suggestion.ResolvedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
     }
 
 

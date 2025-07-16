@@ -69,6 +69,7 @@ public class AcceptPropertySuggestionCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         suggestion.Status.Should().Be(PropertySuggestionStatus.APPROVED);
+        suggestion.ResolvedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
     }
 
     [Fact]

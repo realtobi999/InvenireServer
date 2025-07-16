@@ -65,6 +65,7 @@ public class CreatePropertySuggestionCommandHandlerTests
         result.Suggestion.Status.Should().Be(PropertySuggestionStatus.PENDING);
         result.Suggestion.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         result.Suggestion.LastUpdatedAt.Should().BeNull();
+        result.Suggestion.ResolvedAt.Should().BeNull();
         result.Suggestion.RequestBody.Should().Be(JsonSerializer.Serialize(command.Body));
         result.Suggestion.PropertyId.Should().Be(property.Id);
         result.Suggestion.EmployeeId.Should().Be(employee.Id);

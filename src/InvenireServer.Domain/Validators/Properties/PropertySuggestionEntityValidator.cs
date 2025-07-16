@@ -68,6 +68,20 @@ public static class PropertySuggestionEntityValidator
         if (suggestion.LastUpdatedAt.HasValue && suggestion.CreatedAt > suggestion.LastUpdatedAt.Value)
             errors.Add(new ValidationFailure(nameof(suggestion.LastUpdatedAt), "Creation date cannot be after the last update date."));
 
+        if (suggestion.ResolvedAt.HasValue && suggestion.CreatedAt > suggestion.ResolvedAt.Value)
+            errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), "Creation date cannot be after resolved at date."));
+
+        // ResolvedAt.
+
+        if (suggestion.ResolvedAt.HasValue)
+        {
+            if (suggestion.ResolvedAt > DateTimeOffset.UtcNow)
+                errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), "Resolved at date cannot be in the future."));
+
+            if (suggestion.Status == PropertySuggestionStatus.PENDING)
+                errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), "Resolved at date cannot be set if the status is still pending."));
+        }
+
         // LastUpdatedAt.
 
         if (suggestion.LastUpdatedAt.HasValue && suggestion.LastUpdatedAt > DateTimeOffset.UtcNow)

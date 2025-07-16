@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Interfaces.Services.Properties.Suggestions;
 
 namespace InvenireServer.Domain.Interfaces.Services.Properties;
 

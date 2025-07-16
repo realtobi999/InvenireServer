@@ -3,6 +3,7 @@ using InvenireServer.Application.Services;
 using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
+using InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
@@ -36,6 +37,7 @@ public class Program
                 builder.Services.AddControllers();
                 builder.Services.AddHostedService<AdminCleanupBackgroundService>();
                 builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
+                builder.Services.AddHostedService<PropertySuggestionCleanupBackgroundService>();
                 builder.Services.AddHostedService<OrganizationInvitationCleanupBackgroundService>();
             }
             var app = builder.Build();

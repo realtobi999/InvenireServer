@@ -59,6 +59,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
         }
 
         suggestion.Status = PropertySuggestionStatus.APPROVED;
+        suggestion.ResolvedAt = DateTimeOffset.UtcNow;
 
         await _services.Properties.Suggestion.UpdateAsync(suggestion);
     }
