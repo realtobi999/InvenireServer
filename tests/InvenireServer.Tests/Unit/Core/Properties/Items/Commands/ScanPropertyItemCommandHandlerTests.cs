@@ -25,12 +25,13 @@ public class ScanPropertyItemCommandHandlerTests
     public async Task Handle_ScansItemCorrectly()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
-        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
+        scan.Status = PropertyScanStatus.IN_PROGRESS;
+
+        var item = PropertyItemFaker.Fake();
         var employee = EmployeeFaker.Fake(items: [item]);
         var property = PropertyFaker.Fake(items: [item], scans: [scan]);
-        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
         var command = new ScanPropertyItemCommand
         {
@@ -42,7 +43,8 @@ public class ScanPropertyItemCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => !s.CompletedAt.HasValue)).ReturnsAsync(scan);
+        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync(scan);
+        _services.Setup(s => s.Properties.Scans.UpdateAsync(It.IsAny<PropertyScan>()));
 
         // Act & Assert.
         await _handler.Handle(command, CancellationToken.None);
@@ -55,12 +57,9 @@ public class ScanPropertyItemCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAdminDoesntOwnOrganization()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
         var item = PropertyItemFaker.Fake();
-        var scan = PropertyScanFaker.Fake();
         var employee = EmployeeFaker.Fake(items: [item]);
-        var property = PropertyFaker.Fake(items: [item], scans: [scan]);
-        var organization = OrganizationFaker.Fake(admin: null, property: property, employees: [employee]);
+        var organization = OrganizationFaker.Fake(employees: []);
 
         var command = new ScanPropertyItemCommand
         {
@@ -82,11 +81,9 @@ public class ScanPropertyItemCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenPropertyIsNotCreated()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
         var item = PropertyItemFaker.Fake();
-        var scan = PropertyScanFaker.Fake();
         var employee = EmployeeFaker.Fake(items: [item]);
-        var organization = OrganizationFaker.Fake(admin: admin, property: null, employees: [employee]);
+        var organization = OrganizationFaker.Fake(property: null, employees: [employee]);
 
         var command = new ScanPropertyItemCommand
         {
@@ -109,11 +106,10 @@ public class ScanPropertyItemCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenNoActiveScanIsPresent()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
         var item = PropertyItemFaker.Fake();
         var employee = EmployeeFaker.Fake(items: [item]);
         var property = PropertyFaker.Fake(items: [item], scans: []);
-        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
         var command = new ScanPropertyItemCommand
         {
@@ -125,24 +121,25 @@ public class ScanPropertyItemCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => !s.CompletedAt.HasValue)).ReturnsAsync((PropertyScan?)null);
+        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync((PropertyScan?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("There is currently no active scans.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("There are currently no active scans.");
     }
 
     [Fact]
     public async Task Handle_ThrowsExceptionWhenTheItemIsNotAssignedToTheEmployee()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
-        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
+        scan.Status = PropertyScanStatus.IN_PROGRESS;
+
+        var item = PropertyItemFaker.Fake();
         var employee = EmployeeFaker.Fake(items: []);
         var property = PropertyFaker.Fake(items: [item], scans: [scan]);
-        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
         var command = new ScanPropertyItemCommand
         {
@@ -154,7 +151,7 @@ public class ScanPropertyItemCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => !s.CompletedAt.HasValue)).ReturnsAsync(scan);
+        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync(scan);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -166,12 +163,13 @@ public class ScanPropertyItemCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenTheItemIsNotPartOfTheProperty()
     {
         // Prepare.
-        var admin = AdminFaker.Fake();
-        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
+        scan.Status = PropertyScanStatus.IN_PROGRESS;
+
+        var item = PropertyItemFaker.Fake();
         var employee = EmployeeFaker.Fake(items: [item]);
         var property = PropertyFaker.Fake(items: [], scans: [scan]);
-        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
         var command = new ScanPropertyItemCommand
         {
@@ -183,7 +181,7 @@ public class ScanPropertyItemCommandHandlerTests
         _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => !s.CompletedAt.HasValue)).ReturnsAsync(scan);
+        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync(scan);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
