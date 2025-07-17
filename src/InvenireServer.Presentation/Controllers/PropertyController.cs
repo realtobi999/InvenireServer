@@ -155,6 +155,18 @@ public class PropertyController : ControllerBase
         return Created($"/api/properties/scans/{result.Scan.Id}", null);
     }
 
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/properties/scans/complete")]
+    public async Task<IActionResult> CompleteScan()
+    {
+        await _mediator.Send(new CompletePropertyScanCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return NoContent();
+    }
+
     [Authorize]
     [HttpPost("/api/properties/items/{itemId:guid}/scan")]
     public async Task<IActionResult> ScanItem(Guid itemId)

@@ -424,6 +424,32 @@ public class PropertyEndpointsTests
     }
 
     [Fact]
+    public async Task CompleteScan_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var scan = PropertyScanFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync("/api/properties/scans/complete", scan.ToCreatePropertyScanCommand());
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task ScanItem_ReturnsNoContent()
     {
         // Prepare.
