@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Organizations.Invitations;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Organizations;
 using InvenireServer.Domain.Interfaces.Services.Organizations.Invitations;
@@ -36,6 +37,20 @@ public class OrganizationService : IOrganizationService
     public async Task<Organization?> TryGetAsync(Expression<Func<Organization, bool>> predicate)
     {
         var organization = await _repositories.Organizations.GetAsync(predicate);
+
+        return organization;
+    }
+
+    public async Task<Organization?> TryGetForAsync(Admin admin)
+    {
+        var organization = await _repositories.Organizations.GetAsync(o => o.Id == admin.OrganizationId);
+
+        return organization;
+    }
+
+    public async Task<Organization?> TryGetForAsync(Employee employee)
+    {
+        var organization = await _repositories.Organizations.GetAsync(o => o.Id == employee.OrganizationId);
 
         return organization;
     }

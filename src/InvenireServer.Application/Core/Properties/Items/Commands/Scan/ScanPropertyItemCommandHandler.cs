@@ -34,9 +34,9 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
     private async Task<PropertyScan> GetScanAsEmployee(ScanPropertyItemCommand request, PropertyItem item)
     {
         var employee = await _services.Employees.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId) ?? throw new BadRequest400Exception("You are not part of an organization.");
-        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
-        var scan = await _services.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS) ?? throw new BadRequest400Exception("There are currently no active scans.");
+        var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");
+        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
+        var scan = await _services.Properties.Scans.TryGetInProgressForAsync(property) ?? throw new BadRequest400Exception("There are currently no active scans.");
 
         if (item.EmployeeId != employee.Id) throw new Unauthorized401Exception();
         if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't a part of the property.");
@@ -48,9 +48,9 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
     private async Task<PropertyScan> GetScanAsAdmin(ScanPropertyItemCommand request, PropertyItem item)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You do not own a organization.");
-        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property.");
-        var scan = await _services.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS) ?? throw new BadRequest400Exception("There are currently no active scans.");
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");
+        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
+        var scan = await _services.Properties.Scans.TryGetInProgressForAsync(property) ?? throw new BadRequest400Exception("There are currently no active scans.");
 
         if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't a part of your property.");
 

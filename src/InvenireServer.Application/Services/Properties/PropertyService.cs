@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Properties.Suggestions;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Properties;
@@ -41,6 +42,13 @@ public class PropertyService : IPropertyService
     public async Task<Property?> TryGetAsync(Expression<Func<Property, bool>> predicate)
     {
         var property = await _repositories.Properties.GetAsync(predicate);
+
+        return property;
+    }
+
+    public async Task<Property?> TryGetForAsync(Organization organization)
+    {
+        var property = await TryGetAsync(p => p.OrganizationId == organization.Id);
 
         return property;
     }

@@ -39,6 +39,13 @@ public class PropertyScanService : IPropertyScanService
         return scan;
     }
 
+    public async Task<PropertyScan?> TryGetInProgressForAsync(Property property)
+    {
+        var scan = await TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS);
+
+        return scan;
+    }
+
     public async Task CreateAsync(PropertyScan scan)
     {
         var result = new ValidationResult(PropertyScanEntityValidator.Validate(scan));

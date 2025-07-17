@@ -59,8 +59,8 @@ public class UpdatePropertyItemsCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
 
         var itemQueue = new Queue<PropertyItem>(items);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
@@ -109,7 +109,7 @@ public class UpdatePropertyItemsCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -131,8 +131,8 @@ public class UpdatePropertyItemsCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -175,8 +175,8 @@ public class UpdatePropertyItemsCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(items.First());
         _services.Setup(s => s.Employees.GetAsync(It.IsAny<Expression<Func<Employee, bool>>>())).ReturnsAsync(employee);
 
@@ -222,8 +222,8 @@ public class UpdatePropertyItemsCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(p => p.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(items.First());
 
         var employeeQueue = new Queue<Employee>([employee1, employee2]);

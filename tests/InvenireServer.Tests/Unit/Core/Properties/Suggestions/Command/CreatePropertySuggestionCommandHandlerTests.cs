@@ -50,8 +50,8 @@ public class CreatePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Suggestion.CreateAsync(It.IsAny<PropertySuggestion>()));
 
         // Act & Assert.
@@ -97,7 +97,7 @@ public class CreatePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -131,8 +131,8 @@ public class CreatePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == employee.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

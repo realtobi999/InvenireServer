@@ -17,7 +17,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
     {
         // Get the admin and his organization.
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before adding a property.");
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before adding a property.");
 
         // Create the property and assign it to the organization.
         var property = new Property

@@ -24,7 +24,7 @@ public class Organization
 
     // Navigational properties.
 
-    public Admin? Admin { get; private set; }
+    public Admin? Admin { get; set; }
 
     public Property? Property { get; private set; }
 

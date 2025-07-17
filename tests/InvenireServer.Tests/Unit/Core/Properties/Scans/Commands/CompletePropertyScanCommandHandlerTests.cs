@@ -38,9 +38,9 @@ public class CompletePropertyScanCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync(scan);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
+        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync(scan);
         _services.Setup(s => s.Properties.Scans.UpdateAsync(scan));
 
         // Act & Assert.
@@ -64,7 +64,7 @@ public class CompletePropertyScanCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -85,8 +85,8 @@ public class CompletePropertyScanCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -108,9 +108,9 @@ public class CompletePropertyScanCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS)).ReturnsAsync((PropertyScan?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
+        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync((PropertyScan?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

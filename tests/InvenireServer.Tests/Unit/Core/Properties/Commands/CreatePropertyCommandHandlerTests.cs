@@ -34,7 +34,7 @@ public class CreatePropertyCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.CreateAsync(It.IsAny<Property>()));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
 
@@ -66,7 +66,7 @@ public class CreatePropertyCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

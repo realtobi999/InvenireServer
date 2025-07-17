@@ -15,11 +15,12 @@ public class RemoveOrganizationEmployeeCommandHandler : IRequestHandler<RemoveOr
 
     public async Task Handle(RemoveOrganizationEmployeeCommand request, CancellationToken _)
     {
-        var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
         var admin = await _services.Admins.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization.");
+        var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization.");
 
         organization.RemoveEmployee(employee);
+
         await _services.Organizations.UpdateAsync(organization);
     }
 }

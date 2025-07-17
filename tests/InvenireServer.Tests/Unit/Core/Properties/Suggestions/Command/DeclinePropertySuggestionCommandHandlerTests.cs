@@ -53,8 +53,8 @@ public class DeclinePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Properties.Suggestion.UpdateAsync(It.IsAny<PropertySuggestion>()));
 
@@ -96,7 +96,8 @@ public class DeclinePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync((Organization?)null);
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -132,10 +133,9 @@ public class DeclinePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync((Property?)null);
         _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
-        _services.Setup(s => s.Properties.Suggestion.UpdateAsync(It.IsAny<PropertySuggestion>()));
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
 
         // Act & Assert.
@@ -173,8 +173,8 @@ public class DeclinePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
 
         // Act & Assert.
@@ -212,8 +212,8 @@ public class DeclinePropertySuggestionCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
         _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
 
         // Act & Assert.

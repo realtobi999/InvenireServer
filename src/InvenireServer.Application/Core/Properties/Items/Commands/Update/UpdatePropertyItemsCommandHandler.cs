@@ -17,8 +17,8 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
     public async Task Handle(UpdatePropertyItemsCommand request, CancellationToken _)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
-        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
+        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
 
         // Preload all the items.
         var items = new Dictionary<PropertyItem, UpdatePropertyItemCommand>();
@@ -34,8 +34,7 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         foreach (var id in items.Where(pair => pair.Key.EmployeeId != pair.Value.EmployeeId).SelectMany(pair => new[] { pair.Key.EmployeeId, pair.Value.EmployeeId }).OfType<Guid>().ToHashSet())
         {
             var employee = await _services.Employees.GetAsync(e => e.Id == id);
-            if (employee.OrganizationId != organization.Id)
-                throw new BadRequest400Exception("Cannot assign property item to an employee from a another organization.");
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot assign property item to an employee from a another organization.");
             employees[id] = employee;
         }
 

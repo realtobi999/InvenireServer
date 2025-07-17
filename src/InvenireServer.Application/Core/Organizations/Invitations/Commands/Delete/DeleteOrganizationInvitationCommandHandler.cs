@@ -16,8 +16,8 @@ public class DeleteOrganizationInvitationCommandHandler : IRequestHandler<Delete
     public async Task Handle(DeleteOrganizationInvitationCommand request, CancellationToken _)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before deleting any invitations.");
         var invitation = await _services.Organizations.Invitations.TryGetAsync(i => i.Id == request.Id) ?? throw new NotFound404Exception("The specified invitation does not exist or may have already been deleted.");
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before deleting any invitations.");
 
         organization.RemoveInvitation(invitation);
 

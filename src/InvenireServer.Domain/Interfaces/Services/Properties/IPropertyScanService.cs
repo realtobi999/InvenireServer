@@ -7,6 +7,7 @@ public interface IPropertyScanService
 {
     Task<IEnumerable<PropertyScan>> IndexInProgressAsync(Property property);
     Task<PropertyScan> GetAsync(Expression<Func<PropertyScan, bool>> predicate);
+    Task<PropertyScan?> TryGetInProgressForAsync(Property property);
     Task<PropertyScan?> TryGetAsync(Expression<Func<PropertyScan, bool>> predicate);
     Task CreateAsync(PropertyScan scan);
     Task UpdateAsync(PropertyScan scan);

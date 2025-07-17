@@ -16,8 +16,8 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
     public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken _)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before creating invitations.");
         var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before creating invitations.");
 
         // Create the invitation and assign the employee to it.
         var invitation = new OrganizationInvitation

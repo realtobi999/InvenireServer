@@ -16,8 +16,8 @@ public class DeletePropertyItemsCommandHandler : IRequestHandler<DeletePropertyI
     public async Task Handle(DeletePropertyItemsCommand request, CancellationToken _)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
-        var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
+        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
+        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
 
         // Preload all the items.
         var items = new List<PropertyItem>();
