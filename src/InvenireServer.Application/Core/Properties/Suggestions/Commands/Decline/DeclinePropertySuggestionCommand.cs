@@ -11,8 +11,8 @@ public record DeclinePropertySuggestionCommand : IRequest
     public string? Feedback { get; set; }
 
     [JsonIgnore]
-    public Guid? SuggestionId { get; set; }
+    public Jwt? Jwt { get; set; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Guid? SuggestionId { get; set; }
 }

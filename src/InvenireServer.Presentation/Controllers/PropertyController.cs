@@ -7,9 +7,10 @@ using InvenireServer.Application.Core.Properties.Items.Commands.Scan;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Complete;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Create;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
@@ -135,6 +136,19 @@ public class PropertyController : ControllerBase
             SuggestionId = suggestionId
         };
         await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpDelete("/api/properties/suggestions/{suggestionId:guid}")]
+    public async Task<IActionResult> DeleteSuggestion(Guid suggestionId)
+    {
+        await _mediator.Send(new DeletePropertySuggestionCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            SuggestionId = suggestionId,
+        });
 
         return NoContent();
     }

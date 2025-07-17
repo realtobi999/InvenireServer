@@ -1,4 +1,4 @@
-using InvenireServer.Application.Core.Properties.Items.Commands.Scan;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
@@ -8,67 +8,67 @@ using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Users;
 
-namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;
+namespace InvenireServer.Tests.Unit.Core.Properties.Suggestions.Command;
 
-public class ScanPropertyItemCommandHandlerTests
+public class DeletePropertySuggestionCommandHandlerTests
 {
     private readonly Mock<IServiceManager> _services;
-    private readonly ScanPropertyItemCommandHandler _handler;
+    private readonly DeletePropertySuggestionCommandHandler _handler;
 
-    public ScanPropertyItemCommandHandlerTests()
+    public DeletePropertySuggestionCommandHandlerTests()
     {
         _services = new Mock<IServiceManager>();
-        _handler = new ScanPropertyItemCommandHandler(_services.Object);
+        _handler = new DeletePropertySuggestionCommandHandler(_services.Object);
     }
 
     [Fact]
-    public async Task Handle_ScansItemCorrectly()
+    public async Task Handle_DeletesSuggestionWithoutException()
     {
         // Prepare.
-        var scan = PropertyScanFaker.Fake();
-        scan.Status = PropertyScanStatus.IN_PROGRESS;
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.DECLINED;
 
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
-        var property = PropertyFaker.Fake(items: [item], scans: [scan]);
+        var employee = EmployeeFaker.Fake(suggestions: [suggestion]);
+        var property = PropertyFaker.Fake(suggestions: [suggestion]);
         var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
-        var command = new ScanPropertyItemCommand
+        var command = new DeletePropertySuggestionCommand
         {
             Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
+            SuggestionId = suggestion.Id
         };
 
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync(scan);
-        _services.Setup(s => s.Properties.Scans.UpdateAsync(It.IsAny<PropertyScan>()));
+        _services.Setup(s => s.Properties.Suggestion.DeleteAsync(suggestion));
 
         // Act & Assert.
-        await _handler.Handle(command, CancellationToken.None);
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        // Assert that the scan's items contains the item.
-        scan.ScannedItems.Should().Contain(i => i.Id == item.Id);
+        await action.Should().NotThrowAsync();
     }
 
     [Fact]
     public async Task Handle_ThrowsExceptionWhenEmployeeIsNotInOrganization()
     {
         // Prepare.
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
-        var organization = OrganizationFaker.Fake(employees: []);
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.DECLINED;
 
-        var command = new ScanPropertyItemCommand
+        var employee = EmployeeFaker.Fake(suggestions: [suggestion]);
+        var property = PropertyFaker.Fake(suggestions: [suggestion]);
+        var organization = OrganizationFaker.Fake(property: property, employees: []);
+
+        var command = new DeletePropertySuggestionCommand
         {
             Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
+            SuggestionId = suggestion.Id
         };
 
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
@@ -80,19 +80,20 @@ public class ScanPropertyItemCommandHandlerTests
     [Fact]
     public async Task Handle_ThrowsExceptionWhenPropertyIsNotCreated()
     {
-        // Prepare.
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.DECLINED;
+
+        var employee = EmployeeFaker.Fake(suggestions: [suggestion]);
         var organization = OrganizationFaker.Fake(property: null, employees: [employee]);
 
-        var command = new ScanPropertyItemCommand
+        var command = new DeletePropertySuggestionCommand
         {
             Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
+            SuggestionId = suggestion.Id
         };
 
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
@@ -103,55 +104,26 @@ public class ScanPropertyItemCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenNoActiveScanIsPresent()
+    public async Task Handle_ThrowsExceptionWhenSuggestionStatusIsApproved()
     {
         // Prepare.
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
-        var property = PropertyFaker.Fake(items: [item], scans: []);
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.APPROVED;
+
+        var employee = EmployeeFaker.Fake(suggestions: [suggestion]);
+        var property = PropertyFaker.Fake(suggestions: [suggestion]);
         var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
-        var command = new ScanPropertyItemCommand
+        var command = new DeletePropertySuggestionCommand
         {
             Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
+            SuggestionId = suggestion.Id
         };
 
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync((PropertyScan?)null);
-
-        // Act & Assert.
-        var action = async () => await _handler.Handle(command, CancellationToken.None);
-
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("There are currently no active scans.");
-    }
-
-    [Fact]
-    public async Task Handle_ThrowsExceptionWhenItemIsNotAssignedToEmployee()
-    {
-        // Prepare.
-        var scan = PropertyScanFaker.Fake();
-        scan.Status = PropertyScanStatus.IN_PROGRESS;
-
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: []);
-        var property = PropertyFaker.Fake(items: [item], scans: [scan]);
-        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
-
-        var command = new ScanPropertyItemCommand
-        {
-            Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
-        };
-
-        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
-        _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync(scan);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -160,32 +132,60 @@ public class ScanPropertyItemCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenItemIsNotPartOfProperty()
+    public async Task Handle_ThrowsExceptionWhenEmployeeDoesntOwnSuggestion()
     {
         // Prepare.
-        var scan = PropertyScanFaker.Fake();
-        scan.Status = PropertyScanStatus.IN_PROGRESS;
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.DECLINED;
 
-        var item = PropertyItemFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
-        var property = PropertyFaker.Fake(items: [], scans: [scan]);
+        var employee = EmployeeFaker.Fake(suggestions: []);
+        var property = PropertyFaker.Fake(suggestions: [suggestion]);
         var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
 
-        var command = new ScanPropertyItemCommand
+        var command = new DeletePropertySuggestionCommand
         {
             Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
-            ItemId = item.Id
+            SuggestionId = suggestion.Id
         };
 
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Properties.Items.GetAsync(i => i.Id == command.ItemId)).ReturnsAsync(item);
         _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.TryGetInProgressForAsync(property)).ReturnsAsync(scan);
+        _services.Setup(s => s.Properties.Suggestion.DeleteAsync(suggestion));
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The item isn't a part of the property.");
+        await action.Should().ThrowAsync<Unauthorized401Exception>();
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenSuggestionIsNotPartOfProperty()
+    {
+        // Prepare.
+        var suggestion = PropertySuggestionFaker.Fake();
+        suggestion.Status = PropertySuggestionStatus.DECLINED;
+
+        var employee = EmployeeFaker.Fake(suggestions: [suggestion]);
+        var property = PropertyFaker.Fake(suggestions: []);
+        var organization = OrganizationFaker.Fake(property: property, employees: [employee]);
+
+        var command = new DeletePropertySuggestionCommand
+        {
+            Jwt = new Jwt([], [new("role", Jwt.Roles.EMPLOYEE)]),
+            SuggestionId = suggestion.Id
+        };
+
+        _services.Setup(s => s.Properties.Suggestion.GetAsync(s => s.Id == command.SuggestionId)).ReturnsAsync(suggestion);
+        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _services.Setup(s => s.Organizations.TryGetForAsync(employee)).ReturnsAsync(organization);
+        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
+        _services.Setup(s => s.Properties.Suggestion.DeleteAsync(suggestion));
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The suggestion isn't a part of the property.");
     }
 }
