@@ -5,6 +5,7 @@ using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Scan;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Complete;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;

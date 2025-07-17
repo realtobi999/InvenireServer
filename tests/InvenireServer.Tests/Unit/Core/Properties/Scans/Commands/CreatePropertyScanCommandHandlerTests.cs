@@ -41,7 +41,7 @@ public class CreatePropertyScanCommandHandlerTests
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.IndexActiveAsync()).ReturnsAsync([]);
+        _services.Setup(s => s.Properties.Scans.IndexInProgressAsync(property)).ReturnsAsync([]);
         _services.Setup(s => s.Properties.Scans.CreateAsync(It.IsAny<PropertyScan>()));
 
         // Act & Assert.
@@ -52,7 +52,7 @@ public class CreatePropertyScanCommandHandlerTests
         result.Scan.Name.Should().Be(command.Name);
         result.Scan.Description.Should().Be(command.Description);
         result.Scan.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
-        result.Scan.ClosedAt.Should().BeNull();
+        result.Scan.CompletedAt.Should().BeNull();
         result.Scan.LastUpdatedAt.Should().BeNull();
         result.Scan.PropertyId.Should().Be(property.Id);
     }
@@ -114,8 +114,11 @@ public class CreatePropertyScanCommandHandlerTests
     public async Task Handle_ThrowsExceptionWhenAnotherActiveScanIsPresent()
     {
         // Prepare.
+        var scan = PropertyScanFaker.Fake();
+        scan.Status = PropertyScanStatus.IN_PROGRESS;
+
         var admin = AdminFaker.Fake();
-        var property = PropertyFaker.Fake();
+        var property = PropertyFaker.Fake(scans: [scan]);
         var organization = OrganizationFaker.Fake(admin: admin, property: property);
 
         var faker = new Faker();
@@ -130,7 +133,8 @@ public class CreatePropertyScanCommandHandlerTests
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Properties.TryGetAsync(p => p.OrganizationId == organization.Id)).ReturnsAsync(property);
-        _services.Setup(s => s.Properties.Scans.IndexActiveAsync()).ReturnsAsync([PropertyScanFaker.Fake()]);
+        _services.Setup(s => s.Properties.Scans.IndexInProgressAsync(property)).ReturnsAsync([scan]);
+
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

@@ -24,9 +24,16 @@ public class PropertyScanTypeConfiguration : IEntityTypeConfiguration<PropertySc
             .HasColumnName("description")
             .HasMaxLength(PropertyScan.MAX_DESCRIPTION_LENGTH);
 
+        builder.Property(c => c.Status)
+            .HasColumnName("status")
+            .IsRequired();
+
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
+
+        builder.Property(c => c.CompletedAt)
+            .HasColumnName("completed_at");
 
         builder.Property(c => c.LastUpdatedAt)
             .HasColumnName("last_updated_at");

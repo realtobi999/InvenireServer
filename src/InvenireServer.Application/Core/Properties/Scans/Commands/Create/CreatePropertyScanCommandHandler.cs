@@ -19,15 +19,16 @@ public class CreatePropertyScanCommandHandler : IRequestHandler<CreatePropertySc
         var organization = await _services.Organizations.TryGetAsync(o => o.Id == admin.OrganizationId) ?? throw new BadRequest400Exception("You do not own a organization.");
         var property = await _services.Properties.TryGetAsync(p => p.OrganizationId == organization.Id) ?? throw new BadRequest400Exception("You have not created a property.");
 
-        if ((await _services.Properties.Scans.IndexActiveAsync()).Any()) throw new Conflict409Exception("An active property scan is already created.");
+        if ((await _services.Properties.Scans.IndexInProgressAsync(property)).Any()) throw new Conflict409Exception("An active property scan is already created.");
 
         var scan = new PropertyScan
         {
             Id = request.Id ?? Guid.NewGuid(),
             Name = request.Name,
             Description = request.Description,
+            Status = PropertyScanStatus.IN_PROGRESS,
             CreatedAt = DateTimeOffset.UtcNow,
-            ClosedAt = null,
+            CompletedAt = null,
             LastUpdatedAt = null,
             PropertyId = property.Id,
         };

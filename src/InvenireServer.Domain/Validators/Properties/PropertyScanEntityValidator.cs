@@ -36,6 +36,11 @@ public static class PropertyScanEntityValidator
                 errors.Add(new ValidationFailure(nameof(scan.Description), $"Description must not exceed {PropertyScan.MAX_DESCRIPTION_LENGTH} characters."));
         }
 
+        // Status.
+
+        if (!Enum.IsDefined(scan.Status))
+            errors.Add(new ValidationFailure(nameof(scan.Status), "Status must be a valid enum value."));
+
         // CreatedAt.
 
         if (scan.CreatedAt > DateTimeOffset.UtcNow)
@@ -44,19 +49,24 @@ public static class PropertyScanEntityValidator
         if (scan.LastUpdatedAt.HasValue && scan.CreatedAt > scan.LastUpdatedAt.Value)
             errors.Add(new ValidationFailure(nameof(scan.CreatedAt), "Creation date cannot be after the last update date."));
 
-        if (scan.ClosedAt.HasValue && scan.CreatedAt > scan.ClosedAt.Value)
+        if (scan.CompletedAt.HasValue && scan.CreatedAt > scan.CompletedAt.Value)
             errors.Add(new ValidationFailure(nameof(scan.CreatedAt), "Creation date cannot be after the closing date."));
 
-        // ClosedAt.
+        // CompletedAt.
 
-        if (scan.ClosedAt.HasValue && scan.ClosedAt > DateTimeOffset.UtcNow)
-            errors.Add(new ValidationFailure(nameof(scan.ClosedAt), "Closing date cannot be in the future."));
+        if (scan.CompletedAt.HasValue)
+        {
+            if (scan.CompletedAt > DateTimeOffset.UtcNow)
+                errors.Add(new ValidationFailure(nameof(scan.CompletedAt), "Completed at date cannot be in the future."));
+
+            if (scan.Status == PropertyScanStatus.IN_PROGRESS)
+                errors.Add(new ValidationFailure(nameof(scan.CompletedAt), $"Completed at date cannot be set if the status is '{PropertyScanStatus.IN_PROGRESS}'."));
+        }
 
         // LastUpdatedAt.
 
         if (scan.LastUpdatedAt.HasValue && scan.LastUpdatedAt > DateTimeOffset.UtcNow)
             errors.Add(new ValidationFailure(nameof(scan.LastUpdatedAt), "Last update date cannot be in the future."));
-
 
         // PropertyId.
 

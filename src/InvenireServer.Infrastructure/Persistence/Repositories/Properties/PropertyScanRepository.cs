@@ -10,8 +10,8 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
     {
     }
 
-    public async Task<IEnumerable<PropertyScan>> IndexActiveAsync()
+    public async Task<IEnumerable<PropertyScan>> IndexInProgressAsync(Property property)
     {
-        return await IndexAsync(s => !s.ClosedAt.HasValue);
+        return await IndexAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS);
     }
 }

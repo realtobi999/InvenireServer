@@ -18,9 +18,9 @@ public class PropertyScanService : IPropertyScanService
         _repositories = repositories;
     }
 
-    public Task<IEnumerable<PropertyScan>> IndexActiveAsync()
+    public Task<IEnumerable<PropertyScan>> IndexInProgressAsync(Property property)
     {
-        return _repositories.Properties.Scans.IndexActiveAsync();
+        return _repositories.Properties.Scans.IndexInProgressAsync(property);
     }
 
     public async Task<PropertyScan> GetAsync(Expression<Func<PropertyScan, bool>> predicate)

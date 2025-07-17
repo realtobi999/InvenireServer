@@ -79,7 +79,7 @@ public static class PropertySuggestionEntityValidator
                 errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), "Resolved at date cannot be in the future."));
 
             if (suggestion.Status == PropertySuggestionStatus.PENDING)
-                errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), "Resolved at date cannot be set if the status is still pending."));
+                errors.Add(new ValidationFailure(nameof(suggestion.ResolvedAt), $"Resolved at date cannot be set if the status is '{PropertySuggestionStatus.PENDING}'."));
         }
 
         // LastUpdatedAt.

@@ -16,9 +16,11 @@ public class PropertyScan
 
     public required string? Description { get; set; }
 
+    public required PropertyScanStatus Status { get; set; }
+
     public required DateTimeOffset CreatedAt { get; init; }
 
-    public required DateTimeOffset? ClosedAt { get; init; }
+    public required DateTimeOffset? CompletedAt { get; set; }
 
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
@@ -27,4 +29,10 @@ public class PropertyScan
     public Guid? PropertyId { get; set; }
 
     public ICollection<PropertyItem> ScannedItems { get; set; } = [];
+}
+
+public enum PropertyScanStatus
+{
+    COMPLETED,
+    IN_PROGRESS,
 }
