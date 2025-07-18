@@ -1,7 +1,7 @@
 using FluentValidation.Results;
 using InvenireServer.Domain.Entities.Properties;
 
-namespace InvenireServer.Domain.Validators.Properties;
+namespace InvenireServer.Domain.Validators.Properties.Items;
 
 public static class PropertyItemEntityValidator
 {
@@ -75,6 +75,12 @@ public static class PropertyItemEntityValidator
 
         if (item.DateOfSale.HasValue && item.DateOfSale > DateTimeOffset.UtcNow)
             errors.Add(new ValidationFailure(nameof(item.DateOfSale), "Date of sale cannot be in the future."));
+
+        // Location.
+
+        var locationErrors = PropertyItemLocationEntityValidator.Validate(item.Location);
+        if (locationErrors.Count != 0)
+            errors.AddRange(locationErrors.Select(le => new ValidationFailure($"{nameof(item.Location)}.{le.PropertyName}", le.ErrorMessage)));
 
         // Description.
 

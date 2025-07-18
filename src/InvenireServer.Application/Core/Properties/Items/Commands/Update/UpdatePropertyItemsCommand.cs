@@ -41,6 +41,9 @@ public record UpdatePropertyItemCommand
     [JsonPropertyName("date_of_sale")]
     public DateTimeOffset? DateOfSale { get; init; }
 
+    [JsonPropertyName("location")]
+    public required UpdatePropertyItemCommandLocation Location { get; set; }
+
     [JsonPropertyName("description")]
     public string? Description { get; init; }
 
@@ -49,4 +52,17 @@ public record UpdatePropertyItemCommand
 
     [JsonPropertyName("employee_id")]
     public Guid? EmployeeId { get; init; }
+}
+
+[JsonRequest]
+public record UpdatePropertyItemCommandLocation
+{
+    [JsonPropertyName("room")]
+    public required string Room { get; set; }
+
+    [JsonPropertyName("building")]
+    public required string Building { get; set; }
+
+    [JsonPropertyName("note")]
+    public string? AdditionalNote { get; set; }
 }

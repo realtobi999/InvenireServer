@@ -13,6 +13,7 @@ using InvenireServer.Tests.Integration.Extensions.Users;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
+using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
@@ -143,6 +144,12 @@ public class PropertyEndpointsTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
                     EmployeeId = new Random().NextDouble() < 0.5 ? employee2.Id : null // 50% chance of changing the employee or removing it.
@@ -245,6 +252,12 @@ public class PropertyEndpointsTests
                     Price = 999,
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
@@ -316,6 +329,12 @@ public class PropertyEndpointsTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
             }]
@@ -378,6 +397,12 @@ public class PropertyEndpointsTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
             }]

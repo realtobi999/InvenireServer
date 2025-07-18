@@ -1,6 +1,6 @@
 using InvenireServer.Domain.Entities.Properties;
 
-namespace InvenireServer.Tests.Integration.Fakers.Properties;
+namespace InvenireServer.Tests.Integration.Fakers.Properties.Items;
 
 public sealed class PropertyItemFaker : Faker<PropertyItem>
 {
@@ -14,6 +14,7 @@ public sealed class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.SerialNumber, f => f.Random.Bool(0.7f) ? f.Commerce.Ean13() : null);
         RuleFor(i => i.DateOfPurchase, f => f.Date.Past(5));
         RuleFor(i => i.DateOfSale, (f, p) => f.Random.Bool(0.3f) ? f.Date.Between(p.DateOfPurchase.DateTime, DateTimeOffset.UtcNow.DateTime) : null);
+        RuleFor(i => i.Location, _ => PropertyItemLocationFaker.Fake());
         RuleFor(i => i.Description, f => f.Random.Bool(0.5f) ? f.Commerce.ProductDescription() : null);
         RuleFor(i => i.DocumentNumber, f => f.Random.AlphaNumeric(15));
         RuleFor(i => i.CreatedAt, f => f.Date.PastOffset(5));

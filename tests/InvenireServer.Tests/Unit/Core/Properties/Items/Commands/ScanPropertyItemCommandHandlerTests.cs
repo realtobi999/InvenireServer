@@ -6,6 +6,7 @@ using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
+using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;

@@ -5,7 +5,7 @@ using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Services.Properties;
-using InvenireServer.Domain.Validators.Properties;
+using InvenireServer.Domain.Validators.Properties.Items;
 
 namespace InvenireServer.Application.Services.Properties;
 

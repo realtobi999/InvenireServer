@@ -38,7 +38,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             employees[id] = employee;
         }
 
-        // Update items and handle employee reassignment.
         foreach (var (item, command) in items)
         {
             item.InventoryNumber = command.InventoryNumber;
@@ -48,6 +47,9 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             item.SerialNumber = command.SerialNumber;
             item.DateOfPurchase = command.DateOfPurchase;
             item.DateOfSale = command.DateOfSale;
+            item.Location.Room = command.Location.Room;
+            item.Location.Building = command.Location.Building;
+            item.Location.AdditionalNote = command.Location.AdditionalNote;
             item.Description = command.Description;
             item.DocumentNumber = command.DocumentNumber;
 
@@ -57,7 +59,6 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             if (command.EmployeeId.HasValue && employees.TryGetValue(command.EmployeeId.Value, out var newEmployee)) newEmployee.AddItem(item);
         }
 
-        // Save changes to the database.
         await _services.Properties.Items.UpdateAsync(items.Keys);
         if (employees.Values.Count != 0) await _services.Employees.UpdateAsync(employees.Values);
     }

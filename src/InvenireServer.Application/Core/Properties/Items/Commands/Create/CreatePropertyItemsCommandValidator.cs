@@ -41,6 +41,14 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
         RuleFor(c => c.DateOfPurchase)
             .NotEmpty()
             .WithName("date_of_purchase");
+        RuleFor(c => c.Location)
+            .NotEmpty()
+            .WithName("location")
+            .ChildRules(location =>
+            {
+                location.RuleFor(l => l.Room).NotEmpty().MaximumLength(PropertyItemLocation.MAX_ROOM_LENGTH).WithName("room");
+                location.RuleFor(l => l.Building).NotEmpty().MaximumLength(PropertyItemLocation.MAX_BUILDING_LENGTH).WithName("building");
+            });
         RuleFor(c => c.Description)
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
             .WithName("description");

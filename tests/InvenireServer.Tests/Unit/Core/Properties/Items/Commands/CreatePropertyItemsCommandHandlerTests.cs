@@ -9,6 +9,7 @@ using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Extensions.Properties;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
+using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;
@@ -68,6 +69,9 @@ public class CreatePropertyItemsCommandHandlerTests
             property.Items[i].SerialNumber.Should().Be(items[i].SerialNumber);
             property.Items[i].DateOfPurchase.Should().Be(items[i].DateOfPurchase);
             property.Items[i].DateOfSale.Should().Be(items[i].DateOfSale);
+            property.Items[i].Location.Room.Should().Be(items[i].Location.Room);
+            property.Items[i].Location.Building.Should().Be(items[i].Location.Building);
+            property.Items[i].Location.AdditionalNote.Should().Be(items[i].Location.AdditionalNote);
             property.Items[i].Description.Should().Be(items[i].Description);
             property.Items[i].DocumentNumber.Should().Be(items[i].DocumentNumber);
             property.Items[i].CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));

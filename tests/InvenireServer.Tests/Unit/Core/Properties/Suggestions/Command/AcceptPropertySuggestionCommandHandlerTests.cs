@@ -13,6 +13,7 @@ using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Extensions.Properties;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
+using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using MediatR;
 
@@ -100,6 +101,12 @@ public class AcceptPropertySuggestionCommandHandlerTests
                 SerialNumber = Guid.NewGuid().ToString(),
                 DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                 DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                Location = new UpdatePropertyItemCommandLocation
+                {
+                    Room = "TEST",
+                    Building = "TEST",
+                    AdditionalNote = "TEST",
+                },
                 Description = "TEST",
                 DocumentNumber = Guid.NewGuid().ToString(),
             })],

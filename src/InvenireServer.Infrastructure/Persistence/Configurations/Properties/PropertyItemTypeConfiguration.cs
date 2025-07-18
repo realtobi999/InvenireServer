@@ -9,6 +9,7 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
     public void Configure(EntityTypeBuilder<PropertyItem> builder)
     {
         // Properties.
+
         builder.Property(i => i.Id)
             .HasColumnName("id")
             .IsRequired();
@@ -61,6 +62,19 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
             .HasColumnName("last_updated_at");
 
         // Navigational properties.
+
+        builder.OwnsOne(i => i.Location, locationBuilder =>
+        {
+            locationBuilder.Property(l => l.Room)
+                .HasColumnName("room")
+                .IsRequired();
+            locationBuilder.Property(l => l.Building)
+                .HasColumnName("building")
+                .IsRequired();
+            locationBuilder.Property(l => l.AdditionalNote)
+                .HasColumnName("additional_note");
+        });
+
         builder.Property(i => i.PropertyId)
             .HasColumnName("property_id");
 

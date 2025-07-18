@@ -8,6 +8,7 @@ using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
+using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;
@@ -50,6 +51,12 @@ public class UpdatePropertyItemsCommandHandlerTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
                     EmployeeId = employee2.Id
@@ -85,6 +92,9 @@ public class UpdatePropertyItemsCommandHandlerTests
             items[i].SerialNumber.Should().Be(command.Items[i].SerialNumber);
             items[i].DateOfPurchase.Should().Be(command.Items[i].DateOfPurchase);
             items[i].DateOfSale.Should().Be(command.Items[i].DateOfSale);
+            items[i].Location.Room.Should().Be(command.Items[i].Location.Room);
+            items[i].Location.Building.Should().Be(command.Items[i].Location.Building);
+            items[i].Location.AdditionalNote.Should().Be(command.Items[i].Location.AdditionalNote);
             items[i].Description.Should().Be(command.Items[i].Description);
             items[i].DocumentNumber.Should().Be(command.Items[i].DocumentNumber);
         }
@@ -166,6 +176,12 @@ public class UpdatePropertyItemsCommandHandlerTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
                     EmployeeId = employee.Id
@@ -213,6 +229,12 @@ public class UpdatePropertyItemsCommandHandlerTests
                     SerialNumber = Guid.NewGuid().ToString(),
                     DateOfPurchase = DateTimeOffset.UtcNow.AddYears(-5),
                     DateOfSale = DateTimeOffset.Now.AddYears(-3),
+                    Location = new UpdatePropertyItemCommandLocation
+                    {
+                        Room = "TEST",
+                        Building = "TEST",
+                        AdditionalNote = "TEST",
+                    },
                     Description = "TEST",
                     DocumentNumber = Guid.NewGuid().ToString(),
                     EmployeeId = employee2.Id

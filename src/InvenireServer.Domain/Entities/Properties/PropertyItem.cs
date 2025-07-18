@@ -31,6 +31,8 @@ public class PropertyItem
 
     public required DateTimeOffset? DateOfSale { get; set; }
 
+    public required PropertyItemLocation Location { get; set; }
+
     public required string? Description { get; set; }
 
     public required string DocumentNumber { get; set; }
@@ -74,4 +76,23 @@ public class PropertyItem
 
         EmployeeId = null;
     }
+}
+
+public record PropertyItemLocation
+{
+    // Constants.
+
+    public const int MAX_ROOM_LENGTH = 155;
+
+    public const int MAX_BUILDING_LENGTH = 155;
+
+    public const int MAX_ADDITIONAL_NOTE_LENGTH = 555;
+
+    // Core properties.
+
+    public required string Room { get; set; }
+
+    public required string Building { get; set; }
+
+    public required string? AdditionalNote { get; set; }
 }

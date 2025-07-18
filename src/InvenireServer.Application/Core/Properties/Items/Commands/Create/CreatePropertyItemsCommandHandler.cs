@@ -43,6 +43,12 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
                 SerialNumber = dto.SerialNumber,
                 DateOfPurchase = dto.DateOfPurchase,
                 DateOfSale = dto.DateOfSale,
+                Location = new PropertyItemLocation
+                {
+                    Room = dto.Location.Room,
+                    Building = dto.Location.Building,
+                    AdditionalNote = dto.Location.AdditionalNote
+                },
                 Description = dto.Description,
                 DocumentNumber = dto.DocumentNumber,
                 CreatedAt = DateTimeOffset.UtcNow,

@@ -17,6 +17,12 @@ public static class PropertyItemTestExtensions
             SerialNumber = property.SerialNumber,
             DateOfPurchase = property.DateOfPurchase,
             DateOfSale = property.DateOfSale,
+            Location = new CreatePropertyItemCommandLocation
+            {
+                Room = property.Location.Room,
+                Building = property.Location.Building,
+                AdditionalNote = property.Location.AdditionalNote
+            },
             Description = property.Description,
             DocumentNumber = property.DocumentNumber,
             EmployeeId = property.EmployeeId
