@@ -22,7 +22,7 @@ public class PropertySuggestion
 
     public required string? Feedback { get; set; }
 
-    public required string RequestBody { get; set; }
+    public required string PayloadString { get; set; }
 
     public required PropertySuggestionStatus Status { get; set; }
 

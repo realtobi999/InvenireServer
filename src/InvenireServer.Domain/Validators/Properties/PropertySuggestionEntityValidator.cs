@@ -47,13 +47,13 @@ public static class PropertySuggestionEntityValidator
                 errors.Add(new ValidationFailure(nameof(suggestion.Description), $"Feedback must not exceed {PropertySuggestion.MAX_FEEDBACK_LENGTH} characters."));
         }
 
-        // RequestBody.
+        // PayloadString.
 
-        if (string.IsNullOrWhiteSpace(suggestion.RequestBody))
-            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not be empty."));
+        if (string.IsNullOrWhiteSpace(suggestion.PayloadString))
+            errors.Add(new ValidationFailure(nameof(suggestion.PayloadString), "Payload string must not be empty."));
 
-        if (suggestion.RequestBody != suggestion.RequestBody.Trim())
-            errors.Add(new ValidationFailure(nameof(suggestion.RequestBody), "Request body must not start or end with whitespace."));
+        if (suggestion.PayloadString != suggestion.PayloadString.Trim())
+            errors.Add(new ValidationFailure(nameof(suggestion.PayloadString), "Payload string must not start or end with whitespace."));
 
         // Status.
 

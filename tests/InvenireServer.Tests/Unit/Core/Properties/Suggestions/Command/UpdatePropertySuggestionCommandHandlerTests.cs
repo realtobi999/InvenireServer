@@ -1,5 +1,5 @@
 using System.Text.Json;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -41,7 +41,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -62,7 +62,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
 
         // Assert that the suggestion is correctly updated.
         suggestion.Description = command.Description;
-        suggestion.RequestBody = JsonSerializer.Serialize(command.Body);
+        suggestion.PayloadString = JsonSerializer.Serialize(command.Payload);
         suggestion.Feedback.Should().BeNull();
         suggestion.Status.Should().Be(PropertySuggestionStatus.PENDING);
         suggestion.ResolvedAt.Should().BeNull();
@@ -85,7 +85,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -121,7 +121,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -159,7 +159,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -199,7 +199,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -238,7 +238,7 @@ public class UpdatePropertySuggestionCommandHandlerTests
         var command = new UpdatePropertySuggestionCommand
         {
             Description = new Faker().Lorem.Paragraph(),
-            Body = new UpdatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],

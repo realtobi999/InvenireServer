@@ -16,9 +16,9 @@ public class CreatePropertySuggestionCommandValidator : AbstractValidator<Create
         RuleFor(c => c.Description)
             .MaximumLength(PropertySuggestion.MAX_DESCRIPTION_LENGTH)
             .WithName("description");
-        RuleFor(c => c.Body)
+        RuleFor(c => c.Payload)
             .NotEmpty()
-            .WithName("body")
+            .WithName("payload")
             .ChildRules(body =>
             {
                 body.RuleForEach(b => b.CreateCommands).SetValidator(new CreatePropertyItemCommandValidator());

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -40,7 +41,7 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            Body = new CreatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -66,7 +67,7 @@ public class CreatePropertySuggestionCommandHandlerTests
         result.Suggestion.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
         result.Suggestion.LastUpdatedAt.Should().BeNull();
         result.Suggestion.ResolvedAt.Should().BeNull();
-        result.Suggestion.RequestBody.Should().Be(JsonSerializer.Serialize(command.Body));
+        result.Suggestion.PayloadString.Should().Be(JsonSerializer.Serialize(command.Payload));
         result.Suggestion.PropertyId.Should().Be(property.Id);
         result.Suggestion.EmployeeId.Should().Be(employee.Id);
     }
@@ -87,7 +88,7 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            Body = new CreatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],
@@ -121,7 +122,7 @@ public class CreatePropertySuggestionCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Lorem.Sentence(3),
             Description = faker.Lorem.Paragraph(),
-            Body = new CreatePropertySuggestionCommand.RequestBody
+            Payload = new PropertySuggestionPayload
             {
                 CreateCommands = [.. items.Select(i => i.ToCreatePropertyItemCommand())],
                 DeleteCommands = [],

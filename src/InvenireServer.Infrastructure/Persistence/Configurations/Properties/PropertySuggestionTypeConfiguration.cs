@@ -28,8 +28,8 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
             .HasColumnName("feedback")
             .HasMaxLength(PropertySuggestion.MAX_FEEDBACK_LENGTH);
 
-        builder.Property(s => s.RequestBody)
-            .HasColumnName("request_body")
+        builder.Property(s => s.PayloadString)
+            .HasColumnName("payload_string")
             .IsRequired();
 
         builder.Property(s => s.Status)

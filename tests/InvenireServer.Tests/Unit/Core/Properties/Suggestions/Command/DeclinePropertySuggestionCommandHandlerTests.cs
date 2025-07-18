@@ -1,5 +1,5 @@
 using System.Text.Json;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
@@ -38,7 +38,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             UpdateCommands = [],
@@ -81,7 +81,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             UpdateCommands = [],
@@ -118,7 +118,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: null, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             UpdateCommands = [],
@@ -158,7 +158,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.PENDING;
-        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             UpdateCommands = [],
@@ -197,7 +197,7 @@ public class DeclinePropertySuggestionCommandHandlerTests
         var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
 
         suggestion.Status = PropertySuggestionStatus.APPROVED;
-        suggestion.RequestBody = JsonSerializer.Serialize(new CreatePropertySuggestionCommand.RequestBody
+        suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             UpdateCommands = [],

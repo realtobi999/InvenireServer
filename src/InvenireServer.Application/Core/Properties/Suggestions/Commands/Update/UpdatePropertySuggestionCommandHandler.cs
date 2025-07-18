@@ -27,7 +27,7 @@ public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdateProp
         if (suggestion.Status == PropertySuggestionStatus.APPROVED) throw new BadRequest400Exception("The suggestion is approved and cannot be updated.");
 
         suggestion.Description = request.Description;
-        suggestion.RequestBody = JsonSerializer.Serialize(request.Body);
+        suggestion.PayloadString = JsonSerializer.Serialize(request.Payload);
 
         if (suggestion.Status == PropertySuggestionStatus.DECLINED)
         {

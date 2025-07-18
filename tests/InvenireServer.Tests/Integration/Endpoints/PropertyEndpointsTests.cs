@@ -2,8 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
@@ -233,7 +232,7 @@ public class PropertyEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        var response = await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [items.First().Id],
             CreateCommands = [PropertyItemFaker.Fake().ToCreatePropertyItemCommand()],
@@ -295,7 +294,7 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             CreateCommands = [],
@@ -303,7 +302,7 @@ public class PropertyEndpointsTests
         }))).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.PutAsJsonAsync($"/api/properties/suggestions/{suggestion.Id}", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        var response = await _client.PutAsJsonAsync($"/api/properties/suggestions/{suggestion.Id}", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [items.First().Id],
             CreateCommands = [PropertyItemFaker.Fake().ToCreatePropertyItemCommand()],
@@ -365,7 +364,7 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [items.First().Id],
             CreateCommands = [PropertyItemFaker.Fake().ToCreatePropertyItemCommand()],
@@ -437,7 +436,7 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             CreateCommands = [],
@@ -497,7 +496,7 @@ public class PropertyEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new CreatePropertySuggestionCommand.RequestBody
+        (await _client.PostAsJsonAsync("/api/properties/suggestions", suggestion.ToCreatePropertySuggestionCommand(new PropertySuggestionPayload
         {
             DeleteCommands = [],
             CreateCommands = [],
