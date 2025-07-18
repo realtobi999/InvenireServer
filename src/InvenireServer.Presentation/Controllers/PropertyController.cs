@@ -11,6 +11,7 @@ using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
@@ -108,6 +109,23 @@ public class PropertyController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Created($"/api/properties/suggestions/{result.Suggestion.Id}", null);
+    }
+
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpPut("/api/properties/suggestions/{suggestionId:guid}")]
+    public async Task<IActionResult> UpdateSuggestion([FromBody] UpdatePropertySuggestionCommand command, Guid suggestionId)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            SuggestionId = suggestionId
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]

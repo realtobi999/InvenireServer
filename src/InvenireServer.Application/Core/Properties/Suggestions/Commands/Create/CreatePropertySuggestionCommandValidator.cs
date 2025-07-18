@@ -18,10 +18,11 @@ public class CreatePropertySuggestionCommandValidator : AbstractValidator<Create
             .WithName("description");
         RuleFor(c => c.Body)
             .NotEmpty()
-            .WithName("request_body");
-        RuleForEach(c => c.Body.CreateCommands)
-            .SetValidator(new CreatePropertyItemCommandValidator());
-        RuleForEach(c => c.Body.UpdateCommands)
-            .SetValidator(new UpdatePropertyItemCommandValidator());
+            .WithName("body")
+            .ChildRules(body =>
+            {
+                body.RuleForEach(b => b.CreateCommands).SetValidator(new CreatePropertyItemCommandValidator());
+                body.RuleForEach(b => b.UpdateCommands).SetValidator(new UpdatePropertyItemCommandValidator());
+            });
     }
 }
