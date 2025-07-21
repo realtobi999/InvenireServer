@@ -72,4 +72,10 @@ public class PropertyService : IPropertyService
         _repositories.Properties.Update(property);
         await _repositories.SaveOrThrowAsync();
     }
+
+    public async Task DeleteAsync(Property property)
+    {
+        _repositories.Properties.Delete(property);
+        await _repositories.SaveOrThrowAsync();
+    }
 }

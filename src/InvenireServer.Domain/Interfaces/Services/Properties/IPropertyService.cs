@@ -15,4 +15,5 @@ public interface IPropertyService
     Task<Property?> TryGetForAsync(Organization organization);
     Task CreateAsync(Property property);
     Task UpdateAsync(Property property);
+    Task DeleteAsync(Property property);
 }
