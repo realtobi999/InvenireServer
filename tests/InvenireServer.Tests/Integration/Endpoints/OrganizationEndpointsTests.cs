@@ -209,7 +209,7 @@ public class OrganizationEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/organizations/{organization.Id}/invitations/accept", new object());
+        var response = await _client.PutAsJsonAsync($"/api/organizations/invitations/{invitation.Id}/accept", new object { });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 

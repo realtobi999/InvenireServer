@@ -121,13 +121,13 @@ public class OrganizationController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
-    [HttpPost("/api/organizations/{organizationId:guid}/invitations/accept")]
-    public async Task<IActionResult> AcceptInvitation(Guid organizationId)
+    [HttpPut("/api/organizations/invitations/{invitationId:guid}/accept")]
+    public async Task<IActionResult> AcceptInvitation(Guid invitationId)
     {
         await _mediator.Send(new AcceptOrganizationInvitationCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            OrganizationId = organizationId
+            InvitationId = invitationId
         });
 
         return NoContent();
