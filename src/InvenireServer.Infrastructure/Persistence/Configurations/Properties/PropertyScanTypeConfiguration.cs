@@ -38,10 +38,27 @@ public class PropertyScanTypeConfiguration : IEntityTypeConfiguration<PropertySc
         builder.Property(c => c.LastUpdatedAt)
             .HasColumnName("last_updated_at");
 
+        builder.Property(i => i.PropertyId)
+            .HasColumnName("property_id");
+
         // Relationships.
 
         builder.HasMany(c => c.ScannedItems)
             .WithMany()
-            .UsingEntity<Dictionary<string, object>>("PropertyCheckPropertyItem", i => i.HasOne<PropertyItem>().WithMany().HasForeignKey("PropertyItemId"), c => c.HasOne<PropertyScan>().WithMany().HasForeignKey("PropertyCheckId"));
+            .UsingEntity<Dictionary<string, object>>(
+                "PropertyCheckPropertyItem",
+
+                // PropertyItem side — do not cascade
+                i => i.HasOne<PropertyItem>()
+                      .WithMany()
+                      .HasForeignKey("PropertyItemId")
+                      .OnDelete(DeleteBehavior.Restrict),
+
+                // PropertyScan side — cascade delete
+                c => c.HasOne<PropertyScan>()
+                      .WithMany()
+                      .HasForeignKey("PropertyCheckId")
+                      .OnDelete(DeleteBehavior.Cascade)
+            );
     }
 }

@@ -22,18 +22,24 @@ public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
         builder.Property(p => p.LastUpdatedAt)
             .HasColumnName("last_updated_at");
 
+        builder.Property(p => p.OrganizationId)
+            .HasColumnName("organization_id");
+
         // Relationships.
 
         builder.HasMany(p => p.Items)
             .WithOne()
-            .HasForeignKey(i => i.PropertyId);
+            .HasForeignKey(i => i.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Scans)
             .WithOne()
-            .HasForeignKey(i => i.PropertyId);
+            .HasForeignKey(i => i.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Suggestions)
             .WithOne()
-            .HasForeignKey(s => s.PropertyId);
+            .HasForeignKey(s => s.PropertyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

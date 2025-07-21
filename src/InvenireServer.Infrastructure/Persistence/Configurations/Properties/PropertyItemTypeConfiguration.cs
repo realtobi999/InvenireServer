@@ -61,7 +61,13 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
         builder.Property(i => i.LastUpdatedAt)
             .HasColumnName("last_updated_at");
 
-        // Navigational properties.
+        builder.Property(i => i.PropertyId)
+            .HasColumnName("property_id");
+
+        builder.Property(i => i.EmployeeId)
+            .HasColumnName("employee_id");
+
+        // Relationships.
 
         builder.OwnsOne(i => i.Location, locationBuilder =>
         {
@@ -74,11 +80,5 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
             locationBuilder.Property(l => l.AdditionalNote)
                 .HasColumnName("additional_note");
         });
-
-        builder.Property(i => i.PropertyId)
-            .HasColumnName("property_id");
-
-        builder.Property(i => i.EmployeeId)
-            .HasColumnName("employee_id");
     }
 }
