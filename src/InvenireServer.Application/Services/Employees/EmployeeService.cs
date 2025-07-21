@@ -72,6 +72,11 @@ public class EmployeeService : IEmployeeService
         await _repositories.SaveOrThrowAsync();
     }
 
+    public async Task DeleteAsync(Employee employee)
+    {
+        await DeleteAsync([employee]);
+    }
+
     public async Task DeleteAsync(IEnumerable<Employee> employees)
     {
         foreach (var employee in employees) _repositories.Employees.Delete(employee);

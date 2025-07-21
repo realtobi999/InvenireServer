@@ -1,7 +1,9 @@
 using FluentValidation;
 using FluentValidation.Results;
+using InvenireServer.Application.Core.Employees.Commands.Delete;
 using InvenireServer.Application.Core.Employees.Commands.Login;
 using InvenireServer.Application.Core.Employees.Commands.Register;
+using InvenireServer.Application.Core.Employees.Commands.Update;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Confirm;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Send;
 using InvenireServer.Domain.Entities.Common;
@@ -73,5 +75,33 @@ public class EmployeeController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Ok(result.Token);
+    }
+
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpPut("/api/employees")]
+    public async Task<IActionResult> Update([FromBody] UpdateEmployeeCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+
+    }
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpDelete("/api/employees")]
+    public async Task<IActionResult> Delete()
+    {
+        await _mediator.Send(new DeleteEmployeeCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        });
+
+        return NoContent();
     }
 }

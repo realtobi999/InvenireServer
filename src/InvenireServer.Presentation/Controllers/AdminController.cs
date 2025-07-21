@@ -1,7 +1,9 @@
 using FluentValidation;
 using FluentValidation.Results;
+using InvenireServer.Application.Core.Admins.Commands.Delete;
 using InvenireServer.Application.Core.Admins.Commands.Login;
 using InvenireServer.Application.Core.Admins.Commands.Register;
+using InvenireServer.Application.Core.Admins.Commands.Update;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 using InvenireServer.Domain.Entities.Common;
@@ -73,5 +75,33 @@ public class AdminController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Ok(result.Token);
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/admins")]
+    public async Task<IActionResult> Update([FromBody] UpdateAdminCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/admins")]
+    public async Task<IActionResult> Delete()
+    {
+        await _mediator.Send(new DeleteAdminCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        });
+
+        return NoContent();
     }
 }

@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Employees.Commands.Login;
+using InvenireServer.Application.Core.Employees.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
@@ -89,23 +90,58 @@ public class EmployeeEndpointsTests
         // Prepare.
         var employee = EmployeeFaker.Fake();
 
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.FalseString),
-            new Claim("purpose", "email_verification")
-        ]))}");
-
         (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        employee.SetAsVerified(_app.GetDatabaseContext());
 
         // Act & Assert.
-
         var response = await _client.PostAsJsonAsync("/api/employees/login", new LoginEmployeeCommand
         {
             EmailAddress = employee.EmailAddress,
             Password = employee.Password
         });
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsNoContent()
+    {
+        // Prepare.
+        var employee = EmployeeFaker.Fake();
+
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        employee.SetAsVerified(_app.GetDatabaseContext());
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.EMPLOYEE),
+            new Claim("employee_id", employee.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync("/api/employees", new UpdateEmployeeCommand
+        {
+            Name = new Faker().Lorem.Sentence(),
+        });
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent()
+    {
+        // Prepare.
+        var employee = EmployeeFaker.Fake();
+
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        employee.SetAsVerified(_app.GetDatabaseContext());
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.EMPLOYEE),
+            new Claim("employee_id", employee.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.DeleteAsync("/api/employees");
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }

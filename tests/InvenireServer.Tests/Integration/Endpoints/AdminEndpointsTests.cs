@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using Bogus.Extensions.UnitedKingdom;
 using InvenireServer.Application.Core.Admins.Commands.Login;
+using InvenireServer.Application.Core.Admins.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
@@ -88,15 +90,8 @@ public class AdminEndpointsTests
         // Prepare.
         var admin = AdminFaker.Fake();
 
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.FalseString),
-            new Claim("purpose", "email_verification")
-        ]))}");
-
         (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/admins/email-verification/confirm", new object())).StatusCode.Should().Be(HttpStatusCode.NoContent);
+        admin.SetAsVerified(_app.GetDatabaseContext());
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/admins/login", new LoginAdminCommand
@@ -105,5 +100,48 @@ public class AdminEndpointsTests
             Password = admin.Password
         });
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync("/api/admins", new UpdateAdminCommand
+        {
+            Name = new Faker().Lorem.Sentence(),
+        });
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.DeleteAsync("/api/admins");
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }
