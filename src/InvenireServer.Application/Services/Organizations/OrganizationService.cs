@@ -74,4 +74,10 @@ public class OrganizationService : IOrganizationService
         _repositories.Organizations.Update(organization);
         await _repositories.SaveOrThrowAsync();
     }
+
+    public async Task DeleteAsync(Organization organization)
+    {
+        _repositories.Organizations.Delete(organization);
+        await _repositories.SaveOrThrowAsync();
+    }
 }
