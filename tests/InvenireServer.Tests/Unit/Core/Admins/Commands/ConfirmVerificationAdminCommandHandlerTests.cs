@@ -9,8 +9,8 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class ConfirmVerificationAdminCommandHandlerTests
 {
-    private readonly ConfirmVerificationAdminCommandHandler _handler;
     private readonly Mock<IServiceManager> _services;
+    private readonly ConfirmVerificationAdminCommandHandler _handler;
 
     public ConfirmVerificationAdminCommandHandlerTests()
     {
@@ -19,61 +19,78 @@ public class ConfirmVerificationAdminCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ReturnsVerifiedAdmin()
+    public async Task Handle_VerifiesAdminCorrectly()
     {
         // Prepare
         var admin = AdminFaker.Fake();
+
+        admin.IsVerified = false;
 
         var command = new ConfirmVerificationAdminCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
-        admin.IsVerified = false;
-
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _services.Setup(s => s.Admins.UpdateAsync(admin));
 
         // Act & Assert.
-        await _handler.Handle(command, CancellationToken.None);
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().NotThrowAsync();
 
         // Assert that the admin is verified.
         admin.IsVerified.Should().BeTrue();
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenInvalidToken()
+    public async Task Handle_ThrowsException_WhenPurposeClaimIsMissing()
     {
         // Prepare
         var command = new ConfirmVerificationAdminCommand
         {
-            Jwt = new Jwt([], []) // Insert empty token.
+            Jwt = new Jwt([], []) // Insert a empty token.
         };
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Indication that the token is used for email verification is missing.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The token's purpose is missing.");
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenAdminIsAlreadyVerified()
+    public async Task Handle_ThrowsException_WhenPurposeClaimIsInvalid()
+    {
+        // Prepare
+        var command = new ConfirmVerificationAdminCommand
+        {
+            Jwt = new Jwt([], [new Claim("purpose", "invalid")]) // Insert a invalid purpose claim.
+        };
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The token's purpose is not for email verification.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenAdminIsAlreadyVerified()
     {
         // Prepare
         var admin = AdminFaker.Fake();
+
+        admin.IsVerified = true; // Set the admin as verified.
 
         var command = new ConfirmVerificationAdminCommand
         {
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
-        admin.IsVerified = true; // Set the admin as verified.
-
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Admin is already verified.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin's verification status is already confirmed.");
     }
 }

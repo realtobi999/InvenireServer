@@ -1,13 +1,13 @@
 using System.Security.Claims;
-using InvenireServer.Application.Dtos.Employees.Email;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Dtos.Employees.Email;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Verification.Send;
 
 public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerificationEmployeeCommand>
 {
-    private readonly IEmailManager _email;
     private readonly IJwtManager _jwt;
+    private readonly IEmailManager _email;
     private readonly IServiceManager _services;
 
     public SendVerificationEmployeeCommandHandler(IServiceManager services, IEmailManager email, IJwtManager jwt)
@@ -17,15 +17,13 @@ public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerifi
         _services = services;
     }
 
-    public async Task Handle(SendVerificationEmployeeCommand request, CancellationToken _)
+    public async Task Handle(SendVerificationEmployeeCommand request, CancellationToken ct)
     {
-        var jwt = request.Jwt;
-        var employee = await _services.Employees.GetAsync(jwt);
+        var employee = await _services.Employees.GetAsync(request.Jwt);
 
-        // Make the purpose of the token to be of verification.
+        var jwt = request.Jwt;
         jwt.Payload.Add(new Claim("purpose", "email_verification"));
 
-        // Build and send the email.
         var dto = new EmployeeVerificationEmailDto
         {
             EmployeeAddress = employee.EmailAddress,

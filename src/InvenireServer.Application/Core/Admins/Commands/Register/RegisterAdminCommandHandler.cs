@@ -19,9 +19,8 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         _services = services;
     }
 
-    public async Task<RegisterAdminCommandResult> Handle(RegisterAdminCommand request, CancellationToken _)
+    public async Task<RegisterAdminCommandResult> Handle(RegisterAdminCommand request, CancellationToken ct)
     {
-        // Build the admin from the request and hash the password.
         var admin = new Admin
         {
             Id = request.Id ?? Guid.NewGuid(),
@@ -35,20 +34,16 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         };
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        // Save the admin to the database.
         await _services.Admins.CreateAsync(admin);
-
-        // Create the jwt.
-        var jwt = _jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.FalseString)
-        ]);
 
         return new RegisterAdminCommandResult
         {
             Admin = admin,
-            Token = _jwt.Writer.Write(jwt)
+            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                new Claim("role", Jwt.Roles.ADMIN),
+                new Claim("admin_id", admin.Id.ToString()),
+                new Claim("is_verified", bool.FalseString)
+            ]))
         };
     }
 }

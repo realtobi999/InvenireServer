@@ -12,7 +12,7 @@ public class DeleteAdminCommandHandler : IRequestHandler<DeleteAdminCommand>
         _services = services;
     }
 
-    public async Task Handle(DeleteAdminCommand request, CancellationToken _)
+    public async Task Handle(DeleteAdminCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt);
 

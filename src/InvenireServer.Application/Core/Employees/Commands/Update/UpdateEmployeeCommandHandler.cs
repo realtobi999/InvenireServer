@@ -11,7 +11,7 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
         _services = services;
     }
 
-    public async Task Handle(UpdateEmployeeCommand request, CancellationToken _)
+    public async Task Handle(UpdateEmployeeCommand request, CancellationToken ct)
     {
         var employee = await _services.Employees.GetAsync(request.Jwt!);
 

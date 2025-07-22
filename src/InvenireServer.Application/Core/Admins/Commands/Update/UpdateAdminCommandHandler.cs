@@ -11,7 +11,7 @@ public class UpdateAdminCommandHandler : IRequestHandler<UpdateAdminCommand>
         _services = services;
     }
 
-    public async Task Handle(UpdateAdminCommand request, CancellationToken _)
+    public async Task Handle(UpdateAdminCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
 

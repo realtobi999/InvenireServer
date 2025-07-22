@@ -54,7 +54,7 @@ public class LoginEmployeeCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenEmployeeIsNotFound()
+    public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
         // Prepare
         var employee = EmployeeFaker.Fake();
@@ -77,7 +77,7 @@ public class LoginEmployeeCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenIncorrectPassword()
+    public async Task Handle_ThrowsException_WhenIncorrectPassword()
     {
         // Prepare
         var employee = EmployeeFaker.Fake();
@@ -100,7 +100,7 @@ public class LoginEmployeeCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenEmployeeIsNotVerified()
+    public async Task Handle_ThrowsException_WhenEmployeeIsNotVerified()
     {
         // Prepare
         var employee = EmployeeFaker.Fake();
@@ -119,6 +119,6 @@ public class LoginEmployeeCommandHandlerTests
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification required to proceed.");
+        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification is required to proceed with login.");
     }
 }

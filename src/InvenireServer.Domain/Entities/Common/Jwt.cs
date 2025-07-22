@@ -21,6 +21,10 @@ public sealed class Jwt
         return claim.Value;
     }
 
+    public string? GetPurpose()
+    {
+        return Payload.FirstOrDefault(c => c.Type == "purpose")?.Value;
+    }
 
     public static class Policies
     {

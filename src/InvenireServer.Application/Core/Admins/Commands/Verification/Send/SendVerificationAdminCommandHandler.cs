@@ -17,15 +17,13 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         _services = services;
     }
 
-    public async Task Handle(SendVerificationAdminCommand request, CancellationToken _)
+    public async Task Handle(SendVerificationAdminCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt);
 
-        // Make the purpose of the token to be of verification.
         var jwt = request.Jwt;
         jwt.Payload.Add(new Claim("purpose", "email_verification"));
 
-        // Build and send the email.
         var dto = new AdminVerificationEmailDto
         {
             AdminAddress = admin.EmailAddress,

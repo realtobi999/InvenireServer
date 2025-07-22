@@ -4,5 +4,5 @@ namespace InvenireServer.Application.Core.Employees.Commands.Delete;
 
 public record DeleteEmployeeCommand : IRequest
 {
-    public required Jwt Jwt { get; set; }
+    public required Jwt Jwt { get; init; }
 }

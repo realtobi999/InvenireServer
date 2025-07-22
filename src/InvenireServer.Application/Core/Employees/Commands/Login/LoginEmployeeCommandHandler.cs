@@ -20,10 +20,11 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
         _services = services;
     }
 
-    public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken ct)
     {
-        // Retrieves the employee and returns 401 unauthorized if the employee is not found.
-        Employee employee;
+        // Verify the email belongs to  a  verified  employee  and  confirm  the
+        // password; return unauthorized if any check fails.
+        var employee = (Employee?)null;
         try
         {
             employee = await _services.Employees.GetAsync(e => e.EmailAddress == request.EmailAddress);
@@ -32,27 +33,20 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
         {
             throw new Unauthorized401Exception("Invalid credentials.");
         }
-
-        // Make sure that the employee is verified before logging in.
-        if (!employee.IsVerified) throw new Unauthorized401Exception("Verification required to proceed.");
-
-        // Validate the provided credentials.
+        if (!employee.IsVerified) throw new Unauthorized401Exception("Verification is required to proceed with login.");
         if (_hasher.VerifyHashedPassword(employee, employee.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
-        // Update the timestamp of the employee's last login.
         employee.LastLoginAt = DateTimeOffset.UtcNow;
-        await _services.Employees.UpdateAsync(employee);
 
-        // Create the jwt.
-        var jwt = _jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]);
+        await _services.Employees.UpdateAsync(employee);
 
         return new LoginEmployeeCommandResult
         {
-            Token = _jwt.Writer.Write(jwt)
+            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                new Claim("role", Jwt.Roles.EMPLOYEE),
+                new Claim("employee_id", employee.Id.ToString()),
+                new Claim("is_verified", bool.TrueString)
+            ]))
         };
     }
 }

@@ -42,7 +42,7 @@ public class DeleteAdminCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenOrganizationIsNotDeleted()
+    public async Task Handle_ThrowsException_WhenOrganizationIsNotDeleted()
     {
         // Prepare.
         var admin = AdminFaker.Fake();
@@ -54,7 +54,7 @@ public class DeleteAdminCommandHandlerTests
         };
 
         _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization); // Return the organization.
         _services.Setup(s => s.Admins.DeleteAsync(It.IsAny<Admin>()));
 
         // Act & Assert.

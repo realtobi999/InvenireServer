@@ -49,7 +49,7 @@ public class Employee
 
     public void Verify()
     {
-        if (IsVerified) throw new BadRequest400Exception("Employee is already verified.");
+        if (IsVerified) throw new BadRequest400Exception("The employees's verification status is already confirmed.");
 
         IsVerified = true;
     }
