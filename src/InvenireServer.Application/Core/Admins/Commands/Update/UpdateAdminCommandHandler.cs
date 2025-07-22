@@ -1,4 +1,3 @@
-
 using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Update;
@@ -16,7 +15,7 @@ public class UpdateAdminCommandHandler : IRequestHandler<UpdateAdminCommand>
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
 
-        admin.Name = admin.Name;
+        admin.Name = request.Name;
 
         await _services.Admins.UpdateAsync(admin);
     }
