@@ -1,6 +1,5 @@
-
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 
@@ -19,7 +18,7 @@ public class UpdateOrganizationInvitationCommandHandler : IRequestHandler<Update
         var invitation = await _services.Organizations.Invitations.GetAsync(i => i.Id == request.InvitationId);
         var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization.");
 
-        if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception();
+        if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception("The invitation is not part of your organization.");
 
         invitation.Description = request.Description;
 

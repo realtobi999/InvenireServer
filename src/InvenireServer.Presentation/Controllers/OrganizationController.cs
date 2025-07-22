@@ -10,10 +10,10 @@ using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
-using InvenireServer.Application.Core.Organizations.Commands.Remove;
 using InvenireServer.Application.Core.Organizations.Commands.Update;
 using InvenireServer.Application.Core.Organizations.Commands.Delete;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
+using InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -137,7 +137,7 @@ public class OrganizationController : ControllerBase
     [HttpDelete("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> RemoveEmployee(Guid employeeId)
     {
-        await _mediator.Send(new RemoveOrganizationEmployeeCommand
+        await _mediator.Send(new RemoveEmployeeOrganizationCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             EmployeeId = employeeId
