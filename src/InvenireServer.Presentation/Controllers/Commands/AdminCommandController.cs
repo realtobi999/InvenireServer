@@ -14,15 +14,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace InvenireServer.Presentation.Controllers;
+namespace InvenireServer.Presentation.Controllers.Commands;
 
 [ApiController]
-public class AdminController : ControllerBase
+public class AdminCommandController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly IMediator _mediator;
 
-    public AdminController(IMediator mediator, IConfiguration configuration)
+    public AdminCommandController(IMediator mediator, IConfiguration configuration)
     {
         _mediator = mediator;
         _configuration = configuration;
