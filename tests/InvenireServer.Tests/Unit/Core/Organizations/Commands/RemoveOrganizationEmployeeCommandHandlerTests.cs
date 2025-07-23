@@ -1,22 +1,22 @@
-using InvenireServer.Application.Core.Organizations.Commands.Remove;
+using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 
-public class RemoveOrganizationEmployeeCommandHandlerTests
+public class RemoveEmployeeOrganizationCommandHandlerTests
 {
     private readonly Mock<IServiceManager> _services;
-    private readonly RemoveOrganizationEmployeeCommandHandler _handler;
+    private readonly RemoveEmployeeOrganizationCommandHandler _handler;
 
-    public RemoveOrganizationEmployeeCommandHandlerTests()
+    public RemoveEmployeeOrganizationCommandHandlerTests()
     {
         _services = new Mock<IServiceManager>();
-        _handler = new RemoveOrganizationEmployeeCommandHandler(_services.Object);
+        _handler = new RemoveEmployeeOrganizationCommandHandler(_services.Object);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class RemoveOrganizationEmployeeCommandHandlerTests
         var employee = EmployeeFaker.Fake();
         var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
 
-        var command = new RemoveOrganizationEmployeeCommand
+        var command = new RemoveEmployeeOrganizationCommand
         {
             Jwt = new Jwt([], []),
             EmployeeId = employee.Id
@@ -53,7 +53,7 @@ public class RemoveOrganizationEmployeeCommandHandlerTests
         var employee = EmployeeFaker.Fake();
         var organization = OrganizationFaker.Fake(admin: null, employees: [employee]);
 
-        var command = new RemoveOrganizationEmployeeCommand
+        var command = new RemoveEmployeeOrganizationCommand
         {
             Jwt = new Jwt([], []),
             EmployeeId = employee.Id
@@ -77,7 +77,7 @@ public class RemoveOrganizationEmployeeCommandHandlerTests
         var employee = EmployeeFaker.Fake();
         var organization = OrganizationFaker.Fake(admin: admin, employees: []);
 
-        var command = new RemoveOrganizationEmployeeCommand
+        var command = new RemoveEmployeeOrganizationCommand
         {
             Jwt = new Jwt([], []),
             EmployeeId = employee.Id

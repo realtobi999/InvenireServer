@@ -63,6 +63,11 @@ public class AdminService : IAdminService
         await _repositories.SaveOrThrowAsync();
     }
 
+    public async Task DeleteAsync(Admin admin)
+    {
+        await DeleteAsync([admin]);
+    }
+
     public async Task DeleteAsync(IEnumerable<Admin> admins)
     {
         foreach (var admin in admins) _repositories.Admins.Delete(admin);

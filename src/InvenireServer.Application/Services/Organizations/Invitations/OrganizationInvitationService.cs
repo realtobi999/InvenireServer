@@ -48,6 +48,15 @@ public class OrganizationInvitationService : IOrganizationInvitationService
         await _repositories.SaveOrThrowAsync();
     }
 
+    public async Task UpdateAsync(OrganizationInvitation invitation)
+    {
+        var result = new ValidationResult(OrganizationInvitationEntityValidator.Validate(invitation));
+        if (!result.IsValid) throw new ValidationException($"One or more core validation errors occurred for {nameof(OrganizationInvitation).ToLower()} (ID: {invitation.Id}).", result.Errors);
+
+        _repositories.Organizations.Invitations.Update(invitation);
+        await _repositories.SaveOrThrowAsync();
+    }
+
     public async Task DeleteAsync(OrganizationInvitation invitation)
     {
         await DeleteAsync([invitation]);

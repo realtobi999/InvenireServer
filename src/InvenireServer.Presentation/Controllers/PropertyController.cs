@@ -18,6 +18,9 @@ using InvenireServer.Presentation.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using InvenireServer.Application.Core.Properties.Commands.Update;
+using InvenireServer.Application.Core.Properties.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -45,6 +48,34 @@ public class PropertyController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Created($"/api/properties/{result.Property.Id}", null);
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/properties")]
+    public async Task<IActionResult> Update([FromBody] UpdatePropertyCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/properties")]
+    public async Task<IActionResult> Delete()
+    {
+        await _mediator.Send(new DeletePropertyCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+        });
+
+        return NoContent();
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
@@ -90,6 +121,19 @@ public class PropertyController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             Ids = ids
+        });
+
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpPut("/api/properties/items/{itemId:guid}/scan")]
+    public async Task<IActionResult> ScanItem(Guid itemId)
+    {
+        await _mediator.Send(new ScanPropertyItemCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            ItemId = itemId,
         });
 
         return NoContent();
@@ -188,25 +232,28 @@ public class PropertyController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/properties/scans")]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdatePropertyScanCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/scans/complete")]
     public async Task<IActionResult> CompleteScan()
     {
         await _mediator.Send(new CompletePropertyScanCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return NoContent();
-    }
-
-    [Authorize]
-    [HttpPost("/api/properties/items/{itemId:guid}/scan")]
-    public async Task<IActionResult> ScanItem(Guid itemId)
-    {
-        await _mediator.Send(new ScanPropertyItemCommand
-        {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            ItemId = itemId,
         });
 
         return NoContent();

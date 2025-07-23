@@ -11,5 +11,6 @@ public interface IAdminService
     Task<Admin> GetAsync(Expression<Func<Admin, bool>> predicate);
     Task CreateAsync(Admin admin);
     Task UpdateAsync(Admin admin);
+    Task DeleteAsync(Admin admin);
     Task DeleteAsync(IEnumerable<Admin> admins);
 }

@@ -15,14 +15,14 @@ public class AcceptOrganizationInvitationCommandHandler : IRequestHandler<Accept
     public async Task Handle(AcceptOrganizationInvitationCommand request, CancellationToken _)
     {
         var employee = await _services.Employees.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.GetAsync(o => o.Id == request.OrganizationId);
-        var invitation = await _services.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id) ?? throw new NotFound404Exception("There is no invitation for you to join this organization.");
+        var invitation = await _services.Organizations.Invitations.GetAsync(i => i.Id == request.InvitationId);
+        var organization = await _services.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId) ?? throw new NotFound404Exception("The organization assigned to the invitation was not found.");
 
-        // Add the employee to the organization and delete the invitation.
+        if (invitation.Employee!.Id != employee.Id) throw new Unauthorized401Exception("The invitation is not assigned to you.");
+
         organization.AddEmployee(employee);
-        await _services.Organizations.Invitations.DeleteAsync(invitation);
 
-        // Save changes to the database.
+        await _services.Organizations.Invitations.DeleteAsync(invitation);
         await _services.Employees.UpdateAsync(employee);
         await _services.Organizations.UpdateAsync(organization);
     }

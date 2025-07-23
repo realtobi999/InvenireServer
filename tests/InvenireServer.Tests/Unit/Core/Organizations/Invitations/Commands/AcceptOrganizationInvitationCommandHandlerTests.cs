@@ -31,12 +31,12 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
+            InvitationId = invitation.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync(organization);
         _services.Setup(s => s.Organizations.Invitations.DeleteAsync(invitation));
         _services.Setup(s => s.Organizations.UpdateAsync(organization));
         _services.Setup(s => s.Employees.UpdateAsync(employee));
@@ -61,17 +61,17 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
+            InvitationId = invitation.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The organization assigned to the invitation was not found.");
     }
 
     [Fact]
@@ -86,17 +86,17 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            OrganizationId = organization.Id
+            InvitationId = invitation.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization.Id && i.Employee!.Id == employee.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync(organization);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("There is no invitation for you to join this organization.");
+        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The invitation is not assigned to you.");
     }
 
     [Fact]
@@ -112,12 +112,12 @@ public class AcceptOrganizationInvitationCommandHandlerTests
         var command = new AcceptOrganizationInvitationCommand
         {
             Jwt = new Jwt([], []),
-            OrganizationId = organization1.Id
+            InvitationId = invitation.Id
         };
 
         _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.GetAsync(o => o.Id == command.OrganizationId)).ReturnsAsync(organization1);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.OrganizationId == organization1.Id && i.Employee!.Id == employee.Id)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
+        _services.Setup(s => s.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync(organization1);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

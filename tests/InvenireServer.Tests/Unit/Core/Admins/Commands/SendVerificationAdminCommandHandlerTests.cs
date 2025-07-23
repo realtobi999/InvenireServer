@@ -42,7 +42,9 @@ public class SendVerificationAdminCommandHandlerTests
         _email.Setup(e => e.Sender.SendEmailAsync(It.IsAny<MailMessage>()));
 
         // Act & Assert
-        await _handler.Handle(command, CancellationToken.None);
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().NotThrowAsync();
 
         // Assert that the email dto is correctly build.
         dto.Should().NotBeNull();

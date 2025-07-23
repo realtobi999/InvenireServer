@@ -12,14 +12,15 @@ public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVer
         _services = services;
     }
 
-    public async Task Handle(ConfirmVerificationAdminCommand request, CancellationToken _)
+    public async Task Handle(ConfirmVerificationAdminCommand request, CancellationToken ct)
     {
-        // Make sure that the token purpose is for verification.
-        if (!request.Jwt.Payload.Any(c => c is { Type: "purpose", Value: "email_verification" })) throw new Unauthorized401Exception("Indication that the token is used for email verification is missing.");
+        var purpose = request.Jwt.GetPurpose() ?? throw new BadRequest400Exception("The token's purpose is missing.");
+        if (purpose != "email_verification") throw new Unauthorized401Exception("The token's purpose is not for email verification.");
 
-        // Verify the admin and save changes to the databases.
         var admin = await _services.Admins.GetAsync(request.Jwt);
+
         admin.Verify();
+
         await _services.Admins.UpdateAsync(admin);
     }
 }

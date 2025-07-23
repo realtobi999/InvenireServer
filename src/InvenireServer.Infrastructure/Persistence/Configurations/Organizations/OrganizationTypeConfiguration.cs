@@ -11,6 +11,7 @@ public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organizati
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
         // Properties.
+
         builder.Property(o => o.Id)
             .HasColumnName("id")
             .IsRequired();
@@ -30,20 +31,25 @@ public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organizati
             .HasColumnName("last_updated_at");
 
         // Relationships.
+
         builder.HasOne(o => o.Admin)
             .WithOne()
-            .HasForeignKey<Admin>(a => a.OrganizationId);
+            .HasForeignKey<Admin>(a => a.OrganizationId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(o => o.Property)
             .WithOne()
-            .HasForeignKey<Property>(p => p.OrganizationId);
+            .HasForeignKey<Property>(p => p.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(o => o.Employees)
             .WithOne()
-            .HasForeignKey(e => e.OrganizationId);
+            .HasForeignKey(e => e.OrganizationId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(o => o.Invitations)
             .WithOne()
-            .HasForeignKey(i => i.OrganizationId);
+            .HasForeignKey(i => i.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -45,6 +45,12 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
 
         builder.Property(s => s.LastUpdatedAt)
             .HasColumnName("last_updated_at");
+
+        builder.Property(i => i.PropertyId)
+            .HasColumnName("property_id");
+
+        builder.Property(i => i.EmployeeId)
+            .HasColumnName("employee_id");
     }
 }
 

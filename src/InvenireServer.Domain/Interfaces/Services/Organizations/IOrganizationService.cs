@@ -14,4 +14,5 @@ public interface IOrganizationService
     Task<Organization?> TryGetAsync(Expression<Func<Organization, bool>> predicate);
     Task CreateAsync(Organization organization);
     Task UpdateAsync(Organization organization);
+    Task DeleteAsync(Organization organization);
 }

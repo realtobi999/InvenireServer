@@ -21,8 +21,4 @@
         <ProjectReference Include="../../src/InvenireServer.Presentation/InvenireServer.Presentation.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Unit/Core/Employees/" />
-    </ItemGroup>
-
 </Project>

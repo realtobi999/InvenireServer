@@ -48,14 +48,19 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.LastLoginAt)
             .HasColumnName("last_login_at");
 
+        builder.Property(p => p.OrganizationId)
+            .HasColumnName("organization_id");
+
         // Relationships
 
         builder.HasMany(e => e.AssignedItems)
             .WithOne()
-            .HasForeignKey(i => i.EmployeeId);
+            .HasForeignKey(i => i.EmployeeId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(e => e.Suggestions)
             .WithOne()
-            .HasForeignKey(s => s.EmployeeId);
+            .HasForeignKey(s => s.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

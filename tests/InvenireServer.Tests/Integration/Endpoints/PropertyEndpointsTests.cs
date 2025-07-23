@@ -1,7 +1,9 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using InvenireServer.Application.Core.Properties.Commands.Update;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
@@ -53,6 +55,57 @@ public class PropertyEndpointsTests
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand());
         response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync("/api/properties", new UpdatePropertyCommand
+        {
+
+        });
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.DeleteAsync("/api/properties");
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -194,6 +247,51 @@ public class PropertyEndpointsTests
 
         // Act & Assert.
         var response = await _client.DeleteAsync($"/api/properties/items?ids={string.Join("&ids=", items.Select(i => i.Id))}");
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task ScanItem_ReturnsNoContent()
+    {
+        // Prepare.
+        var item = PropertyItemFaker.Fake();
+        var admin = AdminFaker.Fake();
+        var scan = PropertyScanFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: [item]);
+        var organization = OrganizationFaker.Fake();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        employee.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Assign the employee to the organization.
+        organization.AddEmployee(employee, _app.GetDatabaseContext());
+
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
+        {
+            Items = [item.ToCreatePropertyItemCommand()]
+        })).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        _client.DefaultRequestHeaders.Remove("Authorization");
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.EMPLOYEE),
+            new Claim("employee_id", employee.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync($"/api/properties/items/{item.Id}/scan", new object { });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
@@ -559,6 +657,36 @@ public class PropertyEndpointsTests
     }
 
     [Fact]
+    public async Task UpdateScan_ReturnsNoContent()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var scan = PropertyScanFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Act & Assert.
+        var response = await _client.PutAsJsonAsync("/api/properties/scans", new UpdatePropertyScanCommand
+        {
+            Name = new Faker().Lorem.Sentence(),
+            Description = new Faker().Lorem.Sentence()
+        });
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
     public async Task CompleteScan_ReturnsNoContent()
     {
         // Prepare.
@@ -584,48 +712,4 @@ public class PropertyEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
-    [Fact]
-    public async Task ScanItem_ReturnsNoContent()
-    {
-        // Prepare.
-        var item = PropertyItemFaker.Fake();
-        var admin = AdminFaker.Fake();
-        var scan = PropertyScanFaker.Fake();
-        var property = PropertyFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: [item]);
-        var organization = OrganizationFaker.Fake();
-
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]))}");
-
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Assign the employee to the organization.
-        organization.AddEmployee(employee, _app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
-        {
-            Items = [item.ToCreatePropertyItemCommand()]
-        })).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]))}");
-
-        // Act & Assert.
-        var response = await _client.PostAsJsonAsync($"/api/properties/items/{item.Id}/scan", new object { });
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-    }
 }

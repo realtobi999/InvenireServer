@@ -54,7 +54,7 @@ public class LoginAdminCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenAdminIsNotFound()
+    public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
         // Prepare
         var admin = AdminFaker.Fake();
@@ -77,7 +77,7 @@ public class LoginAdminCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenIncorrectPassword()
+    public async Task Handle_ThrowsException_WhenIncorrectPassword()
     {
         // Prepare
         var admin = AdminFaker.Fake();
@@ -100,7 +100,7 @@ public class LoginAdminCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenAdminIsNotVerified()
+    public async Task Handle_ThrowsException_WhenAdminIsNotVerified()
     {
         // Prepare
         var admin = AdminFaker.Fake();
@@ -119,6 +119,6 @@ public class LoginAdminCommandHandlerTests
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification required to proceed.");
+        await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification is required to proceed with login.");
     }
 }

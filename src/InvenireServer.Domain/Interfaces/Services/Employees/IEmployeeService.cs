@@ -12,5 +12,6 @@ public interface IEmployeeService
     Task CreateAsync(Employee employee);
     Task UpdateAsync(Employee employee);
     Task UpdateAsync(IEnumerable<Employee> employees);
+    Task DeleteAsync(Employee employee);
     Task DeleteAsync(IEnumerable<Employee> employees);
 }

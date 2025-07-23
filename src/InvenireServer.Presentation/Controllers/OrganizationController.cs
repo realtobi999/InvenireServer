@@ -10,7 +10,10 @@ using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
-using InvenireServer.Application.Core.Organizations.Commands.Remove;
+using InvenireServer.Application.Core.Organizations.Commands.Update;
+using InvenireServer.Application.Core.Organizations.Commands.Delete;
+using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
+using InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -44,6 +47,34 @@ public class OrganizationController : ControllerBase
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/organizations")]
+    public async Task<IActionResult> Update([FromBody] UpdateOrganizationCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpDelete("/api/organizations")]
+    public async Task<IActionResult> Delete()
+    {
+        await _mediator.Send(new DeleteOrganizationCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return NoContent();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/organizations/invitations")]
     public async Task<IActionResult> CreateInvitation([FromBody] CreateOrganizationInvitationCommand command)
     {
@@ -59,15 +90,19 @@ public class OrganizationController : ControllerBase
         return Created($"/api/organizations/{result.Organization.Id}/invitations/{result.Invitation.Id}", null);
     }
 
-    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
-    [HttpPost("/api/organizations/{organizationId:guid}/invitations/accept")]
-    public async Task<IActionResult> AcceptInvitation(Guid organizationId)
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPut("/api/organizations/invitations/{invitationId:guid}")]
+    public async Task<IActionResult> UpdateInvitation([FromBody] UpdateOrganizationInvitationCommand command, Guid invitationId)
     {
-        await _mediator.Send(new AcceptOrganizationInvitationCommand
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            OrganizationId = organizationId
-        });
+            InvitationId = invitationId
+        };
+        await _mediator.Send(command);
 
         return NoContent();
     }
@@ -85,11 +120,24 @@ public class OrganizationController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
+    [HttpPut("/api/organizations/invitations/{invitationId:guid}/accept")]
+    public async Task<IActionResult> AcceptInvitation(Guid invitationId)
+    {
+        await _mediator.Send(new AcceptOrganizationInvitationCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            InvitationId = invitationId
+        });
+
+        return NoContent();
+    }
+
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> RemoveEmployee(Guid employeeId)
     {
-        await _mediator.Send(new RemoveOrganizationEmployeeCommand
+        await _mediator.Send(new RemoveEmployeeOrganizationCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             EmployeeId = employeeId

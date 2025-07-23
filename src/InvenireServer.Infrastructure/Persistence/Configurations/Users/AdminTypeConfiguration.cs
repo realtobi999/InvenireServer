@@ -46,5 +46,8 @@ public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
 
         builder.Property(a => a.LastLoginAt)
             .HasColumnName("last_login_at");
+
+        builder.Property(p => p.OrganizationId)
+            .HasColumnName("organization_id");
     }
 }

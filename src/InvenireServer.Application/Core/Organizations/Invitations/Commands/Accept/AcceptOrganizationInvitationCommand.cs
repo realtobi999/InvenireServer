@@ -5,5 +5,5 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Acc
 public class AcceptOrganizationInvitationCommand : IRequest
 {
     public required Jwt Jwt { get; init; }
-    public required Guid OrganizationId { get; init; }
+    public required Guid InvitationId { get; init; }
 }

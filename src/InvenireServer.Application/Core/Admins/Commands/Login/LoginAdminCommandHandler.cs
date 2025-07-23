@@ -20,10 +20,11 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         _services = services;
     }
 
-    public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken _)
+    public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken ct)
     {
-        // Retrieves the admin and returns 401 unauthorized if the admin is not found.
-        Admin admin;
+        // Verify the  email  belongs  to  a  verified  admin  and  confirm  the
+        // password; return unauthorized if any check fails.
+        var admin = (Admin?)null;
         try
         {
             admin = await _services.Admins.GetAsync(e => e.EmailAddress == request.EmailAddress);
@@ -32,28 +33,20 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         {
             throw new Unauthorized401Exception("Invalid credentials.");
         }
-
-        // Make sure that the admin is verified before logging in.
-        if (!admin.IsVerified) throw new Unauthorized401Exception("Verification required to proceed.");
-
-        // Validate the provided credentials.
+        if (!admin.IsVerified) throw new Unauthorized401Exception("Verification is required to proceed with login.");
         if (_hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
-        // Update the timestamp of the admins's last login.
         admin.LastLoginAt = DateTimeOffset.UtcNow;
-        await _services.Admins.UpdateAsync(admin);
 
-        // Create the jwt.
-        var jwt = _jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]);
+        await _services.Admins.UpdateAsync(admin);
 
         return new LoginAdminCommandResult
         {
-            Token = _jwt.Writer.Write(jwt)
+            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                new Claim("role", Jwt.Roles.ADMIN),
+                new Claim("admin_id", admin.Id.ToString()),
+                new Claim("is_verified", bool.TrueString)
+            ]))
         };
-
     }
 }

@@ -1,19 +1,18 @@
-
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Core.Organizations.Commands.Remove;
+namespace InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
 
-public class RemoveOrganizationEmployeeCommandHandler : IRequestHandler<RemoveOrganizationEmployeeCommand>
+public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEmployeeOrganizationCommand>
 {
     private readonly IServiceManager _services;
 
-    public RemoveOrganizationEmployeeCommandHandler(IServiceManager services)
+    public RemoveEmployeeOrganizationCommandHandler(IServiceManager services)
     {
         _services = services;
     }
 
-    public async Task Handle(RemoveOrganizationEmployeeCommand request, CancellationToken _)
+    public async Task Handle(RemoveEmployeeOrganizationCommand request, CancellationToken _)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt);
         var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);

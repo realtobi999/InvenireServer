@@ -43,7 +43,7 @@ public class Admin
 
     public void Verify()
     {
-        if (IsVerified) throw new BadRequest400Exception("Admin is already verified.");
+        if (IsVerified) throw new BadRequest400Exception("The admin's verification status is already confirmed.");
 
         IsVerified = true;
     }

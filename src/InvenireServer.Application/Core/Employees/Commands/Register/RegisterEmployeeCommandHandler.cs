@@ -19,9 +19,8 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         _services = services;
     }
 
-    public async Task<RegisterEmployeeCommandResult> Handle(RegisterEmployeeCommand request, CancellationToken _)
+    public async Task<RegisterEmployeeCommandResult> Handle(RegisterEmployeeCommand request, CancellationToken ct)
     {
-        // Build the employee from the request and hash the password.
         var employee = new Employee
         {
             Id = request.Id ?? Guid.NewGuid(),
@@ -35,20 +34,17 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         };
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        // Save the employee to the database.
         await _services.Employees.CreateAsync(employee);
 
-        // Create the jwt.
-        var jwt = _jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.FalseString)
-        ]);
 
         return new RegisterEmployeeCommandResult
         {
             Employee = employee,
-            Token = _jwt.Writer.Write(jwt)
+            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                new Claim("role", Jwt.Roles.EMPLOYEE),
+                new Claim("employee_id", employee.Id.ToString()),
+                new Claim("is_verified", bool.FalseString)
+            ]))
         };
     }
 }
