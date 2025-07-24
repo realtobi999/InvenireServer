@@ -23,22 +23,22 @@ public class EmployeeQueryController : ControllerBase
     [HttpGet("/api/employees/me")]
     public async Task<IActionResult> GetByJwt()
     {
-        var result = await _mediator.Send(new GetByJwtEmployeeQuery
+        var employeeDto = await _mediator.Send(new GetByJwtEmployeeQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
         });
 
-        return Ok(result.EmployeeDto);
+        return Ok(employeeDto);
     }
 
     [HttpGet("/api/employees/{employeeId:guid}")]
     public async Task<IActionResult> GetById(Guid employeeId)
     {
-        var result = await _mediator.Send(new GetByIdEmployeeQuery
+        var employeeDto = await _mediator.Send(new GetByIdEmployeeQuery
         {
             EmployeeId = employeeId,
         });
 
-        return Ok(result.EmployeeDto);
+        return Ok(employeeDto);
     }
 }

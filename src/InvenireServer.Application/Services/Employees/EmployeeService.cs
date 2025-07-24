@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Interfaces.Services.Employees;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Interfaces.Services.Employees;
 using InvenireServer.Domain.Validators.Users;
 
 namespace InvenireServer.Application.Services.Employees;
@@ -17,7 +18,11 @@ public class EmployeeService : IEmployeeService
     public EmployeeService(IRepositoryManager repositories)
     {
         _repositories = repositories;
+
+        Dto = new EmployeeDtoService(repositories);
     }
+
+    public IEmployeeDtoService Dto { get; }
 
     public Task<IEnumerable<Employee>> IndexInactiveAsync()
     {
@@ -81,5 +86,34 @@ public class EmployeeService : IEmployeeService
     {
         foreach (var employee in employees) _repositories.Employees.Delete(employee);
         await _repositories.SaveOrThrowAsync();
+    }
+}
+
+public class EmployeeDtoService : IEmployeeDtoService
+{
+    private readonly IRepositoryManager _repositories;
+
+    public EmployeeDtoService(IRepositoryManager repositories)
+    {
+        _repositories = repositories;
+    }
+
+    public async Task<EmployeeDto> GetAsync(Jwt jwt)
+    {
+        var claim = jwt.Payload.FirstOrDefault(c => c.Type == "employee_id" && !string.IsNullOrWhiteSpace(c.Value));
+        if (claim is null) throw new BadRequest400Exception("Missing or invalid 'employee_id' claim.");
+
+        if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'employee_id' claim.");
+
+        return await GetAsync(e => e.Id == id);
+    }
+
+    public async Task<EmployeeDto> GetAsync(Expression<Func<Employee, bool>> predicate)
+    {
+        var employeeDto = await _repositories.Employees.Dto.GetAsync(predicate);
+
+        if (employeeDto is null) throw new NotFound404Exception($"The requested {nameof(Employee).ToLower()} was not found in the system.");
+
+        return employeeDto;
     }
 }

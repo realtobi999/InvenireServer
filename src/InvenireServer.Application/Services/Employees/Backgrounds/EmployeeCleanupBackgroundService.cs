@@ -1,6 +1,6 @@
 using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Interfaces.Services.Employees;
+using InvenireServer.Application.Interfaces.Services.Employees;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

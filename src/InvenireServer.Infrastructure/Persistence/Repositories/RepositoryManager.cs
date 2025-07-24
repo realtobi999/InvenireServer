@@ -1,8 +1,8 @@
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Interfaces.Repositories.Organizations;
+using InvenireServer.Application.Interfaces.Repositories.Properties;
+using InvenireServer.Application.Interfaces.Repositories.Users;
 using InvenireServer.Domain.Exceptions.Common;
-using InvenireServer.Domain.Interfaces.Repositories.Organizations;
-using InvenireServer.Domain.Interfaces.Repositories.Properties;
-using InvenireServer.Domain.Interfaces.Repositories.Users;
 using InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
 using InvenireServer.Infrastructure.Persistence.Repositories.Properties;
 using InvenireServer.Infrastructure.Persistence.Repositories.Users;

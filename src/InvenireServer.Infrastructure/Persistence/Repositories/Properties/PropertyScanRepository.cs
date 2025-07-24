@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using InvenireServer.Application.Interfaces.Repositories.Properties;
 using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Domain.Interfaces.Repositories.Properties;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Properties;
 

@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Interfaces.Repositories;
+using InvenireServer.Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;

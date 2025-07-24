@@ -1,7 +1,7 @@
-using InvenireServer.Domain.Interfaces.Services.Admins;
-using InvenireServer.Domain.Interfaces.Services.Employees;
-using InvenireServer.Domain.Interfaces.Services.Organizations;
-using InvenireServer.Domain.Interfaces.Services.Properties;
+using InvenireServer.Application.Interfaces.Services.Admins;
+using InvenireServer.Application.Interfaces.Services.Employees;
+using InvenireServer.Application.Interfaces.Services.Organizations;
+using InvenireServer.Application.Interfaces.Services.Properties;
 
 namespace InvenireServer.Application.Interfaces.Managers;
 

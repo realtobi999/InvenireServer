@@ -5,7 +5,7 @@ using InvenireServer.Domain.Exceptions.Http;
 using FluentValidation.Results;
 using InvenireServer.Domain.Validators.Properties;
 using FluentValidation;
-using InvenireServer.Domain.Interfaces.Services.Properties.Suggestions;
+using InvenireServer.Application.Interfaces.Services.Properties.Suggestions;
 
 namespace InvenireServer.Application.Services.Properties.Suggestions;
 

@@ -1,6 +1,6 @@
-using InvenireServer.Domain.Interfaces.Repositories.Organizations;
-using InvenireServer.Domain.Interfaces.Repositories.Properties;
-using InvenireServer.Domain.Interfaces.Repositories.Users;
+using InvenireServer.Application.Interfaces.Repositories.Organizations;
+using InvenireServer.Application.Interfaces.Repositories.Properties;
+using InvenireServer.Application.Interfaces.Repositories.Users;
 
 namespace InvenireServer.Application.Interfaces.Managers;
 

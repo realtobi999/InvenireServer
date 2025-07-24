@@ -1,12 +1,12 @@
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Interfaces.Services.Admins;
+using InvenireServer.Application.Interfaces.Services.Employees;
+using InvenireServer.Application.Interfaces.Services.Organizations;
+using InvenireServer.Application.Interfaces.Services.Properties;
 using InvenireServer.Application.Services.Admins;
 using InvenireServer.Application.Services.Employees;
 using InvenireServer.Application.Services.Organizations;
 using InvenireServer.Application.Services.Properties;
-using InvenireServer.Domain.Interfaces.Services.Admins;
-using InvenireServer.Domain.Interfaces.Services.Employees;
-using InvenireServer.Domain.Interfaces.Services.Organizations;
-using InvenireServer.Domain.Interfaces.Services.Properties;
 
 namespace InvenireServer.Application.Services;
 

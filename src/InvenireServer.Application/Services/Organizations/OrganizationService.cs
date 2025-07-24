@@ -2,12 +2,12 @@ using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Interfaces.Services.Organizations;
+using InvenireServer.Application.Interfaces.Services.Organizations.Invitations;
 using InvenireServer.Application.Services.Organizations.Invitations;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Interfaces.Services.Organizations;
-using InvenireServer.Domain.Interfaces.Services.Organizations.Invitations;
 using InvenireServer.Domain.Validators.Organizations;
 
 namespace InvenireServer.Application.Services.Organizations;

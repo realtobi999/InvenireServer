@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
+using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Dtos.Admins;
 
@@ -23,4 +24,17 @@ public record AdminDto
 
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; init; }
+
+    public static AdminDto FromAdmin(Admin admin)
+    {
+        return new AdminDto
+        {
+            Id = admin.Id,
+            OrganizationId = admin.OrganizationId,
+            Name = admin.Name,
+            EmailAddress = admin.EmailAddress,
+            CreatedAt = admin.CreatedAt,
+            LastUpdatedAt = admin.LastUpdatedAt,
+        };
+    }
 }
