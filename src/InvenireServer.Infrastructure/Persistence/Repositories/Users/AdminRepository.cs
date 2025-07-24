@@ -36,7 +36,7 @@ public class AdminDtoRepository : IAdminDtoRepository
         return await _context.Set<Admin>()
             .AsNoTracking()
             .Where(predicate)
-            .Select(a => AdminDto.FromAdmin(a))
+            .Select(AdminDto.FromAdminSelector)
             .FirstOrDefaultAsync();
     }
 }

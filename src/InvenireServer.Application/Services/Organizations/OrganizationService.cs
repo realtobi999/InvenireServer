@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
+using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Interfaces.Services.Organizations;
 using InvenireServer.Application.Interfaces.Services.Organizations.Invitations;
@@ -20,8 +21,11 @@ public class OrganizationService : IOrganizationService
     {
         _repositories = repositories;
 
+        Dto = new OrganizationDtoService(repositories);
         Invitations = new OrganizationInvitationService(repositories);
     }
+
+    public IOrganizationDtoService Dto { get; }
 
     public IOrganizationInvitationService Invitations { get; }
 
@@ -43,14 +47,14 @@ public class OrganizationService : IOrganizationService
 
     public async Task<Organization?> TryGetForAsync(Admin admin)
     {
-        var organization = await _repositories.Organizations.GetAsync(o => o.Id == admin.OrganizationId);
+        var organization = await TryGetAsync(o => o.Id == admin.OrganizationId);
 
         return organization;
     }
 
     public async Task<Organization?> TryGetForAsync(Employee employee)
     {
-        var organization = await _repositories.Organizations.GetAsync(o => o.Id == employee.OrganizationId);
+        var organization = await TryGetAsync(o => o.Id == employee.OrganizationId);
 
         return organization;
     }
@@ -79,5 +83,38 @@ public class OrganizationService : IOrganizationService
     {
         _repositories.Organizations.Delete(organization);
         await _repositories.SaveOrThrowAsync();
+    }
+}
+
+public class OrganizationDtoService : IOrganizationDtoService
+{
+    private readonly IRepositoryManager _repositories;
+
+    public OrganizationDtoService(IRepositoryManager repositories)
+    {
+        _repositories = repositories;
+    }
+
+    public async Task<OrganizationDto> GetAsync(Expression<Func<Organization, bool>> predicate)
+    {
+        var organizationDto = await TryGetAsync(predicate);
+
+        if (organizationDto is null) throw new NotFound404Exception($"The requested {nameof(Organization).ToLower()} was not found in the system.");
+
+        return organizationDto;
+    }
+
+    public async Task<OrganizationDto?> TryGetAsync(Expression<Func<Organization, bool>> predicate)
+    {
+        var organizationDto = await _repositories.Organizations.Dto.GetAsync(predicate);
+
+        return organizationDto;
+    }
+
+    public async Task<OrganizationDto?> TryGetForAsync(Admin admin)
+    {
+        var organizationDto = await TryGetAsync(o => o.Id == admin.OrganizationId);
+
+        return organizationDto;
     }
 }

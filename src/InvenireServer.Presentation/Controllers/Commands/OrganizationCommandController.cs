@@ -15,15 +15,15 @@ using InvenireServer.Application.Core.Organizations.Commands.Delete;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 using InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
 
-namespace InvenireServer.Presentation.Controllers;
+namespace InvenireServer.Presentation.Controllers.Commands;
 
 [ApiController]
-public class OrganizationController : ControllerBase
+public class OrganizationCommandController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IConfiguration _configuration;
 
-    public OrganizationController(IMediator mediator, IConfiguration configuration)
+    public OrganizationCommandController(IMediator mediator, IConfiguration configuration)
     {
         _mediator = mediator;
         _configuration = configuration;

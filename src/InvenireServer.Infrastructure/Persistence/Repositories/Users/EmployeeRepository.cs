@@ -36,7 +36,7 @@ public class EmployeeDtoRepository : IEmployeeDtoRepository
         return await _context.Set<Employee>()
             .AsNoTracking()
             .Where(predicate)
-            .Select(e => EmployeeDto.FromEmployee(e))
+            .Select(EmployeeDto.FromEmployeeSelector)
             .FirstOrDefaultAsync();
     }
 }

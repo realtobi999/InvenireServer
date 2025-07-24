@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Users;
@@ -25,16 +26,19 @@ public record AdminDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; init; }
 
-    public static AdminDto FromAdmin(Admin admin)
+    public static Expression<Func<Admin, AdminDto>> FromAdminSelector
     {
-        return new AdminDto
+        get
         {
-            Id = admin.Id,
-            OrganizationId = admin.OrganizationId,
-            Name = admin.Name,
-            EmailAddress = admin.EmailAddress,
-            CreatedAt = admin.CreatedAt,
-            LastUpdatedAt = admin.LastUpdatedAt,
-        };
+            return a => new AdminDto
+            {
+                Id = a.Id,
+                OrganizationId = a.OrganizationId,
+                Name = a.Name,
+                EmailAddress = a.EmailAddress,
+                CreatedAt = a.CreatedAt,
+                LastUpdatedAt = a.LastUpdatedAt
+            };
+        }
     }
 }
