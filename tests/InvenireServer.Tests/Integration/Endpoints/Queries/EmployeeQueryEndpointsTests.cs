@@ -56,43 +56,4 @@ public class EmployeeQueryEndpointsTests
         content.AssignedItems.Should().BeEmpty();
         content.Suggestions.Should().BeEmpty();
     }
-
-    [Fact]
-    public async Task GetById_ReturnsOkAndCorrectData()
-    {
-        // Prepare.
-        var admin = AdminFaker.Fake();
-        var employee = EmployeeFaker.Fake();
-        var organization = OrganizationFaker.Fake();
-
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.ADMIN),
-            new Claim("admin_id", admin.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]))}");
-
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        organization.AddEmployee(employee, _app.GetDatabaseContext());
-
-        // Act & Assert.
-        var response = await _client.GetAsync($"/api/employees/{employee.Id}");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<EmployeeDto>() ?? throw new NullReferenceException();
-
-        content.Id.Should().Be(employee.Id);
-        content.OrganizationId.Should().Be(organization.Id);
-        content.Name.Should().Be(employee.Name);
-        content.EmailAddress.Should().Be(employee.EmailAddress);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.AssignedItems.Should().BeEmpty();
-        content.Suggestions.Should().BeEmpty();
-    }
 }

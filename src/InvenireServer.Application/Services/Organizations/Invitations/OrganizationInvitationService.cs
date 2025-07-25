@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
+using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Interfaces.Services.Organizations.Invitations;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Validators.Organizations;
 
@@ -16,7 +18,11 @@ public class OrganizationInvitationService : IOrganizationInvitationService
     public OrganizationInvitationService(IRepositoryManager repositories)
     {
         _repositories = repositories;
+
+        Dto = new OrganizationInvitationDtoService(repositories);
     }
+
+    public IOrganizationInvitationDtoService Dto { get; }
 
     public async Task<IEnumerable<OrganizationInvitation>> IndexExpiredAsync()
     {
@@ -67,5 +73,29 @@ public class OrganizationInvitationService : IOrganizationInvitationService
         foreach (var invitation in invitations) _repositories.Organizations.Invitations.Delete(invitation);
 
         await _repositories.SaveOrThrowAsync();
+    }
+}
+
+public class OrganizationInvitationDtoService : IOrganizationInvitationDtoService
+{
+    private readonly IRepositoryManager _repositories;
+
+    public OrganizationInvitationDtoService(IRepositoryManager repositories)
+    {
+        _repositories = repositories;
+    }
+
+    public Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        var invitations = _repositories.Organizations.Invitations.Dto.IndexAsync(predicate);
+
+        return invitations;
+    }
+
+    public Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee)
+    {
+        var invitations = IndexAsync(i => i.Employee != null && i.Employee.Id == employee.Id);
+
+        return invitations;
     }
 }
