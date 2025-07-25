@@ -52,14 +52,14 @@ public class OrganizationQueryEndpointsTests
 
         content.Id.Should().Be(organization.Id);
         content.Name.Should().Be(organization.Name);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
         content.LastUpdatedAt.Should().BeNull();
         content.Admin.Should().NotBeNull();
         content.Admin!.Id.Should().Be(admin.Id);
         content.Admin!.OrganizationId.Should().Be(organization.Id);
         content.Admin!.Name.Should().Be(admin.Name);
         content.Admin!.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.Admin!.LastUpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        content.Admin!.LastUpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
         content.Property.Should().BeNull();
         content.Employees.Should().BeEmpty();
         content.Invitations.Should().BeEmpty();

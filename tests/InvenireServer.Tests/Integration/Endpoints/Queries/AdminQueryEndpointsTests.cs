@@ -39,30 +39,7 @@ public class AdminQueryEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.GetAsync("/api/admins/me");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<AdminDto>() ?? throw new NullReferenceException();
-
-        content.Id.Should().Be(admin.Id);
-        content.OrganizationId.Should().BeNull();
-        content.Name.Should().Be(admin.Name);
-        content.EmailAddress.Should().Be(admin.EmailAddress);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
-        content.LastUpdatedAt.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task GetById_ReturnsOkAndCorrectData()
-    {
-        // Prepare.
-        var admin = AdminFaker.Fake();
-
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Act & Assert.
-        var response = await _client.GetAsync($"/api/admins/{admin.Id}");
+        var response = await _client.GetAsync("/api/admins/profile");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.

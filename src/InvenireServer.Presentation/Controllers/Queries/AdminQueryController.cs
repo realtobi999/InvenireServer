@@ -1,4 +1,3 @@
-using InvenireServer.Application.Core.Admins.Queries.GetById;
 using InvenireServer.Application.Core.Admins.Queries.GetByJwt;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
@@ -20,23 +19,12 @@ public class AdminQueryController : ControllerBase
     }
 
     [Authorize(Roles = Jwt.Roles.ADMIN)]
-    [HttpGet("/api/admins/me")]
+    [HttpGet("/api/admins/profile")]
     public async Task<IActionResult> GetByJwt()
     {
         var adminDto = await _mediator.Send(new GetByJwtAdminQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return Ok(adminDto);
-    }
-
-    [HttpGet("/api/admins/{adminId:guid}")]
-    public async Task<IActionResult> GetById(Guid adminId)
-    {
-        var adminDto = await _mediator.Send(new GetByIdAdminQuery
-        {
-            AdminId = adminId
         });
 
         return Ok(adminDto);

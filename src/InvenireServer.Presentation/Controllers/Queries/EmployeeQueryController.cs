@@ -20,7 +20,7 @@ public class EmployeeQueryController : ControllerBase
     }
 
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
-    [HttpGet("/api/employees/me")]
+    [HttpGet("/api/employees/profile")]
     public async Task<IActionResult> GetByJwt()
     {
         var employeeDto = await _mediator.Send(new GetByJwtEmployeeQuery
@@ -31,11 +31,13 @@ public class EmployeeQueryController : ControllerBase
         return Ok(employeeDto);
     }
 
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/employees/{employeeId:guid}")]
     public async Task<IActionResult> GetById(Guid employeeId)
     {
         var employeeDto = await _mediator.Send(new GetByIdEmployeeQuery
         {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             EmployeeId = employeeId,
         });
 

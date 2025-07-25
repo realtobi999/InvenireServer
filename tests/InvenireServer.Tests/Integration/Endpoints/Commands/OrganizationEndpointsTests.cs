@@ -12,15 +12,15 @@ using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
-namespace InvenireServer.Tests.Integration.Endpoints;
+namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
-public class OrganizationEndpointsTests
+public class OrganizationCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly IJwtManager _jwt;
 
-    public OrganizationEndpointsTests()
+    public OrganizationCommandEndpointsTests()
     {
         _app = new ServerFactory<Program>();
         _jwt = JwtManagerFaker.Initiate();
