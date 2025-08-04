@@ -13,5 +13,6 @@ public interface IOrganizationInvitationRepository : IRepositoryBase<Organizatio
 
 public interface IOrganizationInvitationDtoRepository
 {
+    Task<OrganizationInvitationDto?> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
     Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
 }

@@ -107,14 +107,13 @@ public class OrganizationQueryEndpointsTests
     }
 
     [Fact]
-    public async Task GetInvitationsByEmployee_ReturnsOkAndCorrectData()
+    public async Task GetInvitationById_ReturnsOkAndCorrectData()
     {
+        // Prepare.
         var admin = AdminFaker.Fake();
         var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
         var organization = OrganizationFaker.Fake();
-
-        var invitations = new List<OrganizationInvitation>();
-        for (int i = 0; i < 5; i++) invitations.Add(OrganizationInvitationFaker.Fake(employee: employee));
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -122,46 +121,33 @@ public class OrganizationQueryEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         admin.SetAsVerified(_app.GetDatabaseContext());
         employee.SetAsVerified(_app.GetDatabaseContext());
-
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        foreach (var invitation in invitations)
-            (await _client.PostAsJsonAsync("/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]))}");
+        (await _client.PostAsJsonAsync("/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.GetAsync($"/api/organizations/employees/invitations");
+        var response = await _client.GetAsync($"/api/organizations/invitations/{invitation.Id}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<List<OrganizationInvitationDto>>() ?? throw new NullReferenceException();
+        var content = await response.Content.ReadFromJsonAsync<OrganizationInvitationDto>() ?? throw new NullReferenceException();
 
-        foreach (var invitation in content)
-        {
-            invitations.Select(i => i.Id).Should().Contain(invitation.Id);
-            invitation.OrganizationId.Should().Be(organization.Id);
-            invitations.Select(i => i.Description).Should().Contain(invitation.Description);
-            invitation.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-            invitation.LastUpdatedAt.Should().BeNull();
-            invitation.Employee.Should().NotBeNull();
-            invitation.Employee!.Id.Should().Be(employee.Id);
-            invitation.Employee!.OrganizationId.Should().BeNull();
-            invitation.Employee!.Name.Should().Be(employee.Name);
-            invitation.Employee!.EmailAddress.Should().Be(employee.EmailAddress);
-            invitation.Employee!.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-            invitation.Employee!.LastUpdatedAt.Should().BeNull();
-            invitation.Employee!.AssignedItems.Should().BeEmpty();
-            invitation.Employee!.Suggestions.Should().BeEmpty();
-        }
+        content.Id.Should().Be(invitation.Id);
+        content.OrganizationId.Should().Be(organization.Id);
+        content.Description.Should().Be(invitation.Description);
+        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        content.LastUpdatedAt.Should().BeNull();
+        content.Employee.Should().NotBeNull();
+        content.Employee!.Id.Should().Be(employee.Id);
+        content.Employee!.OrganizationId.Should().BeNull();
+        content.Employee!.Name.Should().Be(employee.Name);
+        content.Employee!.EmailAddress.Should().Be(employee.EmailAddress);
+        content.Employee!.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        content.Employee!.LastUpdatedAt.Should().BeNull();
+        content.Employee!.AssignedItems.Should().BeEmpty();
+        content.Employee!.Suggestions.Should().BeEmpty();
     }
 }

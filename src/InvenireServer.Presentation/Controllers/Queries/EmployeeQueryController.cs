@@ -1,10 +1,11 @@
 using MediatR;
-using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetByEmployee;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -28,5 +29,17 @@ public class EmployeeQueryController : ControllerBase
         });
 
         return Ok(employeeDto);
+    }
+
+    [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
+    [HttpGet("/api/employees/invitations")]
+    public async Task<IActionResult> GetInvitationsByEmployee()
+    {
+        var invitationDtos = await _mediator.Send(new GetByEmployeeOrganizationInvitationQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+        });
+
+        return Ok(invitationDtos.ToList());
     }
 }

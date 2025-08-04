@@ -19,6 +19,8 @@ public interface IOrganizationInvitationService
 
 public interface IOrganizationInvitationDtoService
 {
+    Task<OrganizationInvitationDto> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
+    Task<OrganizationInvitationDto?> TryGetAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
     Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
     Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee);
 }

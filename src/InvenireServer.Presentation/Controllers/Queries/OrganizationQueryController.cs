@@ -1,5 +1,6 @@
 using InvenireServer.Application.Core.Employees.Queries.GetById;
 using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetByEmployee;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
 using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
@@ -45,15 +46,16 @@ public class OrganizationQueryController : ControllerBase
         return Ok(employeeDto);
     }
 
-    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
-    [HttpGet("/api/organizations/employees/invitations")]
-    public async Task<IActionResult> GetInvitationsByEmployee()
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/organizations/invitations/{invitationId:guid}")]
+    public async Task<IActionResult> GetInvitationById(Guid invitationId)
     {
-        var invitationDtos = await _mediator.Send(new GetByEmployeeOrganizationInvitationQuery
+        var invitationDto = await _mediator.Send(new GetByIdOrganizationInvitationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            InvitationId = invitationId
         });
 
-        return Ok(invitationDtos.ToList());
+        return Ok(invitationDto);
     }
 }

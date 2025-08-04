@@ -85,6 +85,22 @@ public class OrganizationInvitationDtoService : IOrganizationInvitationDtoServic
         _repositories = repositories;
     }
 
+    public async Task<OrganizationInvitationDto> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        var invitation = await TryGetAsync(predicate);
+
+        if (invitation is null) throw new NotFound404Exception($"The requested {nameof(OrganizationInvitation).ToLower()} was not found in the system.");
+
+        return invitation;
+    }
+
+    public async Task<OrganizationInvitationDto?> TryGetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        var invitation = await _repositories.Organizations.Invitations.Dto.GetAsync(predicate);
+
+        return invitation;
+    }
+
     public Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
     {
         var invitations = _repositories.Organizations.Invitations.Dto.IndexAsync(predicate);

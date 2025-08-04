@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Repositories.Organizations;
-using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
 
@@ -35,6 +34,15 @@ public class OrganizationInvitationDtoRepository : IOrganizationInvitationDtoRep
     public OrganizationInvitationDtoRepository(InvenireServerContext context)
     {
         _context = context;
+    }
+
+    public async Task<OrganizationInvitationDto?> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    {
+        return await _context.Set<OrganizationInvitation>()
+            .AsNoTracking()
+            .Where(predicate)
+            .Select(OrganizationInvitationDto.FromInvitationSelector)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
