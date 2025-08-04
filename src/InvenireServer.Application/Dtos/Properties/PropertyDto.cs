@@ -1,5 +1,6 @@
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
-using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
@@ -17,12 +18,39 @@ public class PropertyDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
-    [JsonPropertyName("items")]
-    public required List<PropertyItemDto> Items { get; set; } = [];
+    [JsonPropertyName("items_summary")]
+    public required PropertyItemsSummary? ItemsSummary { get; set; }
 
-    [JsonPropertyName("scans")]
-    public required List<PropertyScanDto> Scans { get; set; } = [];
+    [JsonPropertyName("scans_summary")]
+    public required PropertyScansSummary? ScansSummary { get; set; }
 
-    [JsonPropertyName("suggestions")]
-    public required List<PropertySuggestionDto> Suggestions { get; set; } = [];
+    [JsonPropertyName("suggestions_summary")]
+    public required PropertySuggestionsSummary? SuggestionsSummary { get; set; }
+
+    public static Expression<Func<Property, PropertyDto>> FromPropertySelector
+    {
+        get
+        {
+            return p => new PropertyDto
+            {
+                Id = p.Id,
+                OrganizationId = p.OrganizationId,
+                CreatedAt = p.CreatedAt,
+                LastUpdatedAt = p.LastUpdatedAt,
+                ItemsSummary = p.Items.Count == 0 ? null : new PropertyItemsSummary
+                {
+                    TotalItems = p.Items.Count,
+                    TotalValue = p.Items.Sum(i => i.Price),
+                },
+                ScansSummary = p.Scans.Count == 0 ? null : new PropertyScansSummary
+                {
+                    TotalScans = p.Scans.Count,
+                },
+                SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertySuggestionsSummary
+                {
+                    TotalSuggestions = p.Suggestions.Count,
+                },
+            };
+        }
+    }
 }

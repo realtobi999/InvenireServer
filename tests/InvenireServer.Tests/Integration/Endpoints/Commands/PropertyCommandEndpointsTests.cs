@@ -19,15 +19,15 @@ using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
-namespace InvenireServer.Tests.Integration.Endpoints;
+namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
-public class PropertyEndpointsTests
+public class PropertyCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
     private readonly HttpClient _client;
     private readonly JwtManager _jwt;
 
-    public PropertyEndpointsTests()
+    public PropertyCommandEndpointsTests()
     {
         _app = new ServerFactory<Program>();
         _jwt = JwtManagerFaker.Initiate();

@@ -22,6 +22,6 @@ public interface IOrganizationService
 public interface IOrganizationDtoService
 {
     Task<OrganizationDto> GetAsync(Expression<Func<Organization, bool>> predicate);
-    Task<OrganizationDto?> TryGetForAsync(Admin admin);
     Task<OrganizationDto?> TryGetAsync(Expression<Func<Organization, bool>> predicate);
+    Task<OrganizationDto?> TryGetForAsync(Admin admin);
 }

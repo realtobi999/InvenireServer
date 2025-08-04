@@ -58,9 +58,9 @@ public class OrganizationDto
                     OrganizationId = o.Property.OrganizationId,
                     CreatedAt = o.Property.CreatedAt,
                     LastUpdatedAt = o.LastUpdatedAt,
-                    Items = new(),
-                    Scans = new(),
-                    Suggestions = new(),
+                    ItemsSummary = null,
+                    ScansSummary = null,
+                    SuggestionsSummary = null,
                 },
                 Employees = o.Employees.Count == 0 ? new() : o.Employees.Select(e => new EmployeeDto
                 {

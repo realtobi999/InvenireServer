@@ -64,3 +64,13 @@ public record PropertyItemLocationDto
     [JsonPropertyName("additional_note")]
     public required string? AdditionalNote { get; set; }
 }
+
+[JsonResponse]
+public record PropertyItemsSummary
+{
+    [JsonPropertyName("total_items")]
+    public required int TotalItems { get; set; }
+
+    [JsonPropertyName("total_value")]
+    public required double TotalValue { get; set; }
+}

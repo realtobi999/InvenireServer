@@ -41,3 +41,9 @@ public class PropertySuggestionDto
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 }
 
+[JsonResponse]
+public class PropertySuggestionsSummary
+{
+    [JsonPropertyName("total_suggestions")]
+    public required int TotalSuggestions { get; set; }
+}

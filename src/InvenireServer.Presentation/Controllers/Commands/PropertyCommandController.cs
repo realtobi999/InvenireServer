@@ -22,14 +22,14 @@ using InvenireServer.Application.Core.Properties.Commands.Update;
 using InvenireServer.Application.Core.Properties.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
-namespace InvenireServer.Presentation.Controllers;
+namespace InvenireServer.Presentation.Controllers.Commands;
 
 [ApiController]
-public class PropertyController : ControllerBase
+public class PropertyCommandController : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    public PropertyController(IMediator mediator)
+    public PropertyCommandController(IMediator mediator)
     {
         _mediator = mediator;
     }
