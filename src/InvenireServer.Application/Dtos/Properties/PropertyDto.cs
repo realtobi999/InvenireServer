@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
+using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+[JsonResponse]
 public class PropertyDto
 {
     [JsonPropertyName("id")]
@@ -19,13 +21,13 @@ public class PropertyDto
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
     [JsonPropertyName("items_summary")]
-    public required PropertyItemsSummary? ItemsSummary { get; set; }
+    public required PropertyDtoItemsSummary? ItemsSummary { get; set; }
 
     [JsonPropertyName("scans_summary")]
-    public required PropertyScansSummary? ScansSummary { get; set; }
+    public required PropertyDtoScansSummary? ScansSummary { get; set; }
 
     [JsonPropertyName("suggestions_summary")]
-    public required PropertySuggestionsSummary? SuggestionsSummary { get; set; }
+    public required PropertyDtoSuggestionsSummary? SuggestionsSummary { get; set; }
 
     public static Expression<Func<Property, PropertyDto>> FromPropertySelector
     {
@@ -37,20 +39,30 @@ public class PropertyDto
                 OrganizationId = p.OrganizationId,
                 CreatedAt = p.CreatedAt,
                 LastUpdatedAt = p.LastUpdatedAt,
-                ItemsSummary = p.Items.Count == 0 ? null : new PropertyItemsSummary
+                ItemsSummary = p.Items.Count == 0 ? null : new PropertyDtoItemsSummary
                 {
                     TotalItems = p.Items.Count,
                     TotalValue = p.Items.Sum(i => i.Price),
                 },
-                ScansSummary = p.Scans.Count == 0 ? null : new PropertyScansSummary
+                ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary
                 {
                     TotalScans = p.Scans.Count,
                 },
-                SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertySuggestionsSummary
+                SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
                 {
                     TotalSuggestions = p.Suggestions.Count,
                 },
             };
         }
     }
+}
+
+[JsonResponse]
+public record PropertyDtoItemsSummary
+{
+    [JsonPropertyName("total_items")]
+    public required int TotalItems { get; set; }
+
+    [JsonPropertyName("total_value")]
+    public required double TotalValue { get; set; }
 }

@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Application.Dtos.Organizations;
 
 namespace InvenireServer.Application.Interfaces.Repositories.Organizations;
 

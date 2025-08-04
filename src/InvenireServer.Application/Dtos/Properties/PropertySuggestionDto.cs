@@ -42,7 +42,7 @@ public class PropertySuggestionDto
 }
 
 [JsonResponse]
-public class PropertySuggestionsSummary
+public class PropertyDtoSuggestionsSummary
 {
     [JsonPropertyName("total_suggestions")]
     public required int TotalSuggestions { get; set; }

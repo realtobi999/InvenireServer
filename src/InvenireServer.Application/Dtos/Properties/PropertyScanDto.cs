@@ -36,7 +36,7 @@ public class PropertyScanDto
 }
 
 [JsonResponse]
-public record PropertyScansSummary
+public record PropertyDtoScansSummary
 {
     [JsonPropertyName("total_scans")]
     public required int TotalScans { get; set; }

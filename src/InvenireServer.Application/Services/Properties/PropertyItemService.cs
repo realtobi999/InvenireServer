@@ -1,11 +1,13 @@
-using System.Linq.Expressions;
 using FluentValidation;
+using System.Linq.Expressions;
 using FluentValidation.Results;
-using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Interfaces.Services.Properties;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Application.Dtos.Properties;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Validators.Properties.Items;
+using InvenireServer.Application.Interfaces.Services.Properties;
 
 namespace InvenireServer.Application.Services.Properties;
 
@@ -16,7 +18,11 @@ public class PropertyItemService : IPropertyItemService
     public PropertyItemService(IRepositoryManager repositories)
     {
         _repositories = repositories;
+
+        Dto = new PropertyItemDtoService(repositories);
     }
+
+    public IPropertyItemDtoService Dto { get; }
 
     public async Task<PropertyItem> GetAsync(Expression<Func<PropertyItem, bool>> predicate)
     {
@@ -75,5 +81,29 @@ public class PropertyItemService : IPropertyItemService
         foreach (var item in items) _repositories.Properties.Items.Delete(item);
 
         await _repositories.SaveOrThrowAsync();
+    }
+}
+
+public class PropertyItemDtoService : IPropertyItemDtoService
+{
+    private readonly IRepositoryManager _repositories;
+
+    public PropertyItemDtoService(IRepositoryManager repositories)
+    {
+        _repositories = repositories;
+    }
+
+    public async Task<IEnumerable<PropertyItemDto>> IndexAsync(Expression<Func<PropertyItem, bool>> predicate, PaginationParameters pagination)
+    {
+        var items = await _repositories.Properties.Items.Dto.IndexAsync(predicate, pagination);
+
+        return items;
+    }
+
+    public async Task<IEnumerable<PropertyItemDto>> IndexForAsync(Property property, PaginationParameters pagination)
+    {
+        var items = await IndexAsync(i => i.PropertyId == property.Id, pagination);
+
+        return items;
     }
 }
