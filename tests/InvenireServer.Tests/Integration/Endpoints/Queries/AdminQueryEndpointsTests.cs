@@ -4,7 +4,6 @@ using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
-using InvenireServer.Tests.Integration.Extensions.Users;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
@@ -30,7 +29,9 @@ public class AdminQueryEndpointsTests
         // Prepare.
         var admin = AdminFaker.Fake();
 
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -49,7 +50,7 @@ public class AdminQueryEndpointsTests
         content.OrganizationId.Should().BeNull();
         content.Name.Should().Be(admin.Name);
         content.EmailAddress.Should().Be(admin.EmailAddress);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.Now, TimeSpan.FromSeconds(2));
-        content.LastUpdatedAt.Should().BeNull();
+        content.CreatedAt.Should().Be(admin.CreatedAt);
+        content.LastUpdatedAt.Should().Be(admin.LastUpdatedAt);
     }
 }

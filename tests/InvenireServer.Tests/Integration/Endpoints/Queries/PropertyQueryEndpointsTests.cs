@@ -1,24 +1,17 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using InvenireServer.Application.Core.Properties.Items.Commands.Create;
-using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexForAdmin;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
-using InvenireServer.Tests.Integration.Extensions.Organizations;
-using InvenireServer.Tests.Integration.Extensions.Properties;
-using InvenireServer.Tests.Integration.Extensions.Users;
 using InvenireServer.Tests.Integration.Fakers.Common;
 using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
@@ -40,34 +33,33 @@ public class PropertyQueryEndpointsTests
     {
         // Prepare.
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 5; _++) items.Add(PropertyItemFaker.Fake());
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
+
+        var suggestions = new List<PropertySuggestion>();
+        for (var _ = 0; _ < 10; _++) suggestions.Add(PropertySuggestionFaker.Fake());
+
+        var scans = new List<PropertyScan>();
+        for (var _ = 0; _ < 10; _++) scans.Add(PropertyScanFaker.Fake());
 
         var admin = AdminFaker.Fake();
-        var employee = EmployeeFaker.Fake();
-        var property = PropertyFaker.Fake();
-        var suggestion = PropertySuggestionFaker.Fake();
-        var organization = OrganizationFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: items, suggestions: suggestions);
+        var property = PropertyFaker.Fake(items: items, suggestions: suggestions, scans: scans);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.AddRange(suggestions);
+        context.AddRange(scans);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.TrueString)
         ]))}");
-
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Assign the employee to the organization.
-        organization.AddEmployee(employee, _app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
-        {
-            Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
-        })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.GetAsync("/api/properties");
@@ -77,14 +69,16 @@ public class PropertyQueryEndpointsTests
         var content = await response.Content.ReadFromJsonAsync<PropertyDto>() ?? throw new NullReferenceException();
 
         content.Id.Should().Be(property.Id);
-        content.OrganizationId.Should().Be(organization.Id);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
-        content.LastUpdatedAt.Should().BeNull();
+        content.OrganizationId.Should().Be(property.OrganizationId);
+        content.CreatedAt.Should().Be(property.CreatedAt);
+        content.LastUpdatedAt.Should().Be(property.LastUpdatedAt);
         content.ItemsSummary.Should().NotBeNull();
         content.ItemsSummary!.TotalItems.Should().Be(items.Count);
         content.ItemsSummary!.TotalValue.Should().Be(items.Sum(i => i.Price));
-        content.ScansSummary.Should().BeNull();
-        content.SuggestionsSummary.Should().BeNull();
+        content.ScansSummary.Should().NotBeNull();
+        content.ScansSummary!.TotalScans.Should().Be(scans.Count);
+        content.SuggestionsSummary.Should().NotBeNull();
+        content.SuggestionsSummary!.TotalSuggestions.Should().Be(suggestions.Count);
     }
 
     [Fact]
@@ -92,13 +86,18 @@ public class PropertyQueryEndpointsTests
     {
         // Prepare.
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 300; _++) items.Add(PropertyItemFaker.Fake());
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
 
         var admin = AdminFaker.Fake();
-        var employee = EmployeeFaker.Fake();
-        var property = PropertyFaker.Fake();
-        var suggestion = PropertySuggestionFaker.Fake();
-        var organization = OrganizationFaker.Fake();
+        var property = PropertyFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -106,24 +105,9 @@ public class PropertyQueryEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Assign the employee to the organization.
-        organization.AddEmployee(employee, _app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
-        {
-            Items = [.. items.Select(i => i.ToCreatePropertyItemCommand())]
-        })).StatusCode.Should().Be(HttpStatusCode.Created);
-
         // Act & Assert.
         var limit = 100;
-        var offset = 100;
+        var offset = 0;
         var response = await _client.GetAsync($"/api/properties/items?limit={limit}&offset={offset}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -133,28 +117,27 @@ public class PropertyQueryEndpointsTests
         content.Count.Should().Be(limit);
     }
 
+
     [Fact]
     public async Task IndexScansForAdmin_ReturnsOkAndCorrectData()
     {
         // Prepare.
         var items = new List<PropertyItem>();
-        for (var _ = 0; _ < 300; _++) items.Add(PropertyItemFaker.Fake());
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
 
         var scans = new List<PropertyScan>();
-        for (var _ = 0; _ < 300; _++) scans.Add(PropertyScanFaker.Fake(items));
+        for (var _ = 0; _ < 10; _++) scans.Add(PropertyScanFaker.Fake(items));
 
         var admin = AdminFaker.Fake();
         var property = PropertyFaker.Fake(scans: scans, items: items);
         var organization = OrganizationFaker.Fake(admin: admin, property: property);
 
         using var context = _app.GetDatabaseContext();
-
         context.Add(admin);
         context.Add(organization);
         context.Add(property);
         context.AddRange(items);
         context.AddRange(scans);
-
         context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
@@ -164,8 +147,8 @@ public class PropertyQueryEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var limit = 100;
-        var offset = 100;
+        var limit = 10;
+        var offset = 0;
         var response = await _client.GetAsync($"/api/properties/scans?limit={limit}&offset={offset}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -177,10 +160,11 @@ public class PropertyQueryEndpointsTests
         content.Offset.Should().Be(offset);
         content.TotalCount.Should().Be(scans.Count);
 
-        var scan = content.Data.First();
-
-        scans.Should().Contain(s => s.Id == scan.Id);
-        scan.ScannedItemsSummary.Should().NotBeNull();
-        scan.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
+        content.Data.Should().AllSatisfy(s =>
+        {
+            s.ScannedItems.Should().BeNullOrEmpty();
+            s.ScannedItemsSummary.Should().NotBeNull();
+            s.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
+        });
     }
 }

@@ -1,8 +1,9 @@
-﻿using InvenireServer.Infrastructure.Persistence;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using InvenireServer.Infrastructure.Persistence;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace InvenireServer.Tests.Integration.Server;
 
@@ -12,6 +13,7 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
     {
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<IHostedService>();
             services.ReplaceWithFakeEmailSender();
             services.ReplaceWithInMemoryDatabase<InvenireServerContext>(Guid.NewGuid().ToString());
         });
