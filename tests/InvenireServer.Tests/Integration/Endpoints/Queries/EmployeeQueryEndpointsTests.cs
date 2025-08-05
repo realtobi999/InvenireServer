@@ -67,7 +67,7 @@ public class EmployeeQueryEndpointsTests
         var organization = OrganizationFaker.Fake();
 
         var invitations = new List<OrganizationInvitation>();
-        for (int i = 0; i < 5; i++) invitations.Add(OrganizationInvitationFaker.Fake(employee: employee));
+        for (int i = 0; i < 20; i++) invitations.Add(OrganizationInvitationFaker.Fake(employee: employee));
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -93,7 +93,9 @@ public class EmployeeQueryEndpointsTests
         ]))}");
 
         // Act & Assert.
-        var response = await _client.GetAsync($"/api/employees/invitations");
+        var limit = invitations.Count;
+        var offset = 0;
+        var response = await _client.GetAsync($"/api/employees/invitations?limit={limit}&offset={offset}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.

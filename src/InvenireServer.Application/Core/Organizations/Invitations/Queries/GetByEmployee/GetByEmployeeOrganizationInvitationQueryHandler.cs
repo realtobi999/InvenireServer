@@ -13,5 +13,5 @@ public class GetByEmployeeOrganizationInvitationQueryHandler : IRequestHandler<G
     }
 
     public async Task<IEnumerable<OrganizationInvitationDto>> Handle(GetByEmployeeOrganizationInvitationQuery request, CancellationToken ct)
-        => await _services.Organizations.Invitations.Dto.IndexForAsync(await _services.Employees.GetAsync(request.Jwt));
+        => await _services.Organizations.Invitations.Dto.IndexForAsync(await _services.Employees.GetAsync(request.Jwt), request.Pagination);
 }

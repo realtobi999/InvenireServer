@@ -95,7 +95,7 @@ public class PropertyItemDtoService : IPropertyItemDtoService
 
     public async Task<IEnumerable<PropertyItemDto>> IndexAsync(Expression<Func<PropertyItem, bool>> predicate, PaginationParameters pagination)
     {
-        var items = await _repositories.Properties.Items.Dto.IndexAsync(predicate, pagination);
+        var items = await _repositories.Properties.Items.IndexAndProjectToAsync<PropertyItemDto>(predicate, PropertyItemDto.FromPropertyItemSelector, pagination);
 
         return items;
     }

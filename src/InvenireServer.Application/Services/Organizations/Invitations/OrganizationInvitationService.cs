@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Interfaces.Services.Organizations.Invitations;
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
@@ -96,21 +97,21 @@ public class OrganizationInvitationDtoService : IOrganizationInvitationDtoServic
 
     public async Task<OrganizationInvitationDto?> TryGetAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
     {
-        var invitation = await _repositories.Organizations.Invitations.Dto.GetAsync(predicate);
+        var invitation = await _repositories.Organizations.Invitations.GetAndProjectToAsync<OrganizationInvitationDto>(predicate, OrganizationInvitationDto.FromInvitationSelector);
 
         return invitation;
     }
 
-    public Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate)
+    public Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate, PaginationParameters pagination)
     {
-        var invitations = _repositories.Organizations.Invitations.Dto.IndexAsync(predicate);
+        var invitations = _repositories.Organizations.Invitations.IndexAndProjectToAsync<OrganizationInvitationDto>(predicate, OrganizationInvitationDto.FromInvitationSelector, pagination);
 
         return invitations;
     }
 
-    public Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee)
+    public Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee, PaginationParameters pagination)
     {
-        var invitations = IndexAsync(i => i.Employee != null && i.Employee.Id == employee.Id);
+        var invitations = IndexAsync(i => i.Employee != null && i.Employee.Id == employee.Id, pagination);
 
         return invitations;
     }

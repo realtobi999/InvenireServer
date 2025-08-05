@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Organizations;
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 
@@ -21,6 +22,6 @@ public interface IOrganizationInvitationDtoService
 {
     Task<OrganizationInvitationDto> GetAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
     Task<OrganizationInvitationDto?> TryGetAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
-    Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate);
-    Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee);
+    Task<IEnumerable<OrganizationInvitationDto>> IndexAsync(Expression<Func<OrganizationInvitation, bool>> predicate, PaginationParameters pagination);
+    Task<IEnumerable<OrganizationInvitationDto>> IndexForAsync(Employee employee, PaginationParameters pagination);
 }

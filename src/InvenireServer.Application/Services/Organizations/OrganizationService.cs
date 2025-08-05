@@ -106,7 +106,7 @@ public class OrganizationDtoService : IOrganizationDtoService
 
     public async Task<OrganizationDto?> TryGetAsync(Expression<Func<Organization, bool>> predicate)
     {
-        var organizationDto = await _repositories.Organizations.Dto.GetAsync(predicate);
+        var organizationDto = await _repositories.Organizations.GetAndProjectToAsync<OrganizationDto>(predicate, OrganizationDto.FromOrganizationSelector);
 
         return organizationDto;
     }

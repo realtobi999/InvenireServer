@@ -33,11 +33,12 @@ public class EmployeeQueryController : ControllerBase
 
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
     [HttpGet("/api/employees/invitations")]
-    public async Task<IActionResult> GetInvitationsByEmployee()
+    public async Task<IActionResult> GetInvitationsByEmployee([FromQuery] int? limit, [FromQuery] int? offset)
     {
         var invitationDtos = await _mediator.Send(new GetByEmployeeOrganizationInvitationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Pagination = new PaginationParameters(limit, offset)
         });
 
         return Ok(invitationDtos.ToList());

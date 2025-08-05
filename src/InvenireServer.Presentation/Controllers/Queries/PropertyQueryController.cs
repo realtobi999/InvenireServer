@@ -33,7 +33,7 @@ public class PropertyQueryController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items")]
-    public async Task<IActionResult> IndexItemsForAdmin([FromQuery] int limit, [FromQuery] int offset)
+    public async Task<IActionResult> IndexItemsForAdmin([FromQuery] int? limit, [FromQuery] int? offset)
     {
         var itemDtos = await _mediator.Send(new IndexForAdminPropertyItemQuery
         {

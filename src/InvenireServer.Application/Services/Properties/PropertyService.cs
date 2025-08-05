@@ -103,7 +103,7 @@ public class PropertyDtoService : IPropertyDtoService
 
     public async Task<PropertyDto?> TryGetAsync(Expression<Func<Property, bool>> predicate)
     {
-        var property = await _repositories.Properties.Dto.GetAsync(predicate);
+        var property = await _repositories.Properties.GetAndProjectToAsync<PropertyDto>(predicate, PropertyDto.FromPropertySelector);
 
         return property;
     }

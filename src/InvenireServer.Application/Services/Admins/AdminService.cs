@@ -101,7 +101,7 @@ public class AdminDtoService : IAdminDtoService
 
     public async Task<AdminDto> GetAsync(Expression<Func<Admin, bool>> predicate)
     {
-        var adminDto = await _repositories.Admins.Dto.GetAsync(predicate);
+        var adminDto = await _repositories.Admins.GetAndProjectToAsync<AdminDto>(predicate, AdminDto.FromAdminSelector);
 
         if (adminDto is null) throw new NotFound404Exception($"The requested {nameof(Admin).ToLower()} was not found in the system.");
 

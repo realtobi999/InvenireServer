@@ -110,7 +110,7 @@ public class EmployeeDtoService : IEmployeeDtoService
 
     public async Task<EmployeeDto> GetAsync(Expression<Func<Employee, bool>> predicate)
     {
-        var employeeDto = await _repositories.Employees.Dto.GetAsync(predicate);
+        var employeeDto = await _repositories.Employees.GetAndProjectToAsync<EmployeeDto>(predicate, EmployeeDto.FromEmployeeSelector);
 
         if (employeeDto is null) throw new NotFound404Exception($"The requested {nameof(Employee).ToLower()} was not found in the system.");
 
