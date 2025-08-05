@@ -1,7 +1,7 @@
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
 
-namespace InvenireServer.Application.Core.Properties.Items.Queries;
+namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexForAdmin;
 
 public class IndexForAdminPropertyItemQuery : IRequest<IEnumerable<PropertyItemDto>>
 {

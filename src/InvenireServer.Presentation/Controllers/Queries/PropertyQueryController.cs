@@ -5,7 +5,8 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
-using InvenireServer.Application.Core.Properties.Items.Queries;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexForAdmin;
+using InvenireServer.Application.Core.Properties.Scans.Queries.IndexForAdmin;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -42,5 +43,16 @@ public class PropertyQueryController : ControllerBase
         });
 
         return Ok(itemDtos.ToList());
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/properties/scans")]
+    public async Task<IActionResult> IndexScansForAdmin([FromQuery] int? limit, [FromQuery] int? offset)
+    {
+        return Ok((IndexForAdminPropertyScanQueryResponse?)await _mediator.Send(new IndexForAdminPropertyScanQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Pagination = new PaginationParameters(limit, offset),
+        }));
     }
 }

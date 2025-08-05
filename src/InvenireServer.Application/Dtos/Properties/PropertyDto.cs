@@ -20,14 +20,17 @@ public class PropertyDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("items_summary")]
-    public required PropertyDtoItemsSummary? ItemsSummary { get; set; }
+    public PropertyDtoItemsSummary? ItemsSummary { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("scans_summary")]
-    public required PropertyDtoScansSummary? ScansSummary { get; set; }
+    public PropertyDtoScansSummary? ScansSummary { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("suggestions_summary")]
-    public required PropertyDtoSuggestionsSummary? SuggestionsSummary { get; set; }
+    public PropertyDtoSuggestionsSummary? SuggestionsSummary { get; set; }
 
     public static Expression<Func<Property, PropertyDto>> FromPropertySelector
     {
@@ -65,4 +68,11 @@ public record PropertyDtoItemsSummary
 
     [JsonPropertyName("total_value")]
     public required double TotalValue { get; set; }
+}
+
+[JsonResponse]
+public record PropertyDtoScansSummary
+{
+    [JsonPropertyName("total_scans")]
+    public required int TotalScans { get; set; }
 }

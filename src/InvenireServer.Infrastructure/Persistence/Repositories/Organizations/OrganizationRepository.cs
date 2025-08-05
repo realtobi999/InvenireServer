@@ -1,6 +1,7 @@
-using InvenireServer.Application.Interfaces.Repositories.Organizations;
-using InvenireServer.Domain.Entities.Organizations;
 using Microsoft.EntityFrameworkCore;
+using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Application.Interfaces.Repositories.Organizations;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Organizations;
 
@@ -12,6 +13,11 @@ public class OrganizationRepository : RepositoryBase<Organization>, IOrganizatio
     }
 
     public IOrganizationInvitationRepository Invitations { get; }
+
+    public async Task<Organization?> GetForAsync(Admin admin)
+    {
+        return await GetAsync(o => o.Id == admin.OrganizationId);
+    }
 
     protected override IQueryable<Organization> GetQueryable()
     {

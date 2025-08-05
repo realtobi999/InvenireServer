@@ -2,7 +2,7 @@ using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Core.Properties.Items.Queries;
+namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexForAdmin;
 
 public class IndexForAdminPropertyItemQueryHandler : IRequestHandler<IndexForAdminPropertyItemQuery, IEnumerable<PropertyItemDto>>
 {

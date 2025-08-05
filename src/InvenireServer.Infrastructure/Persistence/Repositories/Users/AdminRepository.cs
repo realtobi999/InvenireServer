@@ -1,5 +1,7 @@
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Application.Interfaces.Repositories.Users;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -7,6 +9,16 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 {
     public AdminRepository(InvenireServerContext context) : base(context)
     {
+    }
+
+    public async Task<Admin?> GetAsync(Jwt jwt)
+    {
+        var claim = jwt.Payload.FirstOrDefault(c => c.Type == "admin_id" && !string.IsNullOrWhiteSpace(c.Value));
+        if (claim is null) throw new BadRequest400Exception("Missing or invalid 'admin_id' claim.");
+
+        if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
+
+        return await GetAsync(e => e.Id == id);
     }
 
     public async Task<IEnumerable<Admin>> IndexInactiveAsync()

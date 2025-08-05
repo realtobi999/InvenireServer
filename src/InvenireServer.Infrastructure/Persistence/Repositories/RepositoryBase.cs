@@ -59,6 +59,14 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
             .ToListAsync();
     }
 
+    public async Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)
+    {
+        return await Context.Set<Entity>()
+            .AsNoTracking()
+            .Where(predicate)
+            .CountAsync();
+    }
+
     protected virtual IQueryable<Entity> GetQueryable()
     {
         return Context.Set<Entity>();

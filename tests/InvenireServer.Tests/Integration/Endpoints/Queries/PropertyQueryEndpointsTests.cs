@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
+using InvenireServer.Application.Core.Properties.Scans.Queries.IndexForAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
@@ -17,6 +18,7 @@ using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Tests.Integration.Fakers.Properties.Items;
 using InvenireServer.Tests.Integration.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
@@ -129,5 +131,56 @@ public class PropertyQueryEndpointsTests
         var content = await response.Content.ReadFromJsonAsync<List<PropertyItemDto>>() ?? throw new NullReferenceException();
 
         content.Count.Should().Be(limit);
+    }
+
+    [Fact]
+    public async Task IndexScansForAdmin_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 300; _++) items.Add(PropertyItemFaker.Fake());
+
+        var scans = new List<PropertyScan>();
+        for (var _ = 0; _ < 300; _++) scans.Add(PropertyScanFaker.Fake(items));
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake(scans: scans, items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        using var context = _app.GetDatabaseContext();
+
+        context.Add(admin);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.AddRange(scans);
+
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+           new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var limit = 100;
+        var offset = 100;
+        var response = await _client.GetAsync($"/api/properties/scans?limit={limit}&offset={offset}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert that the response content is correct.
+        var content = await response.Content.ReadFromJsonAsync<IndexForAdminPropertyScanQueryResponse>() ?? throw new NullReferenceException();
+
+        content.Data.Count.Should().Be(limit);
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(scans.Count);
+
+        var scan = content.Data.First();
+
+        scans.Should().Contain(s => s.Id == scan.Id);
+        scan.ScannedItemsSummary.Should().NotBeNull();
+        scan.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
     }
 }
