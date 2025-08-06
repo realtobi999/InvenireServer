@@ -4,23 +4,23 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class LoginAdminCommandHandlerTests
 {
-    private readonly LoginAdminCommandHandler _handler;
     private readonly PasswordHasher<Admin> _hasher;
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
+    private readonly LoginAdminCommandHandler _handler;
 
     public LoginAdminCommandHandlerTests()
     {
         _hasher = new PasswordHasher<Admin>();
-        _services = new Mock<IServiceManager>();
-        _handler = new LoginAdminCommandHandler(_services.Object, _hasher, JwtManagerFaker.Initiate());
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new LoginAdminCommandHandler(JwtManagerFaker.Initiate(), _hasher, _repositories.Object);
     }
 
     [Fact]
@@ -38,7 +38,8 @@ public class LoginAdminCommandHandlerTests
         admin.IsVerified = true;
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        _services.Setup(s => s.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Admins.GetAsync(a => a.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -68,7 +69,7 @@ public class LoginAdminCommandHandlerTests
         admin.IsVerified = true;
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        _services.Setup(s => s.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ThrowsAsync(new NotFound404Exception());
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ThrowsAsync(new NotFound404Exception());
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -91,7 +92,7 @@ public class LoginAdminCommandHandlerTests
         admin.IsVerified = true;
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        _services.Setup(s => s.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -114,7 +115,7 @@ public class LoginAdminCommandHandlerTests
         admin.IsVerified = false; // Set the admin as unverified.
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        _services.Setup(s => s.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Admins.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);

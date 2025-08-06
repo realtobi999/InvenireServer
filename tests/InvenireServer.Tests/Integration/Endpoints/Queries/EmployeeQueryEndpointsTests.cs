@@ -5,14 +5,14 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Tests.Integration.Server;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Integration.Fakers.Users;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Application.Dtos.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Properties;
 using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Tests.Integration.Fakers.Properties.Items;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Properties;
+using InvenireServer.Tests.Fakers.Properties.Items;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 

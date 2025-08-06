@@ -6,7 +6,6 @@ namespace InvenireServer.Domain.Entities.Users;
 public class Admin
 {
     // Constants
-
     public const int MAX_NAME_LENGTH = 155;
 
     public const int MAX_EMAIL_ADDRESS_LENGTH = 155;

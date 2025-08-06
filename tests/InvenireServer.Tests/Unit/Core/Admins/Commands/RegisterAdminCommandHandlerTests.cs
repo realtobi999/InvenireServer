@@ -3,21 +3,23 @@ using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Integration.Extensions;
-using InvenireServer.Tests.Integration.Fakers.Common;
+using InvenireServer.Tests.Extensions;
+using InvenireServer.Tests.Fakers.Common;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class RegisterAdminCommandHandlerTests
 {
+    private readonly PasswordHasher<Admin> _hasher;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly RegisterAdminCommandHandler _handler;
-    private readonly Mock<IServiceManager> _services;
 
     public RegisterAdminCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new RegisterAdminCommandHandler(_services.Object, new PasswordHasher<Admin>(), JwtManagerFaker.Initiate());
+        _hasher = new PasswordHasher<Admin>();
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new RegisterAdminCommandHandler(JwtManagerFaker.Initiate(), _hasher, _repositories.Object);
     }
 
     [Fact]
@@ -35,7 +37,8 @@ public class RegisterAdminCommandHandlerTests
             PasswordConfirm = password
         };
 
-        _services.Setup(s => s.Admins.CreateAsync(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.Admins.Create(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -52,7 +55,7 @@ public class RegisterAdminCommandHandlerTests
         admin.LastUpdatedAt.Should().BeNull();
 
         // Assert that the token has all the necessary claims.
-        var jwt = JwtBuilder.Parse(result.Token);
+        var jwt = JwtBuilder.Parse(result.Response.Token);
         jwt.Payload.Should().Contain(c => c.Type == "role" && c.Value == Jwt.Roles.ADMIN);
         jwt.Payload.Should().Contain(c => c.Type == "admin_id" && c.Value == command.Id.ToString());
         jwt.Payload.Should().Contain(c => c.Type == "is_verified" && c.Value == bool.FalseString);

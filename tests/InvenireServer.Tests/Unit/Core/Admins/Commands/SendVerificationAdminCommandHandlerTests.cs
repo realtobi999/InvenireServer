@@ -5,23 +5,22 @@ using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class SendVerificationAdminCommandHandlerTests
 {
     private readonly Mock<IEmailManager> _email;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly SendVerificationAdminCommandHandler _handler;
-    private readonly Mock<IServiceManager> _services;
 
     public SendVerificationAdminCommandHandlerTests()
     {
         _email = new Mock<IEmailManager>();
-        _services = new Mock<IServiceManager>();
-
-        _handler = new SendVerificationAdminCommandHandler(_services.Object, _email.Object, JwtManagerFaker.Initiate());
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new SendVerificationAdminCommandHandler(JwtManagerFaker.Initiate(), _email.Object, _repositories.Object);
     }
 
     [Fact]
@@ -35,7 +34,7 @@ public class SendVerificationAdminCommandHandlerTests
             FrontendBaseUrl = "invenire.com"
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
 
         var dto = (AdminVerificationEmailDto?)null;
         _email.Setup(e => e.Builders.Admin.BuildVerificationEmail(It.IsAny<AdminVerificationEmailDto>())).Callback<AdminVerificationEmailDto>(captured => dto = captured);

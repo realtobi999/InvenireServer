@@ -3,19 +3,19 @@ using InvenireServer.Application.Core.Employees.Commands.Verification.Confirm;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class ConfirmVerificationEmployeeCommandHandlerTests
 {
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly ConfirmVerificationEmployeeCommandHandler _handler;
-    private readonly Mock<IServiceManager> _services;
 
     public ConfirmVerificationEmployeeCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new ConfirmVerificationEmployeeCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new ConfirmVerificationEmployeeCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -31,8 +31,9 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
-        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Employees.UpdateAsync(employee));
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.Update(employee));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -86,7 +87,7 @@ public class ConfirmVerificationEmployeeCommandHandlerTests
             Jwt = new Jwt([], [new Claim("purpose", "email_verification")])
         };
 
-        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

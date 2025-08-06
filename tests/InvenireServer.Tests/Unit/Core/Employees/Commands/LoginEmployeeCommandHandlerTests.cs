@@ -4,23 +4,23 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class LoginEmployeeCommandHandlerTests
 {
-    private readonly LoginEmployeeCommandHandler _handler;
     private readonly PasswordHasher<Employee> _hasher;
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
+    private readonly LoginEmployeeCommandHandler _handler;
 
     public LoginEmployeeCommandHandlerTests()
     {
         _hasher = new PasswordHasher<Employee>();
-        _services = new Mock<IServiceManager>();
-        _handler = new LoginEmployeeCommandHandler(_services.Object, _hasher, JwtManagerFaker.Initiate());
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new LoginEmployeeCommandHandler(JwtManagerFaker.Initiate(), _hasher, _repositories.Object);
     }
 
     [Fact]
@@ -38,7 +38,9 @@ public class LoginEmployeeCommandHandlerTests
         employee.IsVerified = true;
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.Update(It.IsAny<Employee>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -68,7 +70,7 @@ public class LoginEmployeeCommandHandlerTests
         employee.IsVerified = true;
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ThrowsAsync(new NotFound404Exception());
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ThrowsAsync(new NotFound404Exception());
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -91,7 +93,7 @@ public class LoginEmployeeCommandHandlerTests
         employee.IsVerified = true;
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -114,7 +116,7 @@ public class LoginEmployeeCommandHandlerTests
         employee.IsVerified = false; // Set the employee as unverified.
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        _services.Setup(s => s.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.EmailAddress == command.EmailAddress)).ReturnsAsync(employee);
 
         // Act & Assert
         var action = async () => await _handler.Handle(command, CancellationToken.None);

@@ -2,19 +2,19 @@ using InvenireServer.Application.Core.Admins.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class UpdateAdminCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly UpdateAdminCommandHandler _handler;
 
     public UpdateAdminCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new UpdateAdminCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new UpdateAdminCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -29,8 +29,9 @@ public class UpdateAdminCommandHandlerTests
             Name = new Faker().Lorem.Sentence()
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Admins.UpdateAsync(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Admins.Update(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

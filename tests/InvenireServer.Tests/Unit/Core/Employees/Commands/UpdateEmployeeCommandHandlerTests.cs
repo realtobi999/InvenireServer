@@ -1,20 +1,20 @@
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Tests.Integration.Fakers.Users;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Core.Employees.Commands.Update;
+using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class UpdateEmployeeCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly UpdateEmployeeCommandHandler _handler;
 
     public UpdateEmployeeCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new UpdateEmployeeCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new UpdateEmployeeCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -29,8 +29,9 @@ public class UpdateEmployeeCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Employees.UpdateAsync(It.IsAny<Employee>()));
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.Update(It.IsAny<Employee>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

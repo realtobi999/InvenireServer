@@ -8,13 +8,11 @@ using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
-using InvenireServer.Tests.Integration.Extensions.Organizations;
-using InvenireServer.Tests.Integration.Extensions.Users;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Properties;
-using InvenireServer.Tests.Integration.Fakers.Properties.Items;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Properties;
+using InvenireServer.Tests.Fakers.Properties.Items;
+using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;

@@ -1,22 +1,25 @@
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Update;
 
 public class UpdateAdminCommandHandler : IRequestHandler<UpdateAdminCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public UpdateAdminCommandHandler(IServiceManager services)
+    public UpdateAdminCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(UpdateAdminCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
         admin.Name = request.Name;
 
-        await _services.Admins.UpdateAsync(admin);
+        _repositories.Admins.Update(admin);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

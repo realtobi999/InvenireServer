@@ -1,22 +1,25 @@
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Update;
 
 public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public UpdateEmployeeCommandHandler(IServiceManager services)
+    public UpdateEmployeeCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(UpdateEmployeeCommand request, CancellationToken ct)
     {
-        var employee = await _services.Employees.GetAsync(request.Jwt!);
+        var employee = await _repositories.Employees.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
         employee.Name = request.Name;
 
-        await _services.Employees.UpdateAsync(employee);
+        _repositories.Employees.Update(employee);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

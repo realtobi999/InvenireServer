@@ -2,19 +2,19 @@ using InvenireServer.Application.Core.Employees.Commands.Delete;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
 public class DeleteEmployeeCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteEmployeeCommandHandler _handler;
 
     public DeleteEmployeeCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new DeleteEmployeeCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new DeleteEmployeeCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -28,8 +28,9 @@ public class DeleteEmployeeCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
-        _services.Setup(s => s.Employees.DeleteAsync(It.IsAny<Employee>()));
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.Delete(It.IsAny<Employee>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

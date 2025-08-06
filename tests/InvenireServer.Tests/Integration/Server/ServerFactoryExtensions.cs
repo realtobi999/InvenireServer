@@ -1,5 +1,5 @@
 using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Tests.Integration.Fakers.Common;
+using InvenireServer.Tests.Fakers.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;

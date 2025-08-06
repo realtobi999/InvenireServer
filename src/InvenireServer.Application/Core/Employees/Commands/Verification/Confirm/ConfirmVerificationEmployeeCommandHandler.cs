@@ -5,11 +5,11 @@ namespace InvenireServer.Application.Core.Employees.Commands.Verification.Confir
 
 public class ConfirmVerificationEmployeeCommandHandler : IRequestHandler<ConfirmVerificationEmployeeCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public ConfirmVerificationEmployeeCommandHandler(IServiceManager services)
+    public ConfirmVerificationEmployeeCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(ConfirmVerificationEmployeeCommand request, CancellationToken ct)
@@ -17,10 +17,12 @@ public class ConfirmVerificationEmployeeCommandHandler : IRequestHandler<Confirm
         var purpose = request.Jwt.GetPurpose() ?? throw new BadRequest400Exception("The token's purpose is missing.");
         if (purpose != "email_verification") throw new Unauthorized401Exception("The token's purpose is not for email verification.");
 
-        var employee = await _services.Employees.GetAsync(request.Jwt);
+        var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
         employee.Verify();
 
-        await _services.Employees.UpdateAsync(employee);
+        _repositories.Employees.Update(employee);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

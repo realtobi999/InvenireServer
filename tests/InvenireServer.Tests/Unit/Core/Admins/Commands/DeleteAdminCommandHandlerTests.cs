@@ -4,20 +4,20 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class DeleteAdminCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteAdminCommandHandler _handler;
 
     public DeleteAdminCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new DeleteAdminCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new DeleteAdminCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -31,9 +31,10 @@ public class DeleteAdminCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
-        _services.Setup(s => s.Admins.DeleteAsync(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Admins.Delete(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -53,9 +54,10 @@ public class DeleteAdminCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization); // Return the organization.
-        _services.Setup(s => s.Admins.DeleteAsync(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Admins.Delete(It.IsAny<Admin>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

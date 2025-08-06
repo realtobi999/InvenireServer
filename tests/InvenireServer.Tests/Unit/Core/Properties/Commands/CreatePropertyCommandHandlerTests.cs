@@ -4,8 +4,8 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Commands;
 
