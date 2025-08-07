@@ -1,22 +1,23 @@
-using InvenireServer.Application.Core.Organizations.Commands.Delete;
-using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
-using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Core.Organizations.Commands.Delete;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 
 public class DeleteOrganizationCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteOrganizationCommandHandler _handler;
 
     public DeleteOrganizationCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new DeleteOrganizationCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new DeleteOrganizationCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -31,14 +32,32 @@ public class DeleteOrganizationCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.DeleteAsync(It.IsAny<Organization>()));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Delete(It.IsAny<Organization>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
         await action.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenAdminIsNotFound()
+    {
+        // Prepare.
+        var command = new DeleteOrganizationCommand
+        {
+            Jwt = new Jwt([], [])
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
     [Fact]
@@ -53,12 +72,12 @@ public class DeleteOrganizationCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 }

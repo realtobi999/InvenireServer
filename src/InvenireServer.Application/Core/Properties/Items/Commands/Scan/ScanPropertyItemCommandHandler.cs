@@ -14,7 +14,7 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
         _services = services;
     }
 
-    public async Task Handle(ScanPropertyItemCommand request, CancellationToken _)
+    public async Task Handle(ScanPropertyItemCommand request, CancellationToken ct)
     {
         var item = await _services.Properties.Items.GetAsync(i => i.Id == request.ItemId);
 

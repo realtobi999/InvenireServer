@@ -87,7 +87,7 @@ public class OrganizationCommandController : ControllerBase
         };
         var result = await _mediator.Send(command);
 
-        return Created($"/api/organizations/{result.Organization.Id}/invitations/{result.Invitation.Id}", null);
+        return Created($"/api/organizations/invitations/{result.Invitation.Id}", null);
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]

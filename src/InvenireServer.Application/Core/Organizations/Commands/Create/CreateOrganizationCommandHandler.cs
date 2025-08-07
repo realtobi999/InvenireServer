@@ -1,39 +1,39 @@
 using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
 public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizationCommand, CreateOrganizationCommandResult>
 {
     private readonly IEmailManager _email;
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreateOrganizationCommandHandler(IServiceManager services, IEmailManager email)
+    public CreateOrganizationCommandHandler(IEmailManager email, IRepositoryManager repositories)
     {
-        _services = services;
         _email = email;
+        _repositories = repositories;
     }
 
-    public async Task<CreateOrganizationCommandResult> Handle(CreateOrganizationCommand request, CancellationToken _)
+    public async Task<CreateOrganizationCommandResult> Handle(CreateOrganizationCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
-        // Create the organization and assign the admin.
         var organization = new Organization
         {
             Id = request.Id ?? Guid.NewGuid(),
             Name = request.Name,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null
+            LastUpdatedAt = null,
+            Admin = admin,
         };
-        organization.AssignAdmin(admin);
 
-        // Save the changes.
-        await _services.Organizations.CreateAsync(organization);
-        await _services.Admins.UpdateAsync(admin);
+        _repositories.Admins.Update(admin);
+        _repositories.Organizations.Create(organization);
 
-        // Send confirmation email to the admin.
+        await _repositories.SaveOrThrowAsync();
+
         var dto = new AdminOrganizationCreationEmailDto
         {
             AdminAddress = admin.EmailAddress,

@@ -15,7 +15,7 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
         _services = services;
     }
 
-    public async Task<CreatePropertySuggestionCommandResult> Handle(CreatePropertySuggestionCommand request, CancellationToken _)
+    public async Task<CreatePropertySuggestionCommandResult> Handle(CreatePropertySuggestionCommand request, CancellationToken ct)
     {
         var employee = await _services.Employees.GetAsync(request.Jwt!);
         var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");

@@ -18,7 +18,7 @@ public sealed class OrganizationFaker : Faker<Organization>
     {
         var organization = new OrganizationFaker().Generate();
 
-        if (admin is not null) organization.AssignAdmin(admin);
+        if (admin is not null) organization.Admin = admin;
         if (property is not null) organization.AssignProperty(property);
         if (employees is not null) organization.AddEmployees(employees);
         if (invitations is not null) organization.AddInvitations(invitations);

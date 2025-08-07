@@ -25,28 +25,17 @@ public class OrganizationInvitation
 
     public Guid? OrganizationId { get; private set; }
 
-    public Employee? Employee { get; private set; }
+    public Employee? Employee { get; set; }
 
     // Methods.
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("This invitation is already part of a other organization");
-
         OrganizationId = organization.Id;
     }
 
     public void UnassignOrganization()
     {
-        if (OrganizationId is null) throw new BadRequest400Exception("This invitation is not part of a any organization");
-
         OrganizationId = null;
-    }
-
-    public void AssignEmployee(Employee employee)
-    {
-        if (Employee is not null) throw new BadRequest400Exception("This invitation does already have a employee assigned");
-
-        Employee = employee;
     }
 }

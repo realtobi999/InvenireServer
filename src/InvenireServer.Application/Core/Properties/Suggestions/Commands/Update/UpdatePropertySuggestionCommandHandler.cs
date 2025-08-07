@@ -15,7 +15,7 @@ public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdateProp
         _services = services;
     }
 
-    public async Task Handle(UpdatePropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(UpdatePropertySuggestionCommand request, CancellationToken ct)
     {
         var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
         var employee = await _services.Employees.GetAsync(request.Jwt!);

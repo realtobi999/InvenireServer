@@ -7,6 +7,6 @@ namespace InvenireServer.Application.Interfaces.Repositories.Users;
 public interface IAdminRepository : IRepositoryBase<Admin>
 {
     Task<Admin?> GetAsync(Jwt jwt);
-    Task<EntityDto?> GetAndProjectToAsync<EntityDto>(Jwt jwt, Expression<Func<Admin, EntityDto>> selector);
+    Task<EntityDto?> GetAndProjectAsync<EntityDto>(Jwt jwt, Expression<Func<Admin, EntityDto>> selector);
     Task<IEnumerable<Admin>> IndexInactiveAsync();
 }

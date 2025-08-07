@@ -14,5 +14,5 @@ public class GetByJwtAdminQueryHandler : IRequestHandler<GetByJwtAdminQuery, Adm
     }
 
     public async Task<AdminDto> Handle(GetByJwtAdminQuery request, CancellationToken ct)
-        => await _services.Admins.GetAndProjectToAsync(request.Jwt, AdminDto.FromAdminSelector) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        => await _services.Admins.GetAndProjectAsync(request.Jwt, AdminDto.FromAdminSelector) ?? throw new NotFound404Exception("The admin was not found in the system.");
 }

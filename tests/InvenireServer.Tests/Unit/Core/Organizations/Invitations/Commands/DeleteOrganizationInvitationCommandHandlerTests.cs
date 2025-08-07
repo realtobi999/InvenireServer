@@ -2,6 +2,7 @@ using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
@@ -10,13 +11,13 @@ namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
 public class DeleteOrganizationInvitationCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteOrganizationInvitationCommandHandler _handler;
 
     public DeleteOrganizationInvitationCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new DeleteOrganizationInvitationCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new DeleteOrganizationInvitationCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -33,17 +34,37 @@ public class DeleteOrganizationInvitationCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.DeleteAsync(invitation));
-        _services.Setup(s => s.Organizations.UpdateAsync(organization));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Update(organization));
+        _repositories.Setup(r => r.Organizations.Invitations.Delete(invitation));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
-        await _handler.Handle(command, CancellationToken.None);
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().NotThrowAsync();
+    }
 
-        // Assert that the organization is missing the invitation.
-        organization.Invitations.Should().NotContain(i => i.Id == invitation.Id);
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheAdminIsNotFound()
+    {
+        // Prepare.
+        var invitation = OrganizationInvitationFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: null, invitations: [invitation]);
+
+        var command = new DeleteOrganizationInvitationCommand
+        {
+            Id = invitation.Id,
+            Jwt = new Jwt([], [])
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<NotFound404Exception>("The admin was not found in the system.");
     }
 
     [Fact]
@@ -60,18 +81,18 @@ public class DeleteOrganizationInvitationCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before deleting any invitations.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenTheInvitationDoesntExist()
+    public async Task Handle_ThrowsExceptionWhenTheInvitationIsNotFound()
     {
         // Prepare.
         var admin = AdminFaker.Fake();
@@ -84,13 +105,37 @@ public class DeleteOrganizationInvitationCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.TryGetAsync(i => i.Id == command.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(s => s.Organizations.Invitations.GetAsync(i => i.Id == command.Id)).ReturnsAsync((OrganizationInvitation?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The specified invitation does not exist or may have already been deleted.");
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The invitation was not found in the system.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheInvitationIsNotPartOfTheOrganization()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: []);
+
+        var command = new DeleteOrganizationInvitationCommand
+        {
+            Id = invitation.Id,
+            Jwt = new Jwt([], [])
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Unauthorized401Exception>("The invitation is not part of the organization.");
     }
 }

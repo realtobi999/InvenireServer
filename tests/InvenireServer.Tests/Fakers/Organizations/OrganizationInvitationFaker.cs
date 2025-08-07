@@ -17,7 +17,7 @@ public sealed class OrganizationInvitationFaker : Faker<OrganizationInvitation>
     {
         var invitation = new OrganizationInvitationFaker().Generate();
 
-        if (employee is not null) invitation.AssignEmployee(employee);
+        if (employee is not null) invitation.Employee = employee;
 
         return invitation;
     }

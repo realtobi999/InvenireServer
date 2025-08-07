@@ -13,7 +13,7 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         _services = services;
     }
 
-    public async Task<CreatePropertyCommandResponse> Handle(CreatePropertyCommand request, CancellationToken _)
+    public async Task<CreatePropertyCommandResponse> Handle(CreatePropertyCommand request, CancellationToken ct)
     {
         // Get the admin and his organization.
         var admin = await _services.Admins.GetAsync(request.Jwt!);

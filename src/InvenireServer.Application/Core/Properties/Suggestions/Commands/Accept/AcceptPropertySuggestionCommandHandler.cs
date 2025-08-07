@@ -19,7 +19,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
         _services = services;
     }
 
-    public async Task Handle(AcceptPropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(AcceptPropertySuggestionCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
         var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);

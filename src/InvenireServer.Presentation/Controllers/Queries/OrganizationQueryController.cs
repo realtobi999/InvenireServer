@@ -25,37 +25,31 @@ public class OrganizationQueryController : ControllerBase
     [HttpGet("/api/organizations")]
     public async Task<IActionResult> GetByAdmin()
     {
-        var organizationDto = await _mediator.Send(new GetByAdminOrganizationQuery
+        return Ok((Application.Dtos.Organizations.OrganizationDto?)await _mediator.Send(new GetByAdminOrganizationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return Ok(organizationDto);
-    }
-
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
-    [HttpGet("/api/organizations/employees/{employeeId:guid}")]
-    public async Task<IActionResult> GetEmployeeById(Guid employeeId)
-    {
-        var employeeDto = await _mediator.Send(new GetByIdEmployeeQuery
-        {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            EmployeeId = employeeId,
-        });
-
-        return Ok(employeeDto);
+        }));
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/organizations/invitations/{invitationId:guid}")]
     public async Task<IActionResult> GetInvitationById(Guid invitationId)
     {
-        var invitationDto = await _mediator.Send(new GetByIdOrganizationInvitationQuery
+        return Ok((Application.Dtos.Organizations.OrganizationInvitationDto?)await _mediator.Send(new GetByIdOrganizationInvitationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             InvitationId = invitationId
-        });
+        }));
+    }
 
-        return Ok(invitationDto);
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/organizations/employees/{employeeId:guid}")]
+    public async Task<IActionResult> GetEmployeeById(Guid employeeId)
+    {
+        return Ok((Application.Dtos.Employees.EmployeeDto?)await _mediator.Send(new GetByIdEmployeeQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            EmployeeId = employeeId,
+        }));
     }
 }

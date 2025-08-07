@@ -34,7 +34,7 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
             .WithName("password_confirm");
     }
 
-    private async Task<bool> BeUniqueEmail(string email, CancellationToken _)
+    private async Task<bool> BeUniqueEmail(string email, CancellationToken ct)
     {
         return await _repositories.Admins.GetAsync(e => e.EmailAddress == email) is null;
     }

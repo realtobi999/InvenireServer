@@ -13,7 +13,7 @@ public class DeclinePropertySuggestionCommandHandler : IRequestHandler<DeclinePr
         _services = services;
     }
 
-    public async Task Handle(DeclinePropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(DeclinePropertySuggestionCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
         var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);

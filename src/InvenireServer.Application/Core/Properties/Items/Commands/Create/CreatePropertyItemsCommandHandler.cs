@@ -14,7 +14,7 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
         _services = services;
     }
 
-    public async Task Handle(CreatePropertyItemsCommand request, CancellationToken _)
+    public async Task Handle(CreatePropertyItemsCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
         var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");

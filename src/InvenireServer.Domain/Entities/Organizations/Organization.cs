@@ -10,7 +10,7 @@ public class Organization
 
     public const int MAX_NAME_LENGTH = 155;
 
-    public const int MAX_AMOUNT_OF_INVITATIONS = 100;
+    public const int MAX_INVITATIONS = 100;
 
     // Core properties.
 
@@ -34,15 +34,6 @@ public class Organization
 
     // Methods.
 
-    public void AssignAdmin(Admin admin)
-    {
-        if (Admin is not null) throw new BadRequest400Exception("A admin is already assigned to this organization.");
-
-        Admin = admin;
-
-        admin.AssignOrganization(this);
-    }
-
     public void AssignProperty(Property property)
     {
         if (Property is not null) throw new BadRequest400Exception("A property is already assigned to this organization");
@@ -54,10 +45,7 @@ public class Organization
 
     public void AddEmployee(Employee employee)
     {
-        if (Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is already a part of this organization.");
-
         Employees.Add(employee);
-
         employee.AssignOrganization(this);
     }
 
@@ -68,20 +56,12 @@ public class Organization
 
     public void RemoveEmployee(Employee employee)
     {
-        if (!Employees.Any(e => e.Id == employee.Id)) throw new BadRequest400Exception("This employee is not a part of this organization.");
-
-        Employees.Remove(employee);
-
         employee.UnassignOrganization();
     }
 
     public void AddInvitation(OrganizationInvitation invitation)
     {
-        if (Invitations.Any(i => i.Id == invitation.Id)) throw new BadRequest400Exception("This invitation is already a part of this organization.");
-        if (Invitations.Count > MAX_AMOUNT_OF_INVITATIONS) throw new BadRequest400Exception("Maximum number of invitations reached.");
-
         Invitations.Add(invitation);
-
         invitation.AssignOrganization(this);
     }
 
@@ -92,10 +72,6 @@ public class Organization
 
     public void RemoveInvitation(OrganizationInvitation invitation)
     {
-        if (Invitations.All(i => i.Id != invitation.Id)) throw new BadRequest400Exception("This invitation is not part of this organization.");
-
-        Invitations.Remove(invitation);
-
         invitation.UnassignOrganization();
     }
 }

@@ -2,6 +2,7 @@ using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
@@ -10,13 +11,13 @@ namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
 public class CreateOrganizationInvitationCommandHandlerTests
 {
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly CreateOrganizationInvitationCommandHandler _handler;
-    private readonly Mock<IServiceManager> _services;
 
     public CreateOrganizationInvitationCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new CreateOrganizationInvitationCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new CreateOrganizationInvitationCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -30,16 +31,19 @@ public class CreateOrganizationInvitationCommandHandlerTests
         var command = new CreateOrganizationInvitationCommand
         {
             Id = Guid.NewGuid(),
-            Description = new Faker().Lorem.Sentences(3),
+            Jwt = new Jwt([], []),
             EmployeeId = employee.Id,
-            Jwt = new Jwt([], [])
+            Description = new Faker().Lorem.Sentences(3)
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
-        _services.Setup(s => s.Organizations.UpdateAsync(organization));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _repositories.Setup(r => r.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id)).ReturnsAsync(0);
+        _repositories.Setup(r => r.Organizations.Update(It.IsAny<Organization>()));
+        _repositories.Setup(r => r.Organizations.Invitations.Create(It.IsAny<OrganizationInvitation>()));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -59,6 +63,52 @@ public class CreateOrganizationInvitationCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheAdminIsNotFound()
+    {
+        // Prepare.
+        var employee = EmployeeFaker.Fake();
+
+        var command = new CreateOrganizationInvitationCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], []),
+            EmployeeId = employee.Id,
+            Description = new Faker().Lorem.Sentences(3)
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheEmployeeIsNotFound()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
+
+        var command = new CreateOrganizationInvitationCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], []),
+            EmployeeId = EmployeeFaker.Fake().Id,
+            Description = new Faker().Lorem.Sentences(3)
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync((Employee?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
+    }
+
+    [Fact]
     public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare.
@@ -69,25 +119,84 @@ public class CreateOrganizationInvitationCommandHandlerTests
         var command = new CreateOrganizationInvitationCommand
         {
             Id = Guid.NewGuid(),
-            Description = new Faker().Lorem.Sentences(3),
+            Jwt = new Jwt([], []),
             EmployeeId = employee.Id,
-            Jwt = new Jwt([], [])
+            Description = new Faker().Lorem.Sentences(3)
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
-        _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
-        _services.Setup(s => s.Organizations.UpdateAsync(organization));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _repositories.Setup(r => r.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id)).ReturnsAsync(0);
+        _repositories.Setup(r => r.Organizations.Update(It.IsAny<Organization>()));
+        _repositories.Setup(r => r.Organizations.Invitations.Create(It.IsAny<OrganizationInvitation>()));
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before creating invitations.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization");
     }
 
     [Fact]
-    public async Task Handle_ThrowsExceptionWhenTheNumberOfInvitationsExceedsMaximum()
+    public async Task Handle_ThrowsExceptionWhenOrganizationAlreadyHasAInvitationForTheEmployee()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: [invitation]);
+
+        var command = new CreateOrganizationInvitationCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], []),
+            EmployeeId = employee.Id,
+            Description = new Faker().Lorem.Sentences(3)
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id)).ReturnsAsync(invitation);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Conflict409Exception>().WithMessage("The organization already has a invitation for the employee.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheEmployeeIsAlreadyPartOfTheOrganization()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
+
+        var command = new CreateOrganizationInvitationCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], []),
+            EmployeeId = employee.Id,
+            Description = new Faker().Lorem.Sentences(3)
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id)).ReturnsAsync((OrganizationInvitation?)null);
+        _repositories.Setup(r => r.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id)).ReturnsAsync(0);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Conflict409Exception>().WithMessage("The invitation is already part of another organization.");
+
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheNumberOfOrganizationInvitationsExceedsMaximum()
     {
         // Prepare.
         var admin = AdminFaker.Fake();
@@ -96,32 +205,21 @@ public class CreateOrganizationInvitationCommandHandlerTests
 
         var command = new CreateOrganizationInvitationCommand
         {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], []),
             EmployeeId = employee.Id,
-            Jwt = new Jwt([], [])
+            Description = new Faker().Lorem.Sentences(3)
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Organizations.UpdateAsync(It.IsAny<Organization>()));
-        _services.Setup(s => s.Organizations.Invitations.CreateAsync(It.IsAny<OrganizationInvitation>()));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id));
+        _repositories.Setup(r => r.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id)).ReturnsAsync(Organization.MAX_INVITATIONS);
 
         // Act & Assert.
-        for (var i = 0; i <= Organization.MAX_AMOUNT_OF_INVITATIONS; i++)
-        {
-            command = command with
-            {
-                Id = Guid.NewGuid()
-            };
-            await _handler.Handle(command, CancellationToken.None);
-        }
-
-        command = command with
-        {
-            Id = Guid.NewGuid()
-        };
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Maximum number of invitations reached.");
+        await action.Should().ThrowAsync<Conflict409Exception>().WithMessage($"The organization's number of invitations exceeded the limit (max {Organization.MAX_INVITATIONS})");
     }
 }

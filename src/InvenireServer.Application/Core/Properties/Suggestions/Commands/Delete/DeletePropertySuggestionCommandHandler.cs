@@ -15,7 +15,7 @@ public class DeletePropertySuggestionCommandHandler : IRequestHandler<DeleteProp
         _services = services;
     }
 
-    public async Task Handle(DeletePropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(DeletePropertySuggestionCommand request, CancellationToken ct)
     {
         var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
 

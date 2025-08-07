@@ -5,21 +5,24 @@ namespace InvenireServer.Application.Core.Organizations.Commands.Employee.Remove
 
 public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEmployeeOrganizationCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public RemoveEmployeeOrganizationCommandHandler(IServiceManager services)
+    public RemoveEmployeeOrganizationCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(RemoveEmployeeOrganizationCommand request, CancellationToken _)
+    public async Task Handle(RemoveEmployeeOrganizationCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt);
-        var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
+        if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee is not part of the organization");
         organization.RemoveEmployee(employee);
 
-        await _services.Organizations.UpdateAsync(organization);
+        _repositories.Organizations.Update(organization);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

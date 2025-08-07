@@ -12,7 +12,7 @@ public class UpdatePropertyCommandHandler : IRequestHandler<UpdatePropertyComman
         _services = services;
     }
 
-    public async Task Handle(UpdatePropertyCommand request, CancellationToken _)
+    public async Task Handle(UpdatePropertyCommand request, CancellationToken ct)
     {
         var admin = await _services.Admins.GetAsync(request.Jwt!);
         var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");

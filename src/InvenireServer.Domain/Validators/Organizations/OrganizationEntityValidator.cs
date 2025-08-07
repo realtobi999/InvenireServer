@@ -72,8 +72,8 @@ public static class OrganizationEntityValidator
 
         // Invitations.
 
-        if (organization.Invitations.Count > Organization.MAX_AMOUNT_OF_INVITATIONS)
-            errors.Add(new ValidationFailure(nameof(organization.Invitations), $"Total invitations must not exceed {Organization.MAX_AMOUNT_OF_INVITATIONS}."));
+        if (organization.Invitations.Count > Organization.MAX_INVITATIONS)
+            errors.Add(new ValidationFailure(nameof(organization.Invitations), $"Total invitations must not exceed {Organization.MAX_INVITATIONS}."));
 
         if (organization.Invitations.GroupBy(i => (i.Employee!.Id, i.OrganizationId)).Where(g => g.Count() > 1).ToList().Count != 0)
             errors.Add(new ValidationFailure(nameof(organization.Invitations), "There are duplicate invitations for the same employee."));

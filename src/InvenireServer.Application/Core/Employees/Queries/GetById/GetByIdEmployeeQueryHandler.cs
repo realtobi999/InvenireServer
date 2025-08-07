@@ -7,19 +7,20 @@ namespace InvenireServer.Application.Core.Employees.Queries.GetById;
 
 public class GetByIdEmployeeQueryHandler : IRequestHandler<GetByIdEmployeeQuery, EmployeeDto>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public GetByIdEmployeeQueryHandler(IServiceManager services)
+    public GetByIdEmployeeQueryHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task<EmployeeDto> Handle(GetByIdEmployeeQuery request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt);
-        var employee = await _services.Employees.Dto.GetAsync(e => e.Id == request.EmployeeId);
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var employee = await _repositories.Employees.GetAndProjectAsync(e => e.Id == request.EmployeeId, EmployeeDto.FromEmployeeSelector) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
-        if (admin.OrganizationId != employee.OrganizationId) throw new Unauthorized401Exception("The employee is not from the admin's organization.");
+        if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee is not from the admin's organization.");
 
         return employee;
     }

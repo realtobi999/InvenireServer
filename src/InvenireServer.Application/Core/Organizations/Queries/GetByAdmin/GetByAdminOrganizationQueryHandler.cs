@@ -6,13 +6,19 @@ namespace InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 
 public class GetByAdminOrganizationQueryHandler : IRequestHandler<GetByAdminOrganizationQuery, OrganizationDto>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public GetByAdminOrganizationQueryHandler(IServiceManager services)
+    public GetByAdminOrganizationQueryHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task<OrganizationDto> Handle(GetByAdminOrganizationQuery request, CancellationToken ct)
-        => await _services.Organizations.Dto.TryGetForAsync(await _services.Admins.GetAsync(request.Jwt)) ?? throw new BadRequest400Exception("You have not created an organization.");
+    {
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system");
+        var organization = await _repositories.Organizations.GetAndProjectAsync(o => o.Id == admin.OrganizationId, OrganizationDto.FromOrganizationSelector) ?? throw new NotFound404Exception("The admin doesn't own a organization");
+
+        return organization;
+    }
+
 }

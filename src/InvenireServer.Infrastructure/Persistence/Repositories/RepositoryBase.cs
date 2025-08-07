@@ -34,7 +34,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().FirstOrDefaultAsync(predicate);
     }
 
-    public virtual async Task<EntityDto?> GetAndProjectToAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector)
+    public virtual async Task<EntityDto?> GetAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector)
     {
         return await Context.Set<Entity>()
             .AsNoTracking()
@@ -48,7 +48,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().Where(predicate).ToListAsync();
     }
 
-    public virtual async Task<IEnumerable<EntityDto>> IndexAndProjectToAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector, PaginationParameters pagination)
+    public virtual async Task<IEnumerable<EntityDto>> IndexAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector, PaginationParameters pagination)
     {
         return await Context.Set<Entity>()
             .AsNoTracking()

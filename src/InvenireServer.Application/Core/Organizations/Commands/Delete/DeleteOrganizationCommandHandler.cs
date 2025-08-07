@@ -1,23 +1,25 @@
 
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Delete;
 
 public class DeleteOrganizationCommandHandler : IRequestHandler<DeleteOrganizationCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public DeleteOrganizationCommandHandler(IServiceManager services)
+    public DeleteOrganizationCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(DeleteOrganizationCommand request, CancellationToken _)
+    public async Task Handle(DeleteOrganizationCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
-        await _services.Organizations.DeleteAsync(organization);
+        _repositories.Organizations.Delete(organization);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

@@ -5,6 +5,6 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.GetB
 
 public record GetByIdOrganizationInvitationQuery : IRequest<OrganizationInvitationDto>
 {
-    public required Jwt Jwt { get; set; }
-    public required Guid InvitationId { get; set; }
+    public required Jwt Jwt { get; init; }
+    public required Guid InvitationId { get; init; }
 }
