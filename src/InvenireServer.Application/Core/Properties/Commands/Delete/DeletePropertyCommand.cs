@@ -4,5 +4,5 @@ namespace InvenireServer.Application.Core.Properties.Commands.Delete;
 
 public record DeletePropertyCommand : IRequest
 {
-    public required Jwt Jwt { get; set; }
+    public required Jwt Jwt { get; init; }
 }

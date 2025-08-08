@@ -28,7 +28,7 @@ public class Property
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("This property is already a part of another organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("The property is already a part of another organization.");
 
         OrganizationId = organization.Id;
     }

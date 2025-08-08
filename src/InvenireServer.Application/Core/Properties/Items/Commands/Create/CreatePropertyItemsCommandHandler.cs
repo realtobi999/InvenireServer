@@ -7,35 +7,36 @@ namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
 public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyItemsCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreatePropertyItemsCommandHandler(IServiceManager services)
+    public CreatePropertyItemsCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(CreatePropertyItemsCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before creating its items.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         // Preload all employees.
         var employees = new Dictionary<Guid, Employee>();
         foreach (var id in request.Items.Where(i => i.EmployeeId is not null).Select(i => i.EmployeeId!.Value).ToHashSet())
         {
-            var employee = await _services.Employees.GetAsync(e => e.Id == id);
-            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot assign property to a employee from a another organization.");
+            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system (key - {id}).");
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee is not part of the organization (id - {employee.Id}).");
             employees[id] = employee;
         }
 
-        // Initialize all the items.
         var items = new List<PropertyItem>();
         foreach (var dto in request.Items)
         {
             var item = new PropertyItem
             {
                 Id = dto.Id ?? Guid.NewGuid(),
+                PropertyId = property.Id,
+                EmployeeId = dto.EmployeeId,
                 InventoryNumber = dto.InventoryNumber,
                 RegistrationNumber = dto.RegistrationNumber,
                 Name = dto.Name,
@@ -55,14 +56,9 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
                 LastUpdatedAt = null
             };
 
-            if (dto.EmployeeId is not null && employees.TryGetValue(dto.EmployeeId.Value, out var employee)) employee.AddItem(item);
-
-            items.Add(item);
-            property.AddItem(item);
+            _repositories.Properties.Items.Create(item);
         }
 
-        // Save changes to the database.
-        await _services.Properties.Items.CreateAsync(items);
-        if (employees.Values.Count != 0) await _services.Employees.UpdateAsync(employees.Values);
+        await _repositories.SaveOrThrowAsync();
     }
 }

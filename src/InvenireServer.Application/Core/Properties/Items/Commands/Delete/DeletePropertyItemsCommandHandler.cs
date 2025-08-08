@@ -6,32 +6,28 @@ namespace InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 
 public class DeletePropertyItemsCommandHandler : IRequestHandler<DeletePropertyItemsCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public DeletePropertyItemsCommandHandler(IServiceManager services)
+    public DeletePropertyItemsCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(DeletePropertyItemsCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        // Preload all the items.
-        var items = new List<PropertyItem>();
         foreach (var id in request.Ids)
         {
-            var item = await _services.Properties.Items.GetAsync(i => i.Id == id);
-            if (item.PropertyId != property.Id) throw new BadRequest400Exception("Cannot update a item from a property you do not own.");
-            items.Add(item);
+            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system (key - {id}).");
+
+            if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item is not from the property.");
+
+            _repositories.Properties.Items.Delete(item);
         }
 
-        property.RemoveItems(items);
-
-        // Save changes to the database.
-        await _services.Properties.Items.DeleteAsync(items);
-        await _services.Properties.UpdateAsync(property);
+        await _repositories.SaveOrThrowAsync();
     }
 }

@@ -34,10 +34,15 @@ public class Organization
 
     // Methods.
 
+    public void AssignAdmin(Admin admin)
+    {
+        Admin = admin;
+
+        admin.AssignOrganization(this);
+    }
+
     public void AssignProperty(Property property)
     {
-        if (Property is not null) throw new BadRequest400Exception("A property is already assigned to this organization");
-
         Property = property;
 
         property.AssignOrganization(this);

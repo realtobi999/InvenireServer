@@ -3,21 +3,23 @@ using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Properties;
 using InvenireServer.Tests.Fakers.Users;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Commands;
 
 public class CreatePropertyCommandHandlerTests
 {
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly CreatePropertyCommandHandler _handler;
-    private readonly Mock<IServiceManager> _services;
 
     public CreatePropertyCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new CreatePropertyCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new CreatePropertyCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -33,10 +35,12 @@ public class CreatePropertyCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.CreateAsync(It.IsAny<Property>()));
-        _services.Setup(s => s.Organizations.UpdateAsync(organization));
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync((Property?)null);
+        _repositories.Setup(r => r.Properties.Create(It.IsAny<Property>()));
+        _repositories.Setup(r => r.Organizations.Update(organization));
+        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -54,6 +58,24 @@ public class CreatePropertyCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheAdminIsNotFound()
+    {
+        // Prepare
+        var command = new CreatePropertyCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], [])
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
+    }
+
+    [Fact]
     public async Task Handle_ThrowsExceptionWhenTheAdminDoesntOwnAnOrganization()
     {
         // Prepare
@@ -65,12 +87,36 @@ public class CreatePropertyCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
 
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("You have not created an organization. You must first create an organization before adding a property.");
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsExceptionWhenTheOrganizationAlreadyHasAProperty()
+    {
+        // Prepare
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        var command = new CreatePropertyCommand
+        {
+            Id = Guid.NewGuid(),
+            Jwt = new Jwt([], [])
+        };
+
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+
+        await action.Should().ThrowAsync<Conflict409Exception>().WithMessage("The organization already has a property.");
     }
 }

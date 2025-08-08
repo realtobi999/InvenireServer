@@ -26,8 +26,8 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
             Name = request.Name,
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
-            Admin = admin,
         };
+        organization.AssignAdmin(admin);
 
         _repositories.Admins.Update(admin);
         _repositories.Organizations.Create(organization);

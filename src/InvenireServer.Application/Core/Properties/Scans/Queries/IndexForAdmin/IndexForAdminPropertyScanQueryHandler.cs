@@ -17,7 +17,7 @@ public class IndexForAdminPropertyScanQueryHandler : IRequestHandler<IndexForAdm
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
-        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization owned by the admin doesn't have a property created.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         return new IndexForAdminPropertyScanQueryResponse
         {

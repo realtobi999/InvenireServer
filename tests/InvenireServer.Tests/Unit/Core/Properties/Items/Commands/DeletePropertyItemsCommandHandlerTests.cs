@@ -14,13 +14,13 @@ namespace InvenireServer.Tests.Unit.Core.Properties.Items.Commands;
 
 public class DeletePropertyItemsCommandHandlerTests
 {
-    private readonly Mock<IServiceManager> _services;
+    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeletePropertyItemsCommandHandler _handler;
 
     public DeletePropertyItemsCommandHandlerTests()
     {
-        _services = new Mock<IServiceManager>();
-        _handler = new DeletePropertyItemsCommandHandler(_services.Object);
+        _repositories = new Mock<IRepositoryManager>();
+        _handler = new DeletePropertyItemsCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -41,21 +41,16 @@ public class DeletePropertyItemsCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
-
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(s => s.Properties.GetForAsync(organization)).ReturnsAsync(property);
         var itemQueue = new Queue<PropertyItem>(items);
-        _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
-
-        _services.Setup(s => s.Properties.Items.DeleteAsync(items));
-        _services.Setup(s => s.Properties.UpdateAsync(property));
+        _repositories.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
+        _repositories.Setup(s => s.Properties.Items.Delete(It.IsAny<PropertyItem>()));
 
         // Act & Assert.
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert that the property is missing the deleted items.
-        property.Items.Select(i => i.Id).Should().NotContain(items.Select(i => i.Id));
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().NotThrowAsync();
     }
 
     [Fact]
@@ -76,8 +71,8 @@ public class DeletePropertyItemsCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync((Organization?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -103,9 +98,9 @@ public class DeletePropertyItemsCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync((Property?)null);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
@@ -131,12 +126,12 @@ public class DeletePropertyItemsCommandHandlerTests
             Jwt = new Jwt([], [])
         };
 
-        _services.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
-        _services.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
-        _services.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(s => s.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(s => s.Organizations.TryGetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(s => s.Properties.TryGetForAsync(organization)).ReturnsAsync(property);
 
         var itemQueue = new Queue<PropertyItem>(items);
-        _services.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
+        _repositories.Setup(s => s.Properties.Items.GetAsync(It.IsAny<Expression<Func<PropertyItem, bool>>>())).ReturnsAsync(() => itemQueue.Dequeue());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

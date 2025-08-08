@@ -6,5 +6,5 @@ namespace InvenireServer.Application.Core.Properties.Commands.Update;
 public record UpdatePropertyCommand : IRequest
 {
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 }

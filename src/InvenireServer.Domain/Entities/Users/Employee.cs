@@ -70,8 +70,6 @@ public class Employee
 
     public void AddItem(PropertyItem item)
     {
-        if (AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already assigned to this employee.");
-
         AssignedItems.Add(item);
 
         item.AssignEmployee(this);
