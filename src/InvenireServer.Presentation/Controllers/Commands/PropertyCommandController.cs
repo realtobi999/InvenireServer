@@ -119,8 +119,8 @@ public class PropertyCommandController : ControllerBase
 
         await _mediator.Send(new DeletePropertyItemsCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-            Ids = ids
+            Ids = ids,
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
         });
 
         return NoContent();

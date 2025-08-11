@@ -7,34 +7,34 @@ namespace InvenireServer.Application.Core.Properties.Items.Commands.Update;
 
 public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyItemsCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public UpdatePropertyItemsCommandHandler(IServiceManager services)
+    public UpdatePropertyItemsCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(UpdatePropertyItemsCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must create an organization before modifying your property.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property. You must create a property before modifying its items.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         // Preload all the items.
         var items = new Dictionary<PropertyItem, UpdatePropertyItemCommand>();
         foreach (var id in request.Items.Select(i => i.Id))
         {
-            var item = await _services.Properties.Items.GetAsync(i => i.Id == id);
-            if (item.PropertyId != property.Id) throw new BadRequest400Exception("Cannot update a item from a property you do not own.");
+            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system (key - {id}).");
+            if (item.PropertyId != property.Id) throw new BadRequest400Exception($"The item isn't part of the organization (id - {item.Id}).");
             items[item] = request.Items.FirstOrDefault(i => i.Id == item.Id)!;
         }
 
-        // Preload only employees involved in changed assignments
+        // Preload only employees involved in changed assignments.
         var employees = new Dictionary<Guid, Employee>();
         foreach (var id in items.Where(pair => pair.Key.EmployeeId != pair.Value.EmployeeId).SelectMany(pair => new[] { pair.Key.EmployeeId, pair.Value.EmployeeId }).OfType<Guid>().ToHashSet())
         {
-            var employee = await _services.Employees.GetAsync(e => e.Id == id);
-            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception("Cannot assign property item to an employee from a another organization.");
+            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system (key - {id}).");
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee isn't part of the organization (id - {employee.Id}).");
             employees[id] = employee;
         }
 
@@ -52,14 +52,11 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
             item.Location.AdditionalNote = command.Location.AdditionalNote;
             item.Description = command.Description;
             item.DocumentNumber = command.DocumentNumber;
+            item.EmployeeId = command.EmployeeId;
 
-            if (item.EmployeeId == command.EmployeeId) continue;
-
-            if (item.EmployeeId.HasValue && employees.TryGetValue(item.EmployeeId.Value, out var originalEmployee)) originalEmployee.RemoveItem(item);
-            if (command.EmployeeId.HasValue && employees.TryGetValue(command.EmployeeId.Value, out var newEmployee)) newEmployee.AddItem(item);
+            _repositories.Properties.Items.Update(item);
         }
 
-        await _services.Properties.Items.UpdateAsync(items.Keys);
-        if (employees.Values.Count != 0) await _services.Employees.UpdateAsync(employees.Values);
+        await _repositories.SaveOrThrowAsync();
     }
 }

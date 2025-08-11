@@ -19,7 +19,7 @@ public class DeleteOrganizationInvitationCommandHandler : IRequestHandler<Delete
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var invitation = await _repositories.Organizations.Invitations.GetAsync(i => i.Id == request.Id) ?? throw new NotFound404Exception("The invitation was not found in the system.");
 
-        if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception("The invitation is not part of the organization.");
+        if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception("The invitation isn't part of the organization.");
         organization.RemoveInvitation(invitation);
 
         _repositories.Organizations.Update(organization);

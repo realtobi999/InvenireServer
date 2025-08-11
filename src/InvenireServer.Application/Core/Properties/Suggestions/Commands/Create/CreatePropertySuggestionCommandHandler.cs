@@ -8,22 +8,24 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Create
 
 public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreatePropertySuggestionCommand, CreatePropertySuggestionCommandResult>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreatePropertySuggestionCommandHandler(IServiceManager services)
+    public CreatePropertySuggestionCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task<CreatePropertySuggestionCommandResult> Handle(CreatePropertySuggestionCommand request, CancellationToken ct)
     {
-        var employee = await _services.Employees.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
+        var employee = await _repositories.Employees.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         var suggestion = new PropertySuggestion
         {
             Id = request.Id ?? Guid.NewGuid(),
+            PropertyId = property.Id,
+            EmployeeId = employee.Id,
             Name = request.Name,
             Description = request.Description,
             Feedback = null,
@@ -32,11 +34,11 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
             ResolvedAt = null,
-            PropertyId = property.Id,
-            EmployeeId = employee.Id,
         };
 
-        await _services.Properties.Suggestion.CreateAsync(suggestion);
+        _repositories.Properties.Suggestions.Create(suggestion);
+
+        await _repositories.SaveOrThrowAsync();
 
         return new CreatePropertySuggestionCommandResult
         {

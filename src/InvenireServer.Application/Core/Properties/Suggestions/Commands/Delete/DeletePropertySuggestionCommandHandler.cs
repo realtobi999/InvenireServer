@@ -8,16 +8,16 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete
 
 public class DeletePropertySuggestionCommandHandler : IRequestHandler<DeletePropertySuggestionCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public DeletePropertySuggestionCommandHandler(IServiceManager services)
+    public DeletePropertySuggestionCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(DeletePropertySuggestionCommand request, CancellationToken ct)
     {
-        var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
+        var suggestion = await _repositories.Properties.Suggestions.GetAsync(s => s.Id == request.SuggestionId) ?? throw new NotFound404Exception("The suggestion was not found in the system.");
 
         switch (request.Jwt.GetRole())
         {
@@ -29,26 +29,28 @@ public class DeletePropertySuggestionCommandHandler : IRequestHandler<DeleteProp
                 break;
         }
 
-        await _services.Properties.Suggestion.DeleteAsync(suggestion);
+        _repositories.Properties.Suggestions.Delete(suggestion);
+
+        await _repositories.SaveOrThrowAsync();
     }
 
     private async Task ValidateForAdminAsync(Jwt jwt, PropertySuggestion suggestion)
     {
-        var admin = await _services.Admins.GetAsync(jwt);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
+        var admin = await _repositories.Admins.GetAsync(jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't a part your property.");
+        if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't a part the property.");
     }
 
     private async Task ValidateForEmployeeAsync(Jwt jwt, PropertySuggestion suggestion)
     {
-        var employee = await _services.Employees.GetAsync(jwt);
-        var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
+        var employee = await _repositories.Employees.GetAsync(jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        if (suggestion.Status == PropertySuggestionStatus.APPROVED) throw new Unauthorized401Exception();
-        if (suggestion.EmployeeId != employee.Id) throw new Unauthorized401Exception();
+        if (suggestion.Status == PropertySuggestionStatus.APPROVED) throw new Unauthorized401Exception("The suggestion was already approved by the admin.");
+        if (suggestion.EmployeeId != employee.Id) throw new Unauthorized401Exception("The suggestion doesn't belong to the employee.");
         if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't a part of the property.");
     }
 }

@@ -5,8 +5,8 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
-using InvenireServer.Application.Core.Properties.Items.Queries.IndexForAdmin;
-using InvenireServer.Application.Core.Properties.Scans.Queries.IndexForAdmin;
+using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -24,32 +24,29 @@ public class PropertyQueryController : ControllerBase
     [HttpGet("/api/properties")]
     public async Task<IActionResult> GetByAdmin()
     {
-        var propertyDto = await _mediator.Send(new GetByAdminPropertyQuery
+        return Ok(await _mediator.Send(new GetByAdminPropertyQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return Ok(propertyDto);
+        }));
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items")]
     public async Task<IActionResult> IndexItemsForAdmin([FromQuery] int? limit, [FromQuery] int? offset)
     {
-        var itemDtos = await _mediator.Send(new IndexForAdminPropertyItemQuery
+
+        return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             Pagination = new PaginationParameters(limit, offset),
-        });
-
-        return Ok(itemDtos.ToList());
+        }));
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/scans")]
     public async Task<IActionResult> IndexScansForAdmin([FromQuery] int? limit, [FromQuery] int? offset)
     {
-        return Ok((IndexForAdminPropertyScanQueryResponse?)await _mediator.Send(new IndexForAdminPropertyScanQuery
+        return Ok(await _mediator.Send(new IndexByAdminPropertyScanQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             Pagination = new PaginationParameters(limit, offset),

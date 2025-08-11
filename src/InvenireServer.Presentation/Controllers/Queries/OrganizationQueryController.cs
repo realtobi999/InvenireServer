@@ -1,5 +1,4 @@
 using InvenireServer.Application.Core.Employees.Queries.GetById;
-using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetByEmployee;
 using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
 using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 using InvenireServer.Domain.Entities.Common;

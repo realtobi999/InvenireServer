@@ -7,19 +7,18 @@ namespace InvenireServer.Application.Core.Properties.Items.Commands.Scan;
 
 public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public ScanPropertyItemCommandHandler(IServiceManager services)
+    public ScanPropertyItemCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(ScanPropertyItemCommand request, CancellationToken ct)
     {
-        var item = await _services.Properties.Items.GetAsync(i => i.Id == request.ItemId);
+        var item = await _repositories.Properties.Items.GetAsync(i => i.Id == request.ItemId) ?? throw new NotFound404Exception("The item was not found in the system.");
 
-        var scan = (PropertyScan?)null;
-        scan = request.Jwt.GetRole() switch
+        var scan = request.Jwt.GetRole() switch
         {
             Jwt.Roles.EMPLOYEE => await GetScanAsEmployeeAsync(request.Jwt, item),
             Jwt.Roles.ADMIN => await GetScanAsAdminAsync(request.Jwt, item),
@@ -28,18 +27,20 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
 
         scan.ScannedItems.Add(item);
 
-        await _services.Properties.Scans.UpdateAsync(scan);
+        _repositories.Properties.Scans.Update(scan);
+
+        await _repositories.SaveOrThrowAsync();
     }
 
     private async Task<PropertyScan> GetScanAsEmployeeAsync(Jwt jwt, PropertyItem item)
     {
-        var employee = await _services.Employees.GetAsync(jwt);
-        var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
-        var scan = await _services.Properties.Scans.TryGetInProgressForAsync(property) ?? throw new BadRequest400Exception("There are currently no active scans.");
+        var employee = await _repositories.Employees.GetAsync(jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
+        var scan = await _repositories.Properties.Scans.GetInProgressForAsync(property) ?? throw new BadRequest400Exception("The organization doesn't have an active scan.");
 
-        if (item.EmployeeId != employee.Id) throw new Unauthorized401Exception();
-        if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't a part of the property.");
+        if (item.EmployeeId != employee.Id) throw new Unauthorized401Exception("The item doesn't belong to the item.");
+        if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't part of the property.");
 
         return scan;
 
@@ -47,12 +48,12 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
 
     private async Task<PropertyScan> GetScanAsAdminAsync(Jwt jwt, PropertyItem item)
     {
-        var admin = await _services.Admins.GetAsync(jwt);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
-        var scan = await _services.Properties.Scans.TryGetInProgressForAsync(property) ?? throw new BadRequest400Exception("There are currently no active scans.");
+        var admin = await _repositories.Admins.GetAsync(jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
+        var scan = await _repositories.Properties.Scans.GetInProgressForAsync(property) ?? throw new BadRequest400Exception("The organization doesn't have an active scan.");
 
-        if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't a part of your property.");
+        if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item isn't part of the property.");
 
         return scan;
     }

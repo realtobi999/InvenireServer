@@ -72,7 +72,7 @@ public class EmployeeCommandController : ControllerBase
         if (command is null)
             throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
 
-        return Ok((await _mediator.Send(command)).Token);
+        return Ok(await _mediator.Send(command));
     }
 
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]

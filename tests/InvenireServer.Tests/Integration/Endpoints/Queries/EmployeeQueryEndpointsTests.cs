@@ -13,6 +13,7 @@ using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Properties;
 using InvenireServer.Tests.Fakers.Properties.Items;
 using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
@@ -108,13 +109,15 @@ public class EmployeeQueryEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<List<OrganizationInvitationDto>>() ?? throw new NullReferenceException();
+        var content = await response.Content.ReadFromJsonAsync<IndexByEmployeeOrganizationInvitationQueryResponse>() ?? throw new NullReferenceException();
 
-        content.Count.Should().Be(limit);
-        content.Should().AllSatisfy(i =>
+        content.Data.Should().AllSatisfy(i =>
         {
             i.Employee.Should().NotBeNull();
             i.Employee!.Id.Should().Be(employee.Id);
         });
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(invitations.Count);
     }
 }

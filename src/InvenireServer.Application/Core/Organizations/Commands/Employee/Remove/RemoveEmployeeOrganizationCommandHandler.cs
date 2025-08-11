@@ -18,7 +18,7 @@ public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEm
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
-        if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee is not part of the organization");
+        if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee isn't part of the organization");
         organization.RemoveEmployee(employee);
 
         _repositories.Organizations.Update(organization);

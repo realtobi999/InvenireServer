@@ -5,7 +5,6 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
-using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetByEmployee;
 using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
 namespace InvenireServer.Presentation.Controllers.Queries;

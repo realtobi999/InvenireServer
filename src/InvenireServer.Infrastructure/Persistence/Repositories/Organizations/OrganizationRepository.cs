@@ -19,6 +19,11 @@ public class OrganizationRepository : RepositoryBase<Organization>, IOrganizatio
         return await GetAsync(o => o.Id == admin.OrganizationId);
     }
 
+    public async Task<Organization?> GetForAsync(Employee employee)
+    {
+        return await GetAsync(o => o.Id == employee.OrganizationId);
+    }
+
     protected override IQueryable<Organization> GetQueryable()
     {
         return base.GetQueryable().Include(o => o.Admin);

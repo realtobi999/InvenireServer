@@ -22,7 +22,7 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
-        var manager = services.GetRequiredService<IServiceManager>();
+        var manager = services.GetRequiredService<IRepositoryManager>();
         var transaction = services.GetRequiredService<ITransactionScope>();
 
         var admins = await manager.Admins.IndexInactiveAsync();
@@ -30,7 +30,8 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
         {
             await transaction.ExecuteAsync(async () =>
             {
-                await manager.Admins.DeleteAsync(admins);
+                foreach (var admin in admins) manager.Admins.Delete(admin);
+                await manager.SaveOrThrowAsync();
             });
         }
 

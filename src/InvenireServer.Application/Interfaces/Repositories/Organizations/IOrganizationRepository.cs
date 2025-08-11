@@ -7,4 +7,5 @@ public interface IOrganizationRepository : IRepositoryBase<Organization>
 {
     IOrganizationInvitationRepository Invitations { get; }
     Task<Organization?> GetForAsync(Admin admin);
+    Task<Organization?> GetForAsync(Employee employee);
 }

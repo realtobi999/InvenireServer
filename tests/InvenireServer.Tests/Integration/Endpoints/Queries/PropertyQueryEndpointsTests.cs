@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using InvenireServer.Application.Core.Properties.Scans.Queries.IndexForAdmin;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
+using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
@@ -112,9 +113,12 @@ public class PropertyQueryEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<List<PropertyItemDto>>() ?? throw new NullReferenceException();
+        var content = await response.Content.ReadFromJsonAsync<IndexByAdminPropertyItemQueryResponse>() ?? throw new NullReferenceException();
 
-        content.Count.Should().Be(limit);
+        content.Data.Should().NotBeEmpty();
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(items.Count);
     }
 
 
@@ -153,12 +157,7 @@ public class PropertyQueryEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<IndexForAdminPropertyScanQueryResponse>() ?? throw new NullReferenceException();
-
-        content.Data.Count.Should().Be(limit);
-        content.Limit.Should().Be(limit);
-        content.Offset.Should().Be(offset);
-        content.TotalCount.Should().Be(scans.Count);
+        var content = await response.Content.ReadFromJsonAsync<IndexByAdminPropertyScanQueryResponse>() ?? throw new NullReferenceException();
 
         content.Data.Should().AllSatisfy(s =>
         {
@@ -166,5 +165,8 @@ public class PropertyQueryEndpointsTests
             s.ScannedItemsSummary.Should().NotBeNull();
             s.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
         });
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(scans.Count);
     }
 }
