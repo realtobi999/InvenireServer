@@ -1,5 +1,5 @@
 using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Tests.Integration.Fakers.Common;
+using InvenireServer.Tests.Fakers.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -9,7 +9,7 @@ namespace InvenireServer.Tests.Integration.Server;
 
 public static class ServerFactoryExtensions
 {
-    private static void RemoveService<TService>(this IServiceCollection services)
+    public static void RemoveService<TService>(this IServiceCollection services)
     {
         var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(TService));
         if (descriptor != null) services.Remove(descriptor);

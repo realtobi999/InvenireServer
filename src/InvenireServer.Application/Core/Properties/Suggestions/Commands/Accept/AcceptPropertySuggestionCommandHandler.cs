@@ -11,22 +11,22 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept
 public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptPropertySuggestionCommand>
 {
     private readonly IMediator _mediator;
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public AcceptPropertySuggestionCommandHandler(IMediator mediator, IServiceManager services)
+    public AcceptPropertySuggestionCommandHandler(IMediator mediator, IRepositoryManager repositories)
     {
         _mediator = mediator;
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(AcceptPropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(AcceptPropertySuggestionCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var suggestion = await _repositories.Properties.Suggestions.GetAsync(s => s.Id == request.SuggestionId) ?? throw new NotFound404Exception("The suggestion was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't a part of your property.");
+        if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't part of the property.");
         if (suggestion.Status != PropertySuggestionStatus.PENDING) throw new BadRequest400Exception("The suggestion is already closed or approved.");
 
         var payload = JsonSerializer.Deserialize<PropertySuggestionPayload>(suggestion.PayloadString);
@@ -36,7 +36,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
             {
                 Items = payload.CreateCommands,
                 Jwt = request.Jwt,
-            }, _);
+            }, ct);
         }
         if (payload!.UpdateCommands.Count != 0)
         {
@@ -44,7 +44,7 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
             {
                 Items = payload.UpdateCommands,
                 Jwt = request.Jwt,
-            }, _);
+            }, ct);
 
         }
         if (payload!.DeleteCommands.Count != 0)
@@ -53,13 +53,15 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
             {
                 Ids = payload.DeleteCommands,
                 Jwt = request.Jwt,
-            }, _);
+            }, ct);
 
         }
 
         suggestion.Status = PropertySuggestionStatus.APPROVED;
         suggestion.ResolvedAt = DateTimeOffset.UtcNow;
 
-        await _services.Properties.Suggestion.UpdateAsync(suggestion);
+        _repositories.Properties.Suggestions.Update(suggestion);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

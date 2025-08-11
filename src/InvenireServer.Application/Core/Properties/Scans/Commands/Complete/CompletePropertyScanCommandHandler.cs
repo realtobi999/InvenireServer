@@ -6,23 +6,25 @@ namespace InvenireServer.Application.Core.Properties.Scans.Commands.Complete;
 
 public class CompletePropertyScanCommandHandler : IRequestHandler<CompletePropertyScanCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CompletePropertyScanCommandHandler(IServiceManager services)
+    public CompletePropertyScanCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(CompletePropertyScanCommand request, CancellationToken _)
+    public async Task Handle(CompletePropertyScanCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own an organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
-        var scan = await _services.Properties.Scans.TryGetInProgressForAsync(property) ?? throw new BadRequest400Exception("There are currently no active scans.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
+        var scan = await _repositories.Properties.Scans.GetInProgressForAsync(property) ?? throw new BadRequest400Exception("The organization doesn't have an active scan.");
 
         scan.Status = PropertyScanStatus.COMPLETED;
         scan.CompletedAt = DateTimeOffset.UtcNow;
 
-        await _services.Properties.Scans.UpdateAsync(scan);
+        _repositories.Properties.Scans.Update(scan);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

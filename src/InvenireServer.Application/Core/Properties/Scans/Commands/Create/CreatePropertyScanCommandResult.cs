@@ -4,5 +4,5 @@ namespace InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 
 public record CreatePropertyScanCommandResult
 {
-    public required PropertyScan Scan { get; set; }
+    public required PropertyScan Scan { get; init; }
 }

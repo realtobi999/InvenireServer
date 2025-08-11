@@ -8,15 +8,15 @@ namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
 public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCommand, RegisterEmployeeCommandResult>
 {
-    private readonly IPasswordHasher<Employee> _hasher;
     private readonly IJwtManager _jwt;
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
+    private readonly IPasswordHasher<Employee> _hasher;
 
-    public RegisterEmployeeCommandHandler(IServiceManager services, IPasswordHasher<Employee> hasher, IJwtManager jwt)
+    public RegisterEmployeeCommandHandler(IJwtManager jwt, IPasswordHasher<Employee> hasher, IRepositoryManager repositories)
     {
         _jwt = jwt;
         _hasher = hasher;
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task<RegisterEmployeeCommandResult> Handle(RegisterEmployeeCommand request, CancellationToken ct)
@@ -34,17 +34,21 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         };
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        await _services.Employees.CreateAsync(employee);
+        _repositories.Employees.Create(employee);
 
+        await _repositories.SaveOrThrowAsync();
 
         return new RegisterEmployeeCommandResult
         {
             Employee = employee,
-            Token = _jwt.Writer.Write(_jwt.Builder.Build([
-                new Claim("role", Jwt.Roles.EMPLOYEE),
-                new Claim("employee_id", employee.Id.ToString()),
-                new Claim("is_verified", bool.FalseString)
-            ]))
+            Response = new RegisterEmployeeCommandResponse
+            {
+                Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                    new Claim("role", Jwt.Roles.EMPLOYEE),
+                    new Claim("employee_id", employee.Id.ToString()),
+                    new Claim("is_verified", bool.FalseString)
+                ]))
+            }
         };
     }
 }

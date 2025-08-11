@@ -4,6 +4,7 @@ namespace InvenireServer.Application.Interfaces.Repositories.Properties;
 
 public interface IPropertyScanRepository : IRepositoryBase<PropertyScan>
 {
-    Task<IEnumerable<PropertyScan>> IndexInProgressAsync(Property property);
+    Task<PropertyScan?> GetInProgressForAsync(Property property);
+    Task<IEnumerable<PropertyScan>> IndexInProgressForAsync(Property property);
 }
 

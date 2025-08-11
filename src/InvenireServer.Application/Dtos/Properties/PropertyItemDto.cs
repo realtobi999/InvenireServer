@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
+using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
@@ -50,6 +52,36 @@ public record PropertyItemDto
 
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
+
+    public static Expression<Func<PropertyItem, PropertyItemDto>> FromPropertyItemSelector
+    {
+        get
+        {
+            return i => new PropertyItemDto
+            {
+                Id = i.Id,
+                PropertyId = i.PropertyId,
+                EmployeeId = i.EmployeeId,
+                InventoryNumber = i.InventoryNumber,
+                RegistrationNumber = i.RegistrationNumber,
+                Name = i.Name,
+                Price = i.Price,
+                SerialNumber = i.SerialNumber,
+                DateOfPurchase = i.DateOfPurchase,
+                DateOfSale = i.DateOfPurchase,
+                Location = new PropertyItemLocationDto
+                {
+                    Room = i.Location.Room,
+                    Building = i.Location.Building,
+                    AdditionalNote = i.Location.AdditionalNote,
+                },
+                Description = i.Description,
+                DocumentNumber = i.DocumentNumber,
+                CreatedAt = i.CreatedAt,
+                LastUpdatedAt = i.LastUpdatedAt
+            };
+        }
+    }
 }
 
 [JsonResponse]

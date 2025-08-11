@@ -1,10 +1,11 @@
 using MediatR;
-using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -22,11 +23,20 @@ public class EmployeeQueryController : ControllerBase
     [HttpGet("/api/employees/profile")]
     public async Task<IActionResult> GetByJwt()
     {
-        var employeeDto = await _mediator.Send(new GetByJwtEmployeeQuery
+        return Ok(await _mediator.Send(new GetByJwtEmployeeQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
+        }));
+    }
 
-        return Ok(employeeDto);
+    [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
+    [HttpGet("/api/employees/invitations")]
+    public async Task<IActionResult> GetInvitationsByEmployee([FromQuery] int? limit, [FromQuery] int? offset)
+    {
+        return Ok((IndexByEmployeeOrganizationInvitationQueryResponse?)await _mediator.Send(new IndexByEmployeeOrganizationInvitationQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Pagination = new PaginationParameters(limit, offset)
+        }));
     }
 }

@@ -11,5 +11,5 @@ public record UpdateOrganizationCommand : IRequest
     public required string Name { get; init; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 }

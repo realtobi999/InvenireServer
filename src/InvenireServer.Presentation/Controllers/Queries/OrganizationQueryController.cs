@@ -1,5 +1,5 @@
 using InvenireServer.Application.Core.Employees.Queries.GetById;
-using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetByEmployee;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
 using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
@@ -24,36 +24,31 @@ public class OrganizationQueryController : ControllerBase
     [HttpGet("/api/organizations")]
     public async Task<IActionResult> GetByAdmin()
     {
-        var organizationDto = await _mediator.Send(new GetByAdminOrganizationQuery
+        return Ok((Application.Dtos.Organizations.OrganizationDto?)await _mediator.Send(new GetByAdminOrganizationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
+        }));
+    }
 
-        return Ok(organizationDto);
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/organizations/invitations/{invitationId:guid}")]
+    public async Task<IActionResult> GetInvitationById(Guid invitationId)
+    {
+        return Ok((Application.Dtos.Organizations.OrganizationInvitationDto?)await _mediator.Send(new GetByIdOrganizationInvitationQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            InvitationId = invitationId
+        }));
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> GetEmployeeById(Guid employeeId)
     {
-        var employeeDto = await _mediator.Send(new GetByIdEmployeeQuery
+        return Ok((Application.Dtos.Employees.EmployeeDto?)await _mediator.Send(new GetByIdEmployeeQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
             EmployeeId = employeeId,
-        });
-
-        return Ok(employeeDto);
-    }
-
-    [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
-    [HttpGet("/api/organizations/employees/invitations")]
-    public async Task<IActionResult> GetInvitationsByEmployee()
-    {
-        var invitationDtos = await _mediator.Send(new GetByEmployeeOrganizationInvitationQuery
-        {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return Ok(invitationDtos.ToList());
+        }));
     }
 }

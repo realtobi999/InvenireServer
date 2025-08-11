@@ -7,40 +7,33 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
-public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResult>
+public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResponse>
 {
-    private readonly IPasswordHasher<Admin> _hasher;
     private readonly IJwtManager _jwt;
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
+    private readonly IPasswordHasher<Admin> _hasher;
 
-    public LoginAdminCommandHandler(IServiceManager services, IPasswordHasher<Admin> hasher, IJwtManager jwt)
+    public LoginAdminCommandHandler(IJwtManager jwt, IPasswordHasher<Admin> hasher, IRepositoryManager repositories)
     {
         _jwt = jwt;
         _hasher = hasher;
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken ct)
+    public async Task<LoginAdminCommandResponse> Handle(LoginAdminCommand request, CancellationToken ct)
     {
-        // Verify the  email  belongs  to  a  verified  admin  and  confirm  the
-        // password; return unauthorized if any check fails.
-        var admin = (Admin?)null;
-        try
-        {
-            admin = await _services.Admins.GetAsync(e => e.EmailAddress == request.EmailAddress);
-        }
-        catch (NotFound404Exception)
-        {
-            throw new Unauthorized401Exception("Invalid credentials.");
-        }
+        var admin = await _repositories.Admins.GetAsync(a => a.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials.");
+
         if (!admin.IsVerified) throw new Unauthorized401Exception("Verification is required to proceed with login.");
         if (_hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
         admin.LastLoginAt = DateTimeOffset.UtcNow;
 
-        await _services.Admins.UpdateAsync(admin);
+        _repositories.Admins.Update(admin);
 
-        return new LoginAdminCommandResult
+        await _repositories.SaveOrThrowAsync();
+
+        return new LoginAdminCommandResponse
         {
             Token = _jwt.Writer.Write(_jwt.Builder.Build([
                 new Claim("role", Jwt.Roles.ADMIN),

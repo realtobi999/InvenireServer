@@ -65,7 +65,7 @@ public class PropertyItem
 
     public void AssignEmployee(Employee employee)
     {
-        if (EmployeeId is not null) throw new BadRequest400Exception("This item is already assigned to a another employee.");
+        if (EmployeeId is not null) throw new BadRequest400Exception("The item is already assigned to another employee.");
 
         EmployeeId = employee.Id;
     }

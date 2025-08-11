@@ -1,8 +1,9 @@
-using System.Linq.Expressions;
-using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Application.Interfaces.Repositories.Users;
 using InvenireServer.Domain.Entities.Users;
-using Microsoft.EntityFrameworkCore;
+using InvenireServer.Application.Interfaces.Repositories.Users;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Exceptions.Http;
+using System.Linq.Expressions;
+using System.Data.Common;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -10,33 +11,31 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 {
     public AdminRepository(InvenireServerContext context) : base(context)
     {
-        Dto = new AdminDtoRepository(context);
     }
 
-    public IAdminDtoRepository Dto { get; }
+    public async Task<Admin?> GetAsync(Jwt jwt)
+    {
+        var claim = jwt.Payload.FirstOrDefault(c => c.Type == "admin_id" && !string.IsNullOrWhiteSpace(c.Value));
+        if (claim is null) throw new BadRequest400Exception("Missing or invalid 'admin_id' claim.");
+
+        if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
+
+        return await GetAsync(e => e.Id == id);
+    }
+
+    public async Task<EntityDto?> GetAndProjectAsync<EntityDto>(Jwt jwt, Expression<Func<Admin, EntityDto>> selector)
+    {
+        var claim = jwt.Payload.FirstOrDefault(c => c.Type == "admin_id" && !string.IsNullOrWhiteSpace(c.Value));
+        if (claim is null) throw new BadRequest400Exception("Missing or invalid 'admin_id' claim.");
+
+        if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
+
+        return await GetAndProjectAsync(e => e.Id == id, selector);
+    }
 
     public async Task<IEnumerable<Admin>> IndexInactiveAsync()
     {
         var threshold = DateTimeOffset.UtcNow.Add(-Admin.INACTIVE_THRESHOLD);
         return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= threshold);
-    }
-}
-
-public class AdminDtoRepository : IAdminDtoRepository
-{
-    private readonly InvenireServerContext _context;
-
-    public AdminDtoRepository(InvenireServerContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<AdminDto?> GetAsync(Expression<Func<Admin, bool>> predicate)
-    {
-        return await _context.Set<Admin>()
-            .AsNoTracking()
-            .Where(predicate)
-            .Select(AdminDto.FromAdminSelector)
-            .FirstOrDefaultAsync();
     }
 }

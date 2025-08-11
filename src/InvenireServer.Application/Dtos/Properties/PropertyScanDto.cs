@@ -1,15 +1,20 @@
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
+using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+[JsonResponse]
 public class PropertyScanDto
 {
+    // Properties.
+
     [JsonPropertyName("id")]
     public required Guid Id { get; set; }
 
     [JsonPropertyName("property_id")]
-    public required Guid PropertyId { get; set; }
+    public required Guid? PropertyId { get; set; }
 
     [JsonPropertyName("name")]
     public required string Name { get; set; }
@@ -27,8 +32,45 @@ public class PropertyScanDto
     public required DateTimeOffset? CompletedAt { get; set; }
 
     [JsonPropertyName("last_updated_at")]
-    public required DateTimeOffset LastUpdatedAt { get; init; }
+    public required DateTimeOffset? LastUpdatedAt { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("scanned_items")]
-    public required List<PropertyItemDto> ScannedItems { get; set; } = [];
+    public List<PropertyItemDto>? ScannedItems { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("scanned_items_summary")]
+    public PropertyScanDtoScannedItemsSummary? ScannedItemsSummary { get; set; }
+
+    // Selectors.
+
+    public static Expression<Func<PropertyScan, PropertyScanDto>> IndexForAdminSelector
+    {
+        get
+        {
+            return s => new PropertyScanDto
+            {
+                Id = s.Id,
+                PropertyId = s.PropertyId,
+                Name = s.Name,
+                Description = s.Description,
+                Status = s.Status,
+                CreatedAt = s.CreatedAt,
+                CompletedAt = s.CompletedAt,
+                LastUpdatedAt = s.LastUpdatedAt,
+                ScannedItemsSummary = s.ScannedItems.Count == 0 ? null : new PropertyScanDtoScannedItemsSummary
+                {
+                    TotalScannedItems = s.ScannedItems.Count
+                },
+                ScannedItems = null,
+            };
+        }
+    }
+}
+
+[JsonResponse]
+public class PropertyScanDtoScannedItemsSummary
+{
+    [JsonPropertyName("total_scanned_items")]
+    public required int TotalScannedItems { get; set; }
 }

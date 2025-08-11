@@ -6,38 +6,43 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Cre
 
 public class CreateOrganizationInvitationCommandHandler : IRequestHandler<CreateOrganizationInvitationCommand, CreateOrganizationInvitationCommandResult>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreateOrganizationInvitationCommandHandler(IServiceManager services)
+    public CreateOrganizationInvitationCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken _)
+    public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var employee = await _services.Employees.GetAsync(e => e.Id == request.EmployeeId);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before creating invitations.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
-        // Create the invitation and assign the employee to it.
+        if (await _repositories.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id) is not null)
+            throw new Conflict409Exception("The organization already has a invitation for the employee.");
+
         var invitation = new OrganizationInvitation
         {
             Id = request.Id ?? Guid.NewGuid(),
             Description = request.Description,
             CreatedAt = DateTimeOffset.UtcNow,
-            LastUpdatedAt = null
+            LastUpdatedAt = null,
+            Employee = employee,
         };
-        invitation.AssignEmployee(employee);
+
+        if (await _repositories.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id) > Organization.MAX_INVITATIONS)
+            throw new Conflict409Exception($"The organization's number of invitations exceeded the limit (max {Organization.MAX_INVITATIONS}).");
         organization.AddInvitation(invitation);
 
-        // Save the changes.
-        await _services.Organizations.Invitations.CreateAsync(invitation);
-        await _services.Organizations.UpdateAsync(organization);
+        _repositories.Organizations.Update(organization);
+        _repositories.Organizations.Invitations.Create(invitation);
+
+        await _repositories.SaveOrThrowAsync();
 
         return new CreateOrganizationInvitationCommandResult
         {
             Invitation = invitation,
-            Organization = organization
         };
     }
 }

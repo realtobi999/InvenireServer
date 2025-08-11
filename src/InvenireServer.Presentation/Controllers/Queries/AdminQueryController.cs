@@ -22,11 +22,9 @@ public class AdminQueryController : ControllerBase
     [HttpGet("/api/admins/profile")]
     public async Task<IActionResult> GetByJwt()
     {
-        var adminDto = await _mediator.Send(new GetByJwtAdminQuery
+        return Ok((Application.Dtos.Admins.AdminDto?)await _mediator.Send(new GetByJwtAdminQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
-        });
-
-        return Ok(adminDto);
+        }));
     }
 }

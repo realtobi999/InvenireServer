@@ -36,7 +36,7 @@ public class EmployeeCommandController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        return Created($"/api/employee/{result.Employee.Id}", result.Token);
+        return Created($"/api/employee/{result.Employee.Id}", result.Response.Token);
     }
 
     [EnableRateLimiting("SendVerificationPolicy")]
@@ -72,9 +72,7 @@ public class EmployeeCommandController : ControllerBase
         if (command is null)
             throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
 
-        var result = await _mediator.Send(command);
-
-        return Ok(result.Token);
+        return Ok(await _mediator.Send(command));
     }
 
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]

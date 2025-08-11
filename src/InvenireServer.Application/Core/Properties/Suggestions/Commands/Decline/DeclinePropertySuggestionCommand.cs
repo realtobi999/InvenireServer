@@ -8,11 +8,11 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Declin
 public record DeclinePropertySuggestionCommand : IRequest
 {
     [JsonPropertyName("feedback")]
-    public string? Feedback { get; set; }
+    public string? Feedback { get; init; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 
     [JsonIgnore]
-    public Guid? SuggestionId { get; set; }
+    public Guid? SuggestionId { get; init; }
 }

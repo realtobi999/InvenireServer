@@ -19,7 +19,7 @@ public class CreateOrganizationCommandValidator : AbstractValidator<CreateOrgani
             .WithName("name");
     }
 
-    private async Task<bool> BeUniqueName(string name, CancellationToken _)
+    private async Task<bool> BeUniqueName(string name, CancellationToken ct)
     {
         return await _repositories.Organizations.GetAsync(e => e.Name == name) is null;
     }

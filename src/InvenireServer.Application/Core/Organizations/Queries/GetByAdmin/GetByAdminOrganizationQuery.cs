@@ -3,7 +3,7 @@ using InvenireServer.Application.Dtos.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 
-public class GetByAdminOrganizationQuery : IRequest<OrganizationDto>
+public record GetByAdminOrganizationQuery : IRequest<OrganizationDto>
 {
-    public required Jwt Jwt { get; set; }
+    public required Jwt Jwt { get; init; }
 }

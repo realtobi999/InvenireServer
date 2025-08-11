@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
-using InvenireServer.Application.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using InvenireServer.Application.Interfaces.Repositories;
+using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
-public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
+public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Entity : class
 {
     protected readonly InvenireServerContext Context;
 
@@ -13,38 +14,61 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
         Context = context;
     }
 
-    public virtual void Create(T entity)
+    public virtual void Create(Entity entity)
     {
-        Context.Set<T>().Add(entity);
+        Context.Set<Entity>().Add(entity);
     }
 
-    public virtual void Delete(T entity)
+    public virtual void Delete(Entity entity)
     {
-        Context.Set<T>().Remove(entity);
+        Context.Set<Entity>().Remove(entity);
     }
 
-    public virtual void Update(T entity)
+    public virtual void Update(Entity entity)
     {
-        Context.Set<T>().Update(entity);
+        Context.Set<Entity>().Update(entity);
     }
 
-    public virtual async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
+    public virtual async Task<Entity?> GetAsync(Expression<Func<Entity, bool>> predicate)
     {
         return await GetQueryable().FirstOrDefaultAsync(predicate);
     }
 
-    public virtual async Task<IEnumerable<T>> IndexAsync()
+    public virtual async Task<EntityDto?> GetAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector)
     {
-        return await GetQueryable().ToListAsync();
+        return await Context.Set<Entity>()
+            .AsNoTracking()
+            .Where(predicate)
+            .Select(selector)
+            .FirstOrDefaultAsync();
     }
 
-    public virtual async Task<IEnumerable<T>> IndexAsync(Expression<Func<T, bool>> predicate)
+    public virtual async Task<IEnumerable<Entity>> IndexAsync(Expression<Func<Entity, bool>> predicate)
     {
         return await GetQueryable().Where(predicate).ToListAsync();
     }
 
-    protected virtual IQueryable<T> GetQueryable()
+    public virtual async Task<IEnumerable<EntityDto>> IndexAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector, PaginationParameters pagination)
     {
-        return Context.Set<T>();
+        return await Context.Set<Entity>()
+            .AsNoTracking()
+            .Where(predicate)
+            .Skip(pagination.Offset)
+            .Take(pagination.Limit)
+            .Select(selector)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)
+    {
+        return await Context.Set<Entity>()
+            .AsNoTracking()
+            .Where(predicate)
+            .CountAsync();
+    }
+
+    protected virtual IQueryable<Entity> GetQueryable()
+    {
+        return Context.Set<Entity>();
     }
 }

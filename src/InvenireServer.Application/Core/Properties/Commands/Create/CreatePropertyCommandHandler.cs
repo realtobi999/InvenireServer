@@ -4,22 +4,23 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
-public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyCommand, CreatePropertyCommandResponse>
+public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyCommand, CreatePropertyCommandResult>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreatePropertyCommandHandler(IServiceManager services)
+    public CreatePropertyCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task<CreatePropertyCommandResponse> Handle(CreatePropertyCommand request, CancellationToken _)
+    public async Task<CreatePropertyCommandResult> Handle(CreatePropertyCommand request, CancellationToken ct)
     {
-        // Get the admin and his organization.
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before adding a property.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
-        // Create the property and assign it to the organization.
+        if (await _repositories.Properties.GetForAsync(organization) is not null)
+            throw new Conflict409Exception("The organization already has a property.");
+
         var property = new Property
         {
             Id = request.Id ?? Guid.NewGuid(),
@@ -28,11 +29,12 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         };
         organization.AssignProperty(property);
 
-        // Save the changes.
-        await _services.Properties.CreateAsync(property);
-        await _services.Organizations.UpdateAsync(organization);
+        _repositories.Properties.Create(property);
+        _repositories.Organizations.Update(organization);
 
-        return new CreatePropertyCommandResponse
+        await _repositories.SaveOrThrowAsync();
+
+        return new CreatePropertyCommandResult
         {
             Property = property
         };

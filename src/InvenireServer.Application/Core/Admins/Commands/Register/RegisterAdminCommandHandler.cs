@@ -1,22 +1,22 @@
 using System.Security.Claims;
-using InvenireServer.Application.Interfaces.Managers;
+using Microsoft.AspNetCore.Identity;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using Microsoft.AspNetCore.Identity;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
 public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand, RegisterAdminCommandResult>
 {
-    private readonly IPasswordHasher<Admin> _hasher;
     private readonly IJwtManager _jwt;
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
+    private readonly IPasswordHasher<Admin> _hasher;
 
-    public RegisterAdminCommandHandler(IServiceManager services, IPasswordHasher<Admin> hasher, IJwtManager jwt)
+    public RegisterAdminCommandHandler(IJwtManager jwt, IPasswordHasher<Admin> hasher, IRepositoryManager repositories)
     {
         _jwt = jwt;
         _hasher = hasher;
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task<RegisterAdminCommandResult> Handle(RegisterAdminCommand request, CancellationToken ct)
@@ -34,16 +34,21 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         };
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        await _services.Admins.CreateAsync(admin);
+        _repositories.Admins.Create(admin);
+
+        await _repositories.SaveOrThrowAsync();
 
         return new RegisterAdminCommandResult
         {
             Admin = admin,
-            Token = _jwt.Writer.Write(_jwt.Builder.Build([
-                new Claim("role", Jwt.Roles.ADMIN),
-                new Claim("admin_id", admin.Id.ToString()),
-                new Claim("is_verified", bool.FalseString)
-            ]))
+            Response = new RegisterAdminCommandResponse
+            {
+                Token = _jwt.Writer.Write(_jwt.Builder.Build([
+                    new Claim("role", Jwt.Roles.ADMIN),
+                    new Claim("admin_id", admin.Id.ToString()),
+                    new Claim("is_verified", bool.FalseString)
+                ]))
+            }
         };
     }
 }

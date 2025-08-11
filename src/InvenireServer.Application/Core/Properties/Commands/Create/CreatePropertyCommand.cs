@@ -5,7 +5,7 @@ using InvenireServer.Domain.Entities.Common;
 namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
 [JsonRequest]
-public record CreatePropertyCommand : IRequest<CreatePropertyCommandResponse>
+public record CreatePropertyCommand : IRequest<CreatePropertyCommandResult>
 {
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }

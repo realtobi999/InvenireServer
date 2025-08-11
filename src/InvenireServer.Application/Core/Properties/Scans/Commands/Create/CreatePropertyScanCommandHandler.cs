@@ -6,34 +6,36 @@ namespace InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 
 public class CreatePropertyScanCommandHandler : IRequestHandler<CreatePropertyScanCommand, CreatePropertyScanCommandResult>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public CreatePropertyScanCommandHandler(IServiceManager services)
+    public CreatePropertyScanCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task<CreatePropertyScanCommandResult> Handle(CreatePropertyScanCommand request, CancellationToken _)
+    public async Task<CreatePropertyScanCommandResult> Handle(CreatePropertyScanCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You do not own a organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("You have not created a property.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        if ((await _services.Properties.Scans.IndexInProgressAsync(property)).Any()) throw new Conflict409Exception("An active property scan is already created.");
+        if ((await _repositories.Properties.Scans.IndexInProgressForAsync(property)).Any()) throw new Conflict409Exception("The organization already has an active scan.");
 
         var scan = new PropertyScan
         {
             Id = request.Id ?? Guid.NewGuid(),
+            PropertyId = property.Id,
             Name = request.Name,
             Description = request.Description,
             Status = PropertyScanStatus.IN_PROGRESS,
             CreatedAt = DateTimeOffset.UtcNow,
             CompletedAt = null,
             LastUpdatedAt = null,
-            PropertyId = property.Id,
         };
 
-        await _services.Properties.Scans.CreateAsync(scan);
+        _repositories.Properties.Scans.Create(scan);
+
+        await _repositories.SaveOrThrowAsync();
 
         return new CreatePropertyScanCommandResult
         {

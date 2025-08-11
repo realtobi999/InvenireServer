@@ -4,7 +4,7 @@ using InvenireServer.Application.Attributes;
 namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
 [JsonRequest]
-public record LoginAdminCommand : IRequest<LoginAdminCommandResult>
+public record LoginAdminCommand : IRequest<LoginAdminCommandResponse>
 {
     [JsonPropertyName("email_address")]
     public required string EmailAddress { get; init; }

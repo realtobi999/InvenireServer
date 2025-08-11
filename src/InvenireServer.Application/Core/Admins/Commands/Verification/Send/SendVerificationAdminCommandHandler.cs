@@ -1,25 +1,26 @@
 using System.Security.Claims;
 using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 
 public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificationAdminCommand>
 {
-    private readonly IEmailManager _email;
     private readonly IJwtManager _jwt;
-    private readonly IServiceManager _services;
+    private readonly IEmailManager _email;
+    private readonly IRepositoryManager _repositories;
 
-    public SendVerificationAdminCommandHandler(IServiceManager services, IEmailManager email, IJwtManager jwt)
+    public SendVerificationAdminCommandHandler(IJwtManager jwt, IEmailManager email, IRepositoryManager repositories)
     {
         _jwt = jwt;
         _email = email;
-        _services = services;
+        _repositories = repositories;
     }
 
     public async Task Handle(SendVerificationAdminCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt);
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
         var jwt = request.Jwt;
         jwt.Payload.Add(new Claim("purpose", "email_verification"));

@@ -14,6 +14,7 @@ public class LoginAdminCommandValidator : AbstractValidator<LoginAdminCommand>
             .WithName("email_address");
         RuleFor(c => c.Password)
             .NotEmpty()
+            .MinimumLength(Admin.MIN_PASSWORD_LENGTH)
             .MaximumLength(Admin.MAX_PASSWORD_LENGTH)
             .WithName("password");
     }

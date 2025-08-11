@@ -8,14 +8,14 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Update
 public record UpdatePropertySuggestionCommand : IRequest
 {
     [JsonPropertyName("description")]
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     [JsonPropertyName("payload")]
-    public required PropertySuggestionPayload? Payload { get; set; }
+    public required PropertySuggestionPayload? Payload { get; init; }
 
     [JsonIgnore]
-    public Jwt? Jwt { get; set; }
+    public Jwt? Jwt { get; init; }
 
     [JsonIgnore]
-    public Guid? SuggestionId { get; set; }
+    public Guid? SuggestionId { get; init; }
 }

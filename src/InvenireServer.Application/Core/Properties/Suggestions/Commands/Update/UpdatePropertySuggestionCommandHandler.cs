@@ -1,4 +1,3 @@
-
 using System.Text.Json;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;
@@ -8,21 +7,21 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Update
 
 public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdatePropertySuggestionCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public UpdatePropertySuggestionCommandHandler(IServiceManager services)
+    public UpdatePropertySuggestionCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(UpdatePropertySuggestionCommand request, CancellationToken _)
+    public async Task Handle(UpdatePropertySuggestionCommand request, CancellationToken ct)
     {
-        var suggestion = await _services.Properties.Suggestion.GetAsync(s => s.Id == request.SuggestionId);
-        var employee = await _services.Employees.GetAsync(request.Jwt!);
-        var organization = await _services.Organizations.TryGetForAsync(employee) ?? throw new BadRequest400Exception("You are not part of an organization.");
-        var property = await _services.Properties.TryGetForAsync(organization) ?? throw new BadRequest400Exception("Organization you are part of doesn't have a property.");
+        var suggestion = await _repositories.Properties.Suggestions.GetAsync(s => s.Id == request.SuggestionId) ?? throw new NotFound404Exception("The suggestion was not found in the system.");
+        var employee = await _repositories.Employees.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
+        var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        if (suggestion.EmployeeId != employee.Id) throw new Unauthorized401Exception();
+        if (suggestion.EmployeeId != employee.Id) throw new Unauthorized401Exception("The suggestion doesn't belong to the employee.");
         if (suggestion.PropertyId != property.Id) throw new BadRequest400Exception("The suggestion isn't a part of the property.");
         if (suggestion.Status == PropertySuggestionStatus.APPROVED) throw new BadRequest400Exception("The suggestion is approved and cannot be updated.");
 
@@ -36,6 +35,8 @@ public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdateProp
             suggestion.ResolvedAt = null;
         }
 
-        await _services.Properties.Suggestion.UpdateAsync(suggestion);
+        _repositories.Properties.Suggestions.Update(suggestion);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

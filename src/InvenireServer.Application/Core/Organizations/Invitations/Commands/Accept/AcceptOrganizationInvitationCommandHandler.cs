@@ -5,25 +5,26 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Acc
 
 public class AcceptOrganizationInvitationCommandHandler : IRequestHandler<AcceptOrganizationInvitationCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public AcceptOrganizationInvitationCommandHandler(IServiceManager services)
+    public AcceptOrganizationInvitationCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(AcceptOrganizationInvitationCommand request, CancellationToken _)
+    public async Task Handle(AcceptOrganizationInvitationCommand request, CancellationToken ct)
     {
-        var employee = await _services.Employees.GetAsync(request.Jwt);
-        var invitation = await _services.Organizations.Invitations.GetAsync(i => i.Id == request.InvitationId);
-        var organization = await _services.Organizations.TryGetAsync(o => o.Id == invitation.OrganizationId) ?? throw new NotFound404Exception("The organization assigned to the invitation was not found.");
+        var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var invitation = await _repositories.Organizations.Invitations.GetAsync(i => i.Id == request.InvitationId) ?? throw new NotFound404Exception("The invitation was not found in the system.");
+        var organization = await _repositories.Organizations.GetAsync(o => o.Id == invitation.OrganizationId) ?? throw new NotFound404Exception("The organization assigned to the invitation was not found in the system.");
 
-        if (invitation.Employee!.Id != employee.Id) throw new Unauthorized401Exception("The invitation is not assigned to you.");
-
+        if (invitation.Employee!.Id != employee.Id) throw new Unauthorized401Exception("The invitation is not assigned to the employee.");
         organization.AddEmployee(employee);
 
-        await _services.Organizations.Invitations.DeleteAsync(invitation);
-        await _services.Employees.UpdateAsync(employee);
-        await _services.Organizations.UpdateAsync(organization);
+        _repositories.Employees.Update(employee);
+        _repositories.Organizations.Update(organization);
+        _repositories.Organizations.Invitations.Delete(invitation);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

@@ -1,16 +1,12 @@
-using System.Linq.Expressions;
-using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Entities.Common;
+using System.Linq.Expressions;
 
 namespace InvenireServer.Application.Interfaces.Repositories.Users;
 
 public interface IEmployeeRepository : IRepositoryBase<Employee>
 {
-    IEmployeeDtoRepository Dto { get; }
+    Task<Employee?> GetAsync(Jwt jwt);
+    Task<EntityDto?> GetAndProjectAsync<EntityDto>(Jwt jwt, Expression<Func<Employee, EntityDto>> selector);
     Task<IEnumerable<Employee>> IndexInactiveAsync();
-}
-
-public interface IEmployeeDtoRepository
-{
-    Task<EmployeeDto?> GetAsync(Expression<Func<Employee, bool>> predicate);
 }

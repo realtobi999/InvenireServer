@@ -6,7 +6,6 @@ namespace InvenireServer.Domain.Entities.Users;
 public class Admin
 {
     // Constants
-
     public const int MAX_NAME_LENGTH = 155;
 
     public const int MAX_EMAIL_ADDRESS_LENGTH = 155;
@@ -43,14 +42,14 @@ public class Admin
 
     public void Verify()
     {
-        if (IsVerified) throw new BadRequest400Exception("The admin's verification status is already confirmed.");
+        if (IsVerified) throw new Conflict409Exception("The admin's verification status is already confirmed.");
 
         IsVerified = true;
     }
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("This admin is already a owner of a another organization");
+        if (OrganizationId is not null) throw new Conflict409Exception("The admin is already a owner of another organization.");
 
         OrganizationId = organization.Id;
     }

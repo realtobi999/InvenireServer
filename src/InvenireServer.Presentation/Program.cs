@@ -31,7 +31,6 @@ public class Program
                 builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
 
                 builder.Services.AddScoped<IJwtManager, JwtManager>();
-                builder.Services.AddScoped<IServiceManager, ServiceManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
                 builder.Services.AddSwaggerGen();
                 builder.Services.AddControllers();

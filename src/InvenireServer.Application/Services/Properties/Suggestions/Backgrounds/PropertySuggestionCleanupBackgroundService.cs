@@ -22,15 +22,16 @@ public class PropertySuggestionCleanupBackgroundService : BackgroundService, IPr
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
-        var manager = services.GetRequiredService<IServiceManager>();
+        var manager = services.GetRequiredService<IRepositoryManager>();
         var transaction = services.GetRequiredService<ITransactionScope>();
 
-        var suggestions = await manager.Properties.Suggestion.IndexClosedExpiredAsync();
+        var suggestions = await manager.Properties.Suggestions.IndexClosedExpiredAsync();
         if (suggestions.Any())
         {
             await transaction.ExecuteAsync(async () =>
             {
-                await manager.Properties.Suggestion.DeleteAsync(suggestions);
+                foreach (var suggestion in suggestions) manager.Properties.Suggestions.Delete(suggestion);
+                await manager.SaveOrThrowAsync();
             });
         }
 

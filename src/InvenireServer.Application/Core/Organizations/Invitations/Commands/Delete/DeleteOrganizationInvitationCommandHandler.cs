@@ -6,22 +6,25 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Del
 
 public class DeleteOrganizationInvitationCommandHandler : IRequestHandler<DeleteOrganizationInvitationCommand>
 {
-    private readonly IServiceManager _services;
+    private readonly IRepositoryManager _repositories;
 
-    public DeleteOrganizationInvitationCommandHandler(IServiceManager services)
+    public DeleteOrganizationInvitationCommandHandler(IRepositoryManager repositories)
     {
-        _services = services;
+        _repositories = repositories;
     }
 
-    public async Task Handle(DeleteOrganizationInvitationCommand request, CancellationToken _)
+    public async Task Handle(DeleteOrganizationInvitationCommand request, CancellationToken ct)
     {
-        var admin = await _services.Admins.GetAsync(request.Jwt);
-        var invitation = await _services.Organizations.Invitations.TryGetAsync(i => i.Id == request.Id) ?? throw new NotFound404Exception("The specified invitation does not exist or may have already been deleted.");
-        var organization = await _services.Organizations.TryGetForAsync(admin) ?? throw new BadRequest400Exception("You have not created an organization. You must first create an organization before deleting any invitations.");
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var invitation = await _repositories.Organizations.Invitations.GetAsync(i => i.Id == request.Id) ?? throw new NotFound404Exception("The invitation was not found in the system.");
 
+        if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception("The invitation isn't part of the organization.");
         organization.RemoveInvitation(invitation);
 
-        await _services.Organizations.Invitations.DeleteAsync(invitation);
-        await _services.Organizations.UpdateAsync(organization);
+        _repositories.Organizations.Update(organization);
+        _repositories.Organizations.Invitations.Delete(invitation);
+
+        await _repositories.SaveOrThrowAsync();
     }
 }

@@ -56,22 +56,20 @@ public class Employee
 
     public void AssignOrganization(Organization organization)
     {
-        if (OrganizationId is not null) throw new BadRequest400Exception("This employee is already part of a another organization");
+        if (OrganizationId is not null) throw new BadRequest400Exception("The employee is already part of another organization");
 
         OrganizationId = organization.Id;
     }
 
     public void UnassignOrganization()
     {
-        if (OrganizationId is null) throw new BadRequest400Exception("This employee is not part of a any organization");
+        if (OrganizationId is null) throw new BadRequest400Exception("The employee is not part of any organization");
 
         OrganizationId = null;
     }
 
     public void AddItem(PropertyItem item)
     {
-        if (AssignedItems.Any(i => i.Id == item.Id)) throw new BadRequest400Exception("This item is already assigned to this employee.");
-
         AssignedItems.Add(item);
 
         item.AssignEmployee(this);

@@ -22,7 +22,7 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
-        var manager = services.GetRequiredService<IServiceManager>();
+        var manager = services.GetRequiredService<IRepositoryManager>();
         var transaction = services.GetRequiredService<ITransactionScope>();
 
         var invitations = await manager.Organizations.Invitations.IndexExpiredAsync();
@@ -30,7 +30,8 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
         {
             await transaction.ExecuteAsync(async () =>
             {
-                await manager.Organizations.Invitations.DeleteAsync(invitations);
+                foreach (var invitation in invitations) manager.Organizations.Invitations.Delete(invitation);
+                await manager.SaveOrThrowAsync();
             });
         }
 

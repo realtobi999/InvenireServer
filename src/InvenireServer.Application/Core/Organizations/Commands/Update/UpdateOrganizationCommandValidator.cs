@@ -19,7 +19,7 @@ public class UpdateOrganizationCommandValidator : AbstractValidator<UpdateOrgani
             .WithName("name");
     }
 
-    private async Task<bool> BeUniqueName(string name, CancellationToken _)
+    private async Task<bool> BeUniqueName(string name, CancellationToken ct)
     {
         return await _repositories.Organizations.GetAsync(e => e.Name == name) is null;
     }

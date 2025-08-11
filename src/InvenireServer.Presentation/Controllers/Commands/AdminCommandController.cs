@@ -19,8 +19,8 @@ namespace InvenireServer.Presentation.Controllers.Commands;
 [ApiController]
 public class AdminCommandController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
     public AdminCommandController(IMediator mediator, IConfiguration configuration)
     {
@@ -36,7 +36,7 @@ public class AdminCommandController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        return Created($"/api/admin/{result.Admin.Id}", result.Token);
+        return Created($"/api/admin/{result.Admin.Id}", result.Response);
     }
 
     [EnableRateLimiting("SendVerificationPolicy")]
@@ -72,9 +72,7 @@ public class AdminCommandController : ControllerBase
         if (command is null)
             throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
 
-        var result = await _mediator.Send(command);
-
-        return Ok(result.Token);
+        return Ok(await _mediator.Send(command));
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]

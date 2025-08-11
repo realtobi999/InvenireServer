@@ -4,13 +4,15 @@ using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
-using InvenireServer.Tests.Integration.Extensions.Organizations;
-using InvenireServer.Tests.Integration.Extensions.Users;
-using InvenireServer.Tests.Integration.Fakers.Common;
-using InvenireServer.Tests.Integration.Fakers.Organizations;
-using InvenireServer.Tests.Integration.Fakers.Users;
+using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Organizations;
+using InvenireServer.Tests.Fakers.Properties;
+using InvenireServer.Tests.Fakers.Properties.Items;
+using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
@@ -32,8 +34,26 @@ public class OrganizationQueryEndpointsTests
     public async Task GetByAdmin_ReturnsOkAndCorrectData()
     {
         // Prepare.
+        var employees = new List<Employee>();
+        for (int _ = 0; _ < 20; _++) employees.Add(EmployeeFaker.Fake());
+
+        var members = employees.GetRange(0, employees.Count / 2);
+        var invitees = employees.GetRange(employees.Count / 2, employees.Count / 2);
+
+        var invitations = new List<OrganizationInvitation>();
+        foreach (var invitee in invitees) invitations.Add(OrganizationInvitationFaker.Fake(employee: invitee));
+
         var admin = AdminFaker.Fake();
-        var organization = OrganizationFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: members, invitations: invitations);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.AddRange(employees);
+        context.Add(organization);
+        context.AddRange(invitations);
+        context.Add(property);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -41,53 +61,52 @@ public class OrganizationQueryEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        // Act & Assert.
+        // Act
         var response = await _client.GetAsync("/api/organizations");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Assert that the response content is correct.
+        // Assert
         var content = await response.Content.ReadFromJsonAsync<OrganizationDto>() ?? throw new NullReferenceException();
 
         content.Id.Should().Be(organization.Id);
         content.Name.Should().Be(organization.Name);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.LastUpdatedAt.Should().BeNull();
+        content.CreatedAt.Should().Be(organization.CreatedAt);
+        content.LastUpdatedAt.Should().Be(organization.LastUpdatedAt);
         content.Admin.Should().NotBeNull();
         content.Admin!.Id.Should().Be(admin.Id);
-        content.Admin!.OrganizationId.Should().Be(organization.Id);
-        content.Admin!.Name.Should().Be(admin.Name);
-        content.Admin!.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.Admin!.LastUpdatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.Property.Should().BeNull();
-        content.Employees.Should().BeEmpty();
-        content.Invitations.Should().BeEmpty();
+        content.Property.Should().NotBeNull();
+        content.Property!.Id.Should().Be(property.Id);
+        content.Employees.Count.Should().Be(members.Count);
+        content.Invitations.Count.Should().Be(invitations.Count);
     }
 
     [Fact]
     public async Task GetEmployeeById_ReturnsOkAndCorrectData()
     {
         // Prepare.
+        var items = new List<PropertyItem>();
+        for (int i = 0; i < 100; i++) items.Add(PropertyItemFaker.Fake());
+
+        var suggestions = new List<PropertySuggestion>();
+        for (int i = 0; i < 10; i++) suggestions.Add(PropertySuggestionFaker.Fake());
+
         var admin = AdminFaker.Fake();
-        var employee = EmployeeFaker.Fake();
-        var organization = OrganizationFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: items, suggestions: suggestions);
+        var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(employee);
+        context.Add(organization);
+        context.AddRange(items);
+        context.AddRange(suggestions);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
             new Claim("admin_id", admin.Id.ToString()),
             new Claim("is_verified", bool.TrueString)
         ]))}");
-
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        organization.AddEmployee(employee, _app.GetDatabaseContext());
 
         // Act & Assert.
         var response = await _client.GetAsync($"/api/organizations/employees/{employee.Id}");
@@ -97,24 +116,30 @@ public class OrganizationQueryEndpointsTests
         var content = await response.Content.ReadFromJsonAsync<EmployeeDto>() ?? throw new NullReferenceException();
 
         content.Id.Should().Be(employee.Id);
-        content.OrganizationId.Should().Be(organization.Id);
+        content.OrganizationId.Should().Be(employee.OrganizationId);
         content.Name.Should().Be(employee.Name);
         content.EmailAddress.Should().Be(employee.EmailAddress);
-        content.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        content.LastUpdatedAt.Should().BeNull();
-        content.AssignedItems.Should().BeEmpty();
-        content.Suggestions.Should().BeEmpty();
+        content.CreatedAt.Should().Be(employee.CreatedAt);
+        content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
+        content.AssignedItems.Count.Should().Be(items.Count);
+        content.Suggestions.Count.Should().Be(suggestions.Count);
     }
 
     [Fact]
-    public async Task GetInvitationsByEmployee_ReturnsOkAndCorrectData()
+    public async Task GetInvitationById_ReturnsOkAndCorrectData()
     {
+        // Prepare.
         var admin = AdminFaker.Fake();
         var employee = EmployeeFaker.Fake();
-        var organization = OrganizationFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee: employee);
+        var organization = OrganizationFaker.Fake(admin: admin, invitations: [invitation]);
 
-        var invitations = new List<OrganizationInvitation>();
-        for (int i = 0; i < 5; i++) invitations.Add(OrganizationInvitationFaker.Fake(employee: employee));
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(employee);
+        context.Add(organization);
+        context.Add(invitation);
+        context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
             new Claim("role", Jwt.Roles.ADMIN),
@@ -122,46 +147,19 @@ public class OrganizationQueryEndpointsTests
             new Claim("is_verified", bool.TrueString)
         ]))}");
 
-        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-        admin.SetAsVerified(_app.GetDatabaseContext());
-        employee.SetAsVerified(_app.GetDatabaseContext());
-
-        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        foreach (var invitation in invitations)
-            (await _client.PostAsJsonAsync("/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
-
-        _client.DefaultRequestHeaders.Remove("Authorization");
-        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
-            new Claim("role", Jwt.Roles.EMPLOYEE),
-            new Claim("employee_id", employee.Id.ToString()),
-            new Claim("is_verified", bool.TrueString)
-        ]))}");
-
         // Act & Assert.
-        var response = await _client.GetAsync($"/api/organizations/employees/invitations");
+        var response = await _client.GetAsync($"/api/organizations/invitations/{invitation.Id}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Assert that the response content is correct.
-        var content = await response.Content.ReadFromJsonAsync<List<OrganizationInvitationDto>>() ?? throw new NullReferenceException();
+        var content = await response.Content.ReadFromJsonAsync<OrganizationInvitationDto>() ?? throw new NullReferenceException();
 
-        foreach (var invitation in content)
-        {
-            invitations.Select(i => i.Id).Should().Contain(invitation.Id);
-            invitation.OrganizationId.Should().Be(organization.Id);
-            invitations.Select(i => i.Description).Should().Contain(invitation.Description);
-            invitation.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-            invitation.LastUpdatedAt.Should().BeNull();
-            invitation.Employee.Should().NotBeNull();
-            invitation.Employee!.Id.Should().Be(employee.Id);
-            invitation.Employee!.OrganizationId.Should().BeNull();
-            invitation.Employee!.Name.Should().Be(employee.Name);
-            invitation.Employee!.EmailAddress.Should().Be(employee.EmailAddress);
-            invitation.Employee!.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-            invitation.Employee!.LastUpdatedAt.Should().BeNull();
-            invitation.Employee!.AssignedItems.Should().BeEmpty();
-            invitation.Employee!.Suggestions.Should().BeEmpty();
-        }
+        content.Id.Should().Be(invitation.Id);
+        content.OrganizationId.Should().Be(invitation.OrganizationId);
+        content.Description.Should().Be(invitation.Description);
+        content.CreatedAt.Should().Be(invitation.CreatedAt);
+        content.LastUpdatedAt.Should().Be(invitation.LastUpdatedAt);
+        content.Employee.Should().NotBeNull();
+        content.Employee!.Id.Should().Be(employee.Id);
     }
 }
