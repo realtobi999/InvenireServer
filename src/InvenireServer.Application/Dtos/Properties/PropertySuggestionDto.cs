@@ -1,12 +1,16 @@
+using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
 [JsonResponse]
-public class PropertySuggestionDto
+public record PropertySuggestionDto
 {
+    // Properties.
+
     [JsonPropertyName("id")]
     public required Guid Id { get; set; }
 
@@ -25,8 +29,13 @@ public class PropertySuggestionDto
     [JsonPropertyName("feedback")]
     public required string? Feedback { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("payload")]
+    public PropertySuggestionPayload? Payload { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("payload_string")]
-    public required string PayloadString { get; set; }
+    public string? PayloadString { get; set; }
 
     [JsonPropertyName("status")]
     public required PropertySuggestionStatus Status { get; set; }
@@ -39,11 +48,29 @@ public class PropertySuggestionDto
 
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
+
+    // Selectors.
+
+    public static Expression<Func<PropertySuggestion, PropertySuggestionDto>> IndexByAdminSelector
+    {
+        get
+        {
+            return s => new PropertySuggestionDto
+            {
+                Id = s.Id,
+                EmployeeId = s.EmployeeId,
+                PropertyId = s.PropertyId,
+                Name = s.Name,
+                Description = s.Description,
+                Feedback = s.Feedback,
+                Payload = null,
+                PayloadString = s.PayloadString,
+                Status = s.Status,
+                CreatedAt = s.CreatedAt,
+                ResolvedAt = s.ResolvedAt,
+                LastUpdatedAt = s.LastUpdatedAt,
+            };
+        }
+    }
 }
 
-[JsonResponse]
-public class PropertyDtoSuggestionsSummary
-{
-    [JsonPropertyName("total_suggestions")]
-    public required int TotalSuggestions { get; set; }
-}

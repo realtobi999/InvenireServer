@@ -1,7 +1,10 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
+using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
@@ -83,7 +86,7 @@ public class PropertyQueryEndpointsTests
     }
 
     [Fact]
-    public async Task IndexItemsForAdmin_ReturnsOkAndCorrectData()
+    public async Task IndexItemsByAdmin_ReturnsOkAndCorrectData()
     {
         // Prepare.
         var items = new List<PropertyItem>();
@@ -123,7 +126,7 @@ public class PropertyQueryEndpointsTests
 
 
     [Fact]
-    public async Task IndexScansForAdmin_ReturnsOkAndCorrectData()
+    public async Task IndexScansByAdmin_ReturnsOkAndCorrectData()
     {
         // Prepare.
         var items = new List<PropertyItem>();
@@ -168,5 +171,60 @@ public class PropertyQueryEndpointsTests
         content.Limit.Should().Be(limit);
         content.Offset.Should().Be(offset);
         content.TotalCount.Should().Be(scans.Count);
+    }
+
+    [Fact]
+    public async Task IndexSuggestionsByAdmin_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
+
+        var suggestions = new List<PropertySuggestion>();
+        for (var _ = 0; _ < 20; _++)
+        {
+            var suggestion = PropertySuggestionFaker.Fake();
+            suggestion.PayloadString = JsonSerializer.Serialize(new PropertySuggestionPayload
+            {
+                DeleteCommands = [],
+                CreateCommands = [],
+                UpdateCommands = []
+            });
+            suggestions.Add(suggestion);
+        }
+
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake(suggestions: suggestions);
+        var property = PropertyFaker.Fake(suggestions: suggestions, items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(employee);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.AddRange(suggestions);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+           new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var limit = 10;
+        var offset = 0;
+        var response = await _client.GetAsync($"/api/properties/suggestions?limit={limit}&offset={offset}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert that the response content is correct.
+        var content = await response.Content.ReadFromJsonAsync<IndexByAdminPropertySuggestionQueryResponse>() ?? throw new NullReferenceException();
+
+        content.Data.Should().NotBeEmpty();
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(suggestions.Count);
     }
 }

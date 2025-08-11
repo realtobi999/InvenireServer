@@ -74,7 +74,6 @@ public record EmployeeDto
                     Name = s.Name,
                     Description = s.Description,
                     Feedback = s.Feedback,
-                    PayloadString = s.PayloadString,
                     Status = s.Status,
                     CreatedAt = s.CreatedAt,
                     ResolvedAt = s.ResolvedAt,

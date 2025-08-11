@@ -21,7 +21,7 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
 
         return new IndexByAdminPropertyScanQueryResponse
         {
-            Data = [.. await _repositories.Properties.Scans.IndexAndProjectAsync(s => s.PropertyId == property.Id, PropertyScanDto.IndexForAdminSelector, request.Pagination)],
+            Data = [.. await _repositories.Properties.Scans.IndexAndProjectAsync(s => s.PropertyId == property.Id, PropertyScanDto.IndexByAdminSelector, request.Pagination)],
             Limit = request.Pagination.Limit,
             Offset = request.Pagination.Offset,
             TotalCount = await _repositories.Properties.Scans.CountAsync(s => s.PropertyId == property.Id)

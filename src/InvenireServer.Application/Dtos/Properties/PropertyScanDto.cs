@@ -44,7 +44,7 @@ public class PropertyScanDto
 
     // Selectors.
 
-    public static Expression<Func<PropertyScan, PropertyScanDto>> IndexForAdminSelector
+    public static Expression<Func<PropertyScan, PropertyScanDto>> IndexByAdminSelector
     {
         get
         {

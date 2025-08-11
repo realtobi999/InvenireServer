@@ -76,3 +76,10 @@ public record PropertyDtoScansSummary
     [JsonPropertyName("total_scans")]
     public required int TotalScans { get; set; }
 }
+
+[JsonResponse]
+public class PropertyDtoSuggestionsSummary
+{
+    [JsonPropertyName("total_suggestions")]
+    public required int TotalSuggestions { get; set; }
+}

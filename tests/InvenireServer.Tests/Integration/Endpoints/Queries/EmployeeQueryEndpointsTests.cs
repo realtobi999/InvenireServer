@@ -6,7 +6,6 @@ using InvenireServer.Tests.Integration.Server;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
