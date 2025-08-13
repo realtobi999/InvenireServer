@@ -11,7 +11,8 @@ public static class EmployeeTestExtensions
         var dto = new RegisterEmployeeCommand
         {
             Id = employee.Id,
-            Name = employee.Name,
+            FirstName = employee.FirstName,
+            LastName = employee.LastName,
             EmailAddress = employee.EmailAddress,
             Password = employee.Password,
             PasswordConfirm = employee.Password

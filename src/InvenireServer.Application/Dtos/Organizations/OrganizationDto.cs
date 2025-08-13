@@ -47,7 +47,9 @@ public class OrganizationDto
                 {
                     Id = o.Admin.Id,
                     OrganizationId = o.Admin.OrganizationId,
-                    Name = o.Admin.Name,
+                    FirstName = o.Admin.FirstName,
+                    LastName = o.Admin.LastName,
+                    FullName = $"{o.Admin.FirstName} {o.Admin.LastName}",
                     EmailAddress = o.Admin.EmailAddress,
                     CreatedAt = o.Admin.CreatedAt,
                     LastUpdatedAt = o.Admin.LastUpdatedAt
@@ -66,7 +68,9 @@ public class OrganizationDto
                 {
                     Id = e.Id,
                     OrganizationId = e.OrganizationId,
-                    Name = e.Name,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    FullName = $"{e.FirstName} {e.LastName}",
                     EmailAddress = e.EmailAddress,
                     CreatedAt = e.CreatedAt,
                     LastUpdatedAt = e.LastUpdatedAt,

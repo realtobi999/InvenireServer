@@ -37,7 +37,7 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
         var dto = new AdminOrganizationCreationEmailDto
         {
             AdminAddress = admin.EmailAddress,
-            AdminName = admin.Name,
+            AdminName = admin.FirstName,
             OrganizationName = organization.Name,
             DashboardLink = $"{request.FrontendBaseUrl}/dashboard"
         };

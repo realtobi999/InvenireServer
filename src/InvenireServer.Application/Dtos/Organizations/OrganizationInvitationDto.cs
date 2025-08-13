@@ -29,21 +29,23 @@ public class OrganizationInvitationDto
     {
         get
         {
-            return oi => new OrganizationInvitationDto
+            return i => new OrganizationInvitationDto
             {
-                Id = oi.Id,
-                OrganizationId = oi.OrganizationId,
-                Description = oi.Description,
-                CreatedAt = oi.CreatedAt,
-                LastUpdatedAt = oi.LastUpdatedAt,
-                Employee = oi.Employee == null ? null : new EmployeeDto
+                Id = i.Id,
+                OrganizationId = i.OrganizationId,
+                Description = i.Description,
+                CreatedAt = i.CreatedAt,
+                LastUpdatedAt = i.LastUpdatedAt,
+                Employee = i.Employee == null ? null : new EmployeeDto
                 {
-                    Id = oi.Employee.Id,
-                    OrganizationId = oi.Employee.OrganizationId,
-                    Name = oi.Employee.Name,
-                    EmailAddress = oi.Employee.EmailAddress,
-                    CreatedAt = oi.Employee.CreatedAt,
-                    LastUpdatedAt = oi.Employee.LastUpdatedAt,
+                    Id = i.Employee.Id,
+                    OrganizationId = i.Employee.OrganizationId,
+                    FirstName = i.Employee.FirstName,
+                    LastName = i.Employee.LastName,
+                    FullName = $"{i.Employee.FirstName} {i.Employee.LastName}",
+                    EmailAddress = i.Employee.EmailAddress,
+                    CreatedAt = i.Employee.CreatedAt,
+                    LastUpdatedAt = i.Employee.LastUpdatedAt,
                     AssignedItems = new(),
                     Suggestions = new()
                 }

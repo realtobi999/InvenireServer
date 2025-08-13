@@ -24,7 +24,8 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         var employee = new Employee
         {
             Id = request.Id ?? Guid.NewGuid(),
-            Name = request.Name,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             EmailAddress = request.EmailAddress,
             Password = request.Password,
             IsVerified = false,

@@ -12,10 +12,18 @@ public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminComm
     {
         _repositories = repositories;
 
-        RuleFor(c => c.Name)
+        RuleFor(c => c.FirstName)
             .NotEmpty()
+            .MinimumLength(Admin.MIN_NAME_LENGTH)
             .MaximumLength(Admin.MAX_NAME_LENGTH)
-            .WithName("name");
+            .Matches(@"^\p{L}+$")
+            .WithName("first_name");
+        RuleFor(c => c.LastName)
+            .NotEmpty()
+            .MinimumLength(Admin.MIN_NAME_LENGTH)
+            .MaximumLength(Admin.MAX_NAME_LENGTH)
+            .Matches(@"^\p{L}+$")
+            .WithName("last_name");
         RuleFor(c => c.EmailAddress)
             .NotEmpty()
             .EmailAddress()

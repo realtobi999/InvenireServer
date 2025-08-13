@@ -120,7 +120,8 @@ public class EmployeeCommandEndpointsTests
         // Act & Assert.
         var response = await _client.PutAsJsonAsync("/api/employees", new UpdateEmployeeCommand
         {
-            Name = new Faker().Lorem.Sentence(),
+            FirstName = new Faker().Name.FirstName(),
+            LastName = new Faker().Name.LastName(),
         });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }

@@ -28,7 +28,7 @@ public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerifi
         var dto = new EmployeeVerificationEmailDto
         {
             EmployeeAddress = employee.EmailAddress,
-            EmployeeName = employee.Name,
+            EmployeeName = employee.FirstName,
             VerificationLink = $"{request.FrontendBaseUrl}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
         var email = _email.Builders.Employee.BuildVerificationEmail(dto);

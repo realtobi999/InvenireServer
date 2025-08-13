@@ -11,7 +11,8 @@ public static class AdminTestExtensions
         var dto = new RegisterAdminCommand
         {
             Id = admin.Id,
-            Name = admin.Name,
+            FirstName = admin.FirstName,
+            LastName = admin.LastName,
             EmailAddress = admin.EmailAddress,
             Password = admin.Password,
             PasswordConfirm = admin.Password

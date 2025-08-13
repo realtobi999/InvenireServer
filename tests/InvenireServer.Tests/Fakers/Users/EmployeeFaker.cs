@@ -9,7 +9,8 @@ public sealed class EmployeeFaker : Faker<Employee>
     private EmployeeFaker()
     {
         RuleFor(e => e.Id, f => f.Random.Guid());
-        RuleFor(e => e.Name, f => f.Name.FullName());
+        RuleFor(e => e.FirstName, f => f.Name.FirstName());
+        RuleFor(e => e.LastName, f => f.Name.LastName());
         RuleFor(e => e.EmailAddress, f => f.Internet.Email());
         RuleFor(e => e.IsVerified, f => f.Random.Bool());
         RuleFor(e => e.Password, f => f.Internet.SecurePassword());

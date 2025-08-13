@@ -18,8 +18,13 @@ public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
         builder.Property(e => e.OrganizationId)
             .HasColumnName("organization_id");
 
-        builder.Property(e => e.Name)
-            .HasColumnName("name")
+        builder.Property(e => e.FirstName)
+            .HasColumnName("first_name")
+            .HasMaxLength(Employee.MAX_NAME_LENGTH)
+            .IsRequired();
+
+        builder.Property(e => e.LastName)
+            .HasColumnName("last_name")
             .HasMaxLength(Employee.MAX_NAME_LENGTH)
             .IsRequired();
 

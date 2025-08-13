@@ -16,7 +16,8 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
-        employee.Name = request.Name;
+        employee.FirstName = request.FirstName;
+        employee.LastName = request.LastName;
 
         _repositories.Employees.Update(employee);
 

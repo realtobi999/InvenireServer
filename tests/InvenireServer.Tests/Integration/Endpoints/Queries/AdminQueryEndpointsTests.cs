@@ -48,7 +48,8 @@ public class AdminQueryEndpointsTests
 
         content.Id.Should().Be(admin.Id);
         content.OrganizationId.Should().BeNull();
-        content.Name.Should().Be(admin.Name);
+        content.FirstName.Should().Be(admin.FirstName);
+        content.LastName.Should().Be(admin.LastName);
         content.EmailAddress.Should().Be(admin.EmailAddress);
         content.CreatedAt.Should().Be(admin.CreatedAt);
         content.LastUpdatedAt.Should().Be(admin.LastUpdatedAt);

@@ -17,8 +17,13 @@ public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
         builder.Property(a => a.OrganizationId)
             .HasColumnName("organization_id");
 
-        builder.Property(a => a.Name)
-            .HasColumnName("name")
+        builder.Property(a => a.FirstName)
+            .HasColumnName("first_name")
+            .HasMaxLength(Admin.MAX_NAME_LENGTH)
+            .IsRequired();
+
+        builder.Property(a => a.FirstName)
+            .HasColumnName("last_name")
             .HasMaxLength(Admin.MAX_NAME_LENGTH)
             .IsRequired();
 

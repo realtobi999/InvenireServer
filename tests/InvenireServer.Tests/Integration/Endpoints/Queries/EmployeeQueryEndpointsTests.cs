@@ -66,7 +66,8 @@ public class EmployeeQueryEndpointsTests
 
         content.Id.Should().Be(employee.Id);
         content.OrganizationId.Should().Be(employee.OrganizationId);
-        content.Name.Should().Be(employee.Name);
+        content.FirstName.Should().Be(employee.FirstName);
+        content.LastName.Should().Be(employee.LastName);
         content.EmailAddress.Should().Be(employee.EmailAddress);
         content.CreatedAt.Should().Be(employee.CreatedAt);
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);

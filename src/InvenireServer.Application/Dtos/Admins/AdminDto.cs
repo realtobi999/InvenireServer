@@ -14,8 +14,14 @@ public record AdminDto
     [JsonPropertyName("organization_id")]
     public required Guid? OrganizationId { get; init; }
 
-    [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    [JsonPropertyName("first_name")]
+    public required string FirstName { get; init; }
+
+    [JsonPropertyName("last_name")]
+    public required string LastName { get; init; }
+
+    [JsonPropertyName("full_name")]
+    public required string FullName { get; init; }
 
     [JsonPropertyName("email_address")]
     public required string EmailAddress { get; init; }
@@ -34,7 +40,9 @@ public record AdminDto
             {
                 Id = a.Id,
                 OrganizationId = a.OrganizationId,
-                Name = a.Name,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                FullName = $"{a.FirstName} {a.LastName}",
                 EmailAddress = a.EmailAddress,
                 CreatedAt = a.CreatedAt,
                 LastUpdatedAt = a.LastUpdatedAt

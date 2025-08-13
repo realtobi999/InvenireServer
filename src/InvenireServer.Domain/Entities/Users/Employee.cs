@@ -9,7 +9,9 @@ public class Employee
 {
     // Constants.
 
-    public const int MAX_NAME_LENGTH = 155;
+    public const int MIN_NAME_LENGTH = 3;
+
+    public const int MAX_NAME_LENGTH = 15;
 
     public const int MAX_EMAIL_ADDRESS_LENGTH = 155;
 
@@ -23,7 +25,9 @@ public class Employee
 
     public required Guid Id { get; init; }
 
-    public required string Name { get; set; }
+    public required string FirstName { get; set; }
+
+    public required string LastName { get; set; }
 
     public required string Password { get; set; }
 

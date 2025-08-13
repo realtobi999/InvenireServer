@@ -9,8 +9,11 @@ public record RegisterAdminCommand : IRequest<RegisterAdminCommandResult>
     [JsonPropertyName("id")]
     public Guid? Id { get; init; }
 
-    [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    [JsonPropertyName("first_name")]
+    public required string FirstName { get; init; }
+
+    [JsonPropertyName("last_name")]
+    public required string LastName { get; init; }
 
     [JsonPropertyName("email_address")]
     public required string EmailAddress { get; init; }

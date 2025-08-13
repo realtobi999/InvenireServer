@@ -7,8 +7,11 @@ namespace InvenireServer.Application.Core.Employees.Commands.Update;
 [JsonRequest]
 public record UpdateEmployeeCommand : IRequest
 {
-    [JsonPropertyName("name")]
-    public required string Name { get; init; }
+    [JsonPropertyName("first_name")]
+    public required string FirstName { get; init; }
+
+    [JsonPropertyName("last_name")]
+    public required string LastName { get; init; }
 
     [JsonIgnore]
     public Jwt? Jwt { get; init; }

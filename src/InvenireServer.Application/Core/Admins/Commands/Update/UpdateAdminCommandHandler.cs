@@ -16,7 +16,8 @@ public class UpdateAdminCommandHandler : IRequestHandler<UpdateAdminCommand>
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
-        admin.Name = request.Name;
+        admin.FirstName = request.FirstName;
+        admin.LastName = request.LastName;
 
         _repositories.Admins.Update(admin);
 
