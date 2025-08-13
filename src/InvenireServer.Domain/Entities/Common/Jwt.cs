@@ -16,7 +16,7 @@ public sealed class Jwt
 
     public string GetRole()
     {
-        var claim = Payload.FirstOrDefault(c => c.Type == "role") ?? throw new NullReferenceException("No 'role' claim is present in the token.");
+        var claim = Payload.FirstOrDefault(c => c.Type == "role") ?? throw new NullReferenceException("The 'role' claim is present in the token.");
 
         return claim.Value;
     }
@@ -24,6 +24,18 @@ public sealed class Jwt
     public string? GetPurpose()
     {
         return Payload.FirstOrDefault(c => c.Type == "purpose")?.Value;
+    }
+
+    public DateTimeOffset? GetExpirationTime()
+    {
+        var claim = Payload.FirstOrDefault(c => c.Type == "exp") ?? throw new NullReferenceException("The 'exp' claim is present in the token.");
+
+        if (long.TryParse(claim.Value, out var expiration))
+        {
+            return DateTimeOffset.FromUnixTimeSeconds(expiration);
+        }
+
+        throw new FormatException("The 'exp' claim is not a valid Unix timestamp.");
     }
 
     public static class Policies
@@ -39,8 +51,8 @@ public sealed class Jwt
 
     public static class Roles
     {
-        public const string EMPLOYEE = "EMPLOYEE";
-
         public const string ADMIN = "ADMIN";
+
+        public const string EMPLOYEE = "EMPLOYEE";
     }
 }

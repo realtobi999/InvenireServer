@@ -26,7 +26,7 @@ public class OrganizationQueryController : ControllerBase
     {
         return Ok((Application.Dtos.Organizations.OrganizationDto?)await _mediator.Send(new GetByAdminOrganizationQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         }));
     }
 
@@ -36,7 +36,7 @@ public class OrganizationQueryController : ControllerBase
     {
         return Ok((Application.Dtos.Organizations.OrganizationInvitationDto?)await _mediator.Send(new GetByIdOrganizationInvitationQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             InvitationId = invitationId
         }));
     }
@@ -47,7 +47,7 @@ public class OrganizationQueryController : ControllerBase
     {
         return Ok((Application.Dtos.Employees.EmployeeDto?)await _mediator.Send(new GetByIdEmployeeQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             EmployeeId = employeeId,
         }));
     }

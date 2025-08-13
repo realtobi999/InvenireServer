@@ -4,6 +4,7 @@ using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
 using InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
@@ -13,6 +14,7 @@ namespace InvenireServer.Presentation;
 
 public class Program
 {
+
     private static void Main(string[] args)
     {
         try
@@ -23,6 +25,7 @@ public class Program
                 builder.Host.ConfigureConfiguration();
 
                 builder.Services.ConfigureJwt(builder.Configuration);
+                builder.Services.ConfigureCors(builder.Configuration);
                 builder.Services.ConfigureHashing();
                 builder.Services.ConfigureMediatR();
                 builder.Services.ConfigureRareLimiters();
@@ -51,6 +54,7 @@ public class Program
                 }
 
                 app.ConfigureStatusCodePages();
+                app.UseCors(Cors.Policies.FRONTEND_POLICY);
                 app.UseAuthorization();
                 app.UseRateLimiter();
                 app.MapControllers();

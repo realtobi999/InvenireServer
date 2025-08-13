@@ -24,7 +24,7 @@ public class AdminQueryController : ControllerBase
     {
         return Ok((Application.Dtos.Admins.AdminDto?)await _mediator.Send(new GetByJwtAdminQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         }));
     }
 }

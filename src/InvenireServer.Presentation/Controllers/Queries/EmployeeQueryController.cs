@@ -25,7 +25,7 @@ public class EmployeeQueryController : ControllerBase
     {
         return Ok(await _mediator.Send(new GetByJwtEmployeeQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         }));
     }
 
@@ -35,7 +35,7 @@ public class EmployeeQueryController : ControllerBase
     {
         return Ok((IndexByEmployeeOrganizationInvitationQueryResponse?)await _mediator.Send(new IndexByEmployeeOrganizationInvitationQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             Pagination = new PaginationParameters(limit, offset)
         }));
     }

@@ -50,7 +50,6 @@ public class JwtBuilder : IJwtBuilder
         return new Jwt(header, payload);
     }
 
-    /** -------------------------------------------------------------------------- **/
     private static List<Claim> ParseJsonToClaims(string json)
     {
         var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);

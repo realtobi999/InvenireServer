@@ -14,7 +14,7 @@ public class CreateOrganizationCommandValidator : AbstractValidator<CreateOrgani
 
         RuleFor(c => c.Name)
             .NotEmpty()
-            .MustAsync(BeUniqueName).WithMessage("'name' mut be unique among all organizations.")
+            .MustAsync(BeUniqueName).WithMessage("'name' must be unique among all organizations.")
             .MaximumLength(Organization.MAX_NAME_LENGTH)
             .WithName("name");
     }

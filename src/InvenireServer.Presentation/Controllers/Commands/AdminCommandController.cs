@@ -36,7 +36,15 @@ public class AdminCommandController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        return Created($"/api/admin/{result.Admin.Id}", result.Response);
+        Response.Cookies.Append(Cookie.JWT, result.TokenString, new CookieOptions
+        {
+            Secure = true,
+            Expires = result.Token.GetExpirationTime(),
+            SameSite = SameSiteMode.Strict,
+            HttpOnly = true,
+        });
+
+        return Created($"/api/admin/{result.Admin.Id}", null);
     }
 
     [EnableRateLimiting("SendVerificationPolicy")]
@@ -46,7 +54,7 @@ public class AdminCommandController : ControllerBase
     {
         await _mediator.Send(new SendVerificationAdminCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
         });
 
@@ -59,7 +67,7 @@ public class AdminCommandController : ControllerBase
     {
         await _mediator.Send(new ConfirmVerificationAdminCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();
@@ -84,7 +92,7 @@ public class AdminCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         await _mediator.Send(command);
 
@@ -97,7 +105,7 @@ public class AdminCommandController : ControllerBase
     {
         await _mediator.Send(new DeleteAdminCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();

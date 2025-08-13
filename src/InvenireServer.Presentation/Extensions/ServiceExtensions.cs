@@ -20,12 +20,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Presentation.Extensions;
 
 public static class ServiceExtensions
 {
+    public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy(Cors.Policies.FRONTEND_POLICY, policy =>
+            {
+                policy.WithOrigins(configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException())
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
+    }
+
     public static void ConfigureDatabaseContext(this IServiceCollection services, string connectionString)
     {
         services.AddDbContext<InvenireServerContext>(opt =>

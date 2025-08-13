@@ -43,7 +43,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         var result = await _mediator.Send(command);
 
@@ -59,7 +59,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         await _mediator.Send(command);
 
@@ -72,7 +72,7 @@ public class PropertyCommandController : ControllerBase
     {
         await _mediator.Send(new DeletePropertyCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();
@@ -87,7 +87,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         await _mediator.Send(command);
 
@@ -103,7 +103,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         await _mediator.Send(command);
 
@@ -120,7 +120,7 @@ public class PropertyCommandController : ControllerBase
         await _mediator.Send(new DeletePropertyItemsCommand
         {
             Ids = ids,
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();
@@ -132,7 +132,7 @@ public class PropertyCommandController : ControllerBase
     {
         await _mediator.Send(new ScanPropertyItemCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             ItemId = itemId,
         });
 
@@ -148,7 +148,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         };
         var result = await _mediator.Send(command);
 
@@ -164,7 +164,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             SuggestionId = suggestionId
         };
         await _mediator.Send(command);
@@ -178,7 +178,7 @@ public class PropertyCommandController : ControllerBase
     {
         await _mediator.Send(new AcceptPropertySuggestionCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             SuggestionId = suggestionId
         });
 
@@ -194,7 +194,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             SuggestionId = suggestionId
         };
         await _mediator.Send(command);
@@ -208,7 +208,7 @@ public class PropertyCommandController : ControllerBase
     {
         await _mediator.Send(new DeletePropertySuggestionCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             SuggestionId = suggestionId,
         });
 
@@ -224,7 +224,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         };
         var result = await _mediator.Send(command);
 
@@ -240,7 +240,7 @@ public class PropertyCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         };
         await _mediator.Send(command);
 
@@ -253,7 +253,7 @@ public class PropertyCommandController : ControllerBase
     {
         await _mediator.Send(new CompletePropertyScanCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         });
 
         return NoContent();

@@ -38,7 +38,7 @@ public class OrganizationCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
         };
         var result = await _mediator.Send(command);
@@ -55,7 +55,7 @@ public class OrganizationCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         };
         await _mediator.Send(command);
 
@@ -68,7 +68,7 @@ public class OrganizationCommandController : ControllerBase
     {
         await _mediator.Send(new DeleteOrganizationCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
         });
 
         return NoContent();
@@ -83,7 +83,7 @@ public class OrganizationCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         var result = await _mediator.Send(command);
 
@@ -99,7 +99,7 @@ public class OrganizationCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             InvitationId = invitationId
         };
         await _mediator.Send(command);
@@ -114,7 +114,7 @@ public class OrganizationCommandController : ControllerBase
         await _mediator.Send(new DeleteOrganizationInvitationCommand
         {
             Id = invitationId,
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();
@@ -126,7 +126,7 @@ public class OrganizationCommandController : ControllerBase
     {
         await _mediator.Send(new AcceptOrganizationInvitationCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             InvitationId = invitationId
         });
 
@@ -139,7 +139,7 @@ public class OrganizationCommandController : ControllerBase
     {
         await _mediator.Send(new RemoveEmployeeOrganizationCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             EmployeeId = employeeId
         });
 

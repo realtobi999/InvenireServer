@@ -38,17 +38,18 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
 
         await _repositories.SaveOrThrowAsync();
 
+        var token = _jwt.Builder.Build(
+            [
+                new Claim("role", Jwt.Roles.EMPLOYEE),
+                new Claim("employee_id", employee.Id.ToString()),
+                new Claim("is_verified", bool.FalseString)
+            ]
+        );
         return new RegisterEmployeeCommandResult
         {
+            Token = token,
             Employee = employee,
-            Response = new RegisterEmployeeCommandResponse
-            {
-                Token = _jwt.Writer.Write(_jwt.Builder.Build([
-                    new Claim("role", Jwt.Roles.EMPLOYEE),
-                    new Claim("employee_id", employee.Id.ToString()),
-                    new Claim("is_verified", bool.FalseString)
-                ]))
-            }
+            TokenString = _jwt.Writer.Write(token)
         };
     }
 }

@@ -19,7 +19,7 @@ public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmploy
         RuleFor(c => c.EmailAddress)
             .NotEmpty()
             .EmailAddress()
-            .MustAsync(BeUniqueEmail).WithMessage("'email_address' mut be unique among all employees.")
+            .MustAsync(BeUniqueEmail).WithMessage("'email_address' must be unique among all users.")
             .MaximumLength(Employee.MAX_EMAIL_ADDRESS_LENGTH)
             .WithName("email_address");
         RuleFor(c => c.Password)

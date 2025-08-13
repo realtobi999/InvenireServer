@@ -38,17 +38,17 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
 
         await _repositories.SaveOrThrowAsync();
 
+        var token = _jwt.Builder.Build(
+            [
+                new Claim("role", Jwt.Roles.ADMIN),
+                new Claim("admin_id", admin.Id.ToString()),
+                new Claim("is_verified", bool.FalseString)
+            ]);
         return new RegisterAdminCommandResult
         {
             Admin = admin,
-            Response = new RegisterAdminCommandResponse
-            {
-                Token = _jwt.Writer.Write(_jwt.Builder.Build([
-                    new Claim("role", Jwt.Roles.ADMIN),
-                    new Claim("admin_id", admin.Id.ToString()),
-                    new Claim("is_verified", bool.FalseString)
-                ]))
-            }
+            Token = token,
+            TokenString = _jwt.Writer.Write(token)
         };
     }
 }

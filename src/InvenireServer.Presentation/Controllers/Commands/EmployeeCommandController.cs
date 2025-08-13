@@ -36,7 +36,15 @@ public class EmployeeCommandController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        return Created($"/api/employee/{result.Employee.Id}", result.Response.Token);
+        Response.Cookies.Append(Cookie.JWT, result.TokenString, new CookieOptions
+        {
+            Secure = true,
+            Expires = result.Token.GetExpirationTime(),
+            SameSite = SameSiteMode.Strict,
+            HttpOnly = true,
+        });
+
+        return Created($"/api/admin/{result.Employee.Id}", null);
     }
 
     [EnableRateLimiting("SendVerificationPolicy")]
@@ -46,7 +54,7 @@ public class EmployeeCommandController : ControllerBase
     {
         await _mediator.Send(new SendVerificationEmployeeCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken()),
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
         });
 
@@ -59,7 +67,7 @@ public class EmployeeCommandController : ControllerBase
     {
         await _mediator.Send(new ConfirmVerificationEmployeeCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();
@@ -84,7 +92,7 @@ public class EmployeeCommandController : ControllerBase
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
         await _mediator.Send(command);
 
@@ -97,7 +105,7 @@ public class EmployeeCommandController : ControllerBase
     {
         await _mediator.Send(new DeleteEmployeeCommand
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.Headers.ParseBearerToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         });
 
         return NoContent();

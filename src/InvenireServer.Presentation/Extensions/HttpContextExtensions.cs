@@ -1,21 +1,40 @@
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static string ParseBearerToken(this IHeaderDictionary headers)
+    public static string ParseJwtToken(this HttpRequest request)
     {
-        var header = headers.Authorization.ToString();
-        if (header is null) throw new BadRequest400Exception("Authorization header is missing. Expected Format: BEARER <TOKEN>");
+        if (request.Headers.TryParseBearerToken(out var token))
+            return token!;
 
-        const string prefix = "Bearer ";
-        if (!header.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) throw new BadRequest400Exception("Invalid authorization header format. Expected format: BEARER <TOKEN>");
+        if (request.Cookies.TryParseTokenFromCookie(out token))
+            return token!;
 
-        var token = header[prefix.Length..].Trim();
+        throw new BadRequest400Exception("The JWT token is missing in the request.");
+    }
 
-        if (string.IsNullOrEmpty(token)) throw new BadRequest400Exception("Token is missing in the authorization header.");
+    private static bool TryParseTokenFromCookie(this IRequestCookieCollection cookies, out string? token)
+    {
+        token = cookies[Cookie.JWT];
+        return !string.IsNullOrEmpty(token);
+    }
 
-        return token;
+    private static bool TryParseBearerToken(this IHeaderDictionary headers, out string? token)
+    {
+        token = null;
+
+        if (!headers.TryGetValue("Authorization", out var value)) return false;
+
+        var header = value.ToString();
+        if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return false;
+
+        token = header["Bearer ".Length..].Trim();
+
+        if (string.IsNullOrEmpty(token)) return false;
+
+        return true;
     }
 }
