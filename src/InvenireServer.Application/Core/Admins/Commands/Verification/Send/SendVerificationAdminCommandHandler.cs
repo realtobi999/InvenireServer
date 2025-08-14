@@ -22,6 +22,8 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
+        if (admin.IsVerified) throw new BadRequest400Exception("The admin's verification status is already confirmed.");
+
         var jwt = request.Jwt;
         jwt.Payload.Add(new Claim("purpose", "email_verification"));
 

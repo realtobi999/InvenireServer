@@ -1,4 +1,4 @@
-using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Constants;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
@@ -18,7 +18,7 @@ public static class HttpContextExtensions
 
     private static bool TryParseTokenFromCookie(this IRequestCookieCollection cookies, out string? token)
     {
-        token = cookies[Cookie.JWT];
+        token = cookies[CookieConstants.JWT];
         return !string.IsNullOrEmpty(token);
     }
 

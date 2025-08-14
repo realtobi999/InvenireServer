@@ -6,6 +6,7 @@ using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Application.Core.Admins.Commands.Update;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
+using InvenireServer.Domain.Constants;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation.Extensions;
@@ -36,11 +37,11 @@ public class AdminCommandController : ControllerBase
 
         var result = await _mediator.Send(command);
 
-        Response.Cookies.Append(Cookie.JWT, result.TokenString, new CookieOptions
+        Response.Cookies.Append(CookieConstants.JWT, result.TokenString, new CookieOptions
         {
             Secure = true,
             Expires = result.Token.GetExpirationTime(),
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             HttpOnly = true,
         });
 

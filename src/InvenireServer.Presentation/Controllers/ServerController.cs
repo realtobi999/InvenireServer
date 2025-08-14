@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
 
 namespace InvenireServer.Presentation.Controllers;
 
@@ -17,5 +19,12 @@ public class ServerController : ControllerBase
     public IActionResult AuthCheck()
     {
         return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("/api/server/auth/role")]
+    public IActionResult GetRole()
+    {
+        return Ok(JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()).GetRole());
     }
 }

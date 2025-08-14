@@ -22,6 +22,8 @@ public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerifi
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
+        if (employee.IsVerified) throw new BadRequest400Exception("The employee's verification status is already confirmed.");
+
         var jwt = request.Jwt;
         jwt.Payload.Add(new Claim("purpose", "email_verification"));
 

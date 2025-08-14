@@ -7,6 +7,7 @@ using InvenireServer.Application.Behaviors;
 using InvenireServer.Application.Interfaces.Common.Transactions;
 using InvenireServer.Application.Interfaces.Email;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Constants;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication.Options;
@@ -20,7 +21,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Presentation.Extensions;
@@ -31,7 +31,7 @@ public static class ServiceExtensions
     {
         services.AddCors(options =>
         {
-            options.AddPolicy(Cors.Policies.FRONTEND_POLICY, policy =>
+            options.AddPolicy(CorsConstants.Policies.FRONTEND_POLICY, policy =>
             {
                 policy.WithOrigins(configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException())
                     .AllowAnyHeader()
@@ -69,6 +69,17 @@ public static class ServiceExtensions
                     ValidIssuer = options.Issuer,
                     ValidAudience = options.Issuer,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SigningKey))
+                };
+                opts.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.TryGetValue(CookieConstants.JWT, out var token))
+                        {
+                            context.Token = token;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         services.AddAuthorizationBuilder()

@@ -1,6 +1,6 @@
-namespace InvenireServer.Domain.Entities.Common;
+namespace InvenireServer.Domain.Constants;
 
-public abstract class Cors
+public abstract class CorsConstants
 {
     public static class Policies
     {

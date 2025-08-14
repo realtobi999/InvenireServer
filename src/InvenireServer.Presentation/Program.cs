@@ -4,7 +4,7 @@ using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
 using InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
-using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Constants;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
@@ -54,7 +54,7 @@ public class Program
                 }
 
                 app.ConfigureStatusCodePages();
-                app.UseCors(Cors.Policies.FRONTEND_POLICY);
+                app.UseCors(CorsConstants.Policies.FRONTEND_POLICY);
                 app.UseAuthorization();
                 app.UseRateLimiter();
                 app.MapControllers();
