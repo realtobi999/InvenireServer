@@ -16,13 +16,13 @@ public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmploy
             .NotEmpty()
             .MinimumLength(Employee.MIN_NAME_LENGTH)
             .MaximumLength(Employee.MAX_NAME_LENGTH)
-            .Matches(@"^\p{L}+$")
+            .Matches(@"^\p{L}+(?:['-]\p{L}+)*$")
             .WithName("first_name");
         RuleFor(c => c.LastName)
             .NotEmpty()
             .MinimumLength(Employee.MIN_NAME_LENGTH)
             .MaximumLength(Employee.MAX_NAME_LENGTH)
-            .Matches(@"^\p{L}+$")
+            .Matches(@"^\p{L}+(?:['-]\p{L}+)*$")
             .WithName("last_name");
         RuleFor(c => c.EmailAddress)
             .NotEmpty()

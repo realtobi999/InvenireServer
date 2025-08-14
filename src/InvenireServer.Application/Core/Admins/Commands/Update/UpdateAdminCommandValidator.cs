@@ -11,13 +11,13 @@ public class UpdateAdminCommandValidator : AbstractValidator<UpdateAdminCommand>
             .NotEmpty()
             .MinimumLength(Admin.MIN_NAME_LENGTH)
             .MaximumLength(Admin.MAX_NAME_LENGTH)
-            .Matches(@"^\p{L}+$")
+            .Matches(@"^\p{L}+(?:['-]\p{L}+)*$")
             .WithName("first_name");
         RuleFor(c => c.LastName)
             .NotEmpty()
             .MinimumLength(Admin.MIN_NAME_LENGTH)
             .MaximumLength(Admin.MAX_NAME_LENGTH)
-            .Matches(@"^\p{L}+$")
+            .Matches(@"^\p{L}+(?:['-]\p{L}+)*$")
             .WithName("last_name");
     }
 }
