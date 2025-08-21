@@ -33,7 +33,7 @@ public static class ServiceExtensions
         {
             options.AddPolicy(CorsConstants.Policies.FRONTEND_POLICY, policy =>
             {
-                policy.WithOrigins(configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException())
+                policy.WithOrigins(configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException())
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

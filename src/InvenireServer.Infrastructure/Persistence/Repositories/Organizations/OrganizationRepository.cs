@@ -24,6 +24,12 @@ public class OrganizationRepository : RepositoryBase<Organization>, IOrganizatio
         return await GetAsync(o => o.Id == employee.OrganizationId);
     }
 
+    public override void Update(Organization organization)
+    {
+        organization.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(organization);
+    }
+
     protected override IQueryable<Organization> GetQueryable()
     {
         return base.GetQueryable().Include(o => o.Admin);

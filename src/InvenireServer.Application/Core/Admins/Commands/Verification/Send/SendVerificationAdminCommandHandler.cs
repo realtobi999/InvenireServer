@@ -31,7 +31,7 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         {
             AdminAddress = admin.EmailAddress,
             AdminName = admin.FirstName,
-            VerificationLink = $"{request.FrontendBaseUrl}/verify-email?token={_jwt.Writer.Write(jwt)}"
+            VerificationLink = $"{request.FrontendBaseAddress}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
         var email = _email.Builders.Admin.BuildVerificationEmail(dto);
         await _email.Sender.SendEmailAsync(email);

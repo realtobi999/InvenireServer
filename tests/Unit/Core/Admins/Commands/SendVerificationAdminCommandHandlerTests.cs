@@ -31,7 +31,7 @@ public class SendVerificationAdminCommandHandlerTests
         var command = new SendVerificationAdminCommand
         {
             Jwt = new Jwt([], []),
-            FrontendBaseUrl = "invenire.com"
+            FrontendBaseAddress = "invenire.com"
         };
 
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -51,7 +51,7 @@ public class SendVerificationAdminCommandHandlerTests
         dto!.AdminName.Should().Be(admin.Name);
 
         // Assert that the token has all the added claims.
-        var match = Regex.Match(dto.VerificationLink, $@"{command.FrontendBaseUrl}/verify-email\?token=([\w\-_.]+)");
+        var match = Regex.Match(dto.VerificationLink, $@"{command.FrontendBaseAddress}/verify-email\?token=([\w\-_.]+)");
         var jwt = JwtBuilder.Parse(match.Groups[1].Value);
         jwt.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }

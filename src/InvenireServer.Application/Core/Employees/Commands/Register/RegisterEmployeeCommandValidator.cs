@@ -37,7 +37,6 @@ public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmploy
             .Matches(@"^(?=.*[A-Z])(?=.*\d).+$")
             .WithName("password");
         RuleFor(c => c.PasswordConfirm)
-            .NotEmpty()
             .Equal(c => c.Password).WithMessage("'password_confirm' must match 'password'.")
             .WithName("password_confirm");
     }

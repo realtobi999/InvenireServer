@@ -14,4 +14,10 @@ public class PropertySuggestionRepository : RepositoryBase<PropertySuggestion>, 
         var threshold = DateTimeOffset.UtcNow.Add(-PropertySuggestion.EXPIRATION_TIME);
         return await IndexAsync(s => s.Status == PropertySuggestionStatus.DECLINED && s.ResolvedAt <= threshold);
     }
+
+    public override void Update(PropertySuggestion suggestion)
+    {
+        suggestion.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(suggestion);
+    }
 }

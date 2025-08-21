@@ -34,7 +34,7 @@ public class CreateOrganizationCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Internet.UserName(),
             Jwt = new Jwt([], []),
-            FrontendBaseUrl = "invenire.com"
+            FrontendBaseAddress = "invenire.com"
         };
 
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
@@ -66,7 +66,7 @@ public class CreateOrganizationCommandHandlerTests
         dto!.AdminAddress.Should().Be(admin.EmailAddress);
         dto!.AdminName.Should().Be(admin.Name);
         dto!.OrganizationName.Should().Be(organization.Name);
-        dto!.DashboardLink.Should().Be($"{command.FrontendBaseUrl}/dashboard");
+        dto!.DashboardLink.Should().Be($"{command.FrontendBaseAddress}/dashboard");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class CreateOrganizationCommandHandlerTests
             Id = Guid.NewGuid(),
             Name = faker.Internet.UserName(),
             Jwt = new Jwt([], []),
-            FrontendBaseUrl = "invenire.com"
+            FrontendBaseAddress = "invenire.com"
         };
 
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);

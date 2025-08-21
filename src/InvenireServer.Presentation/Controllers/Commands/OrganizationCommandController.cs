@@ -39,7 +39,7 @@ public class OrganizationCommandController : ControllerBase
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
         };
         var result = await _mediator.Send(command);
 

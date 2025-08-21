@@ -17,5 +17,5 @@ public record CreateOrganizationCommand : IRequest<CreateOrganizationCommandResu
     public Jwt? Jwt { get; init; }
 
     [JsonIgnore]
-    public string? FrontendBaseUrl { get; init; }
+    public string? FrontendBaseAddress { get; init; }
 }

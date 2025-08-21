@@ -31,7 +31,7 @@ public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerifi
         {
             EmployeeAddress = employee.EmailAddress,
             EmployeeName = employee.FirstName,
-            VerificationLink = $"{request.FrontendBaseUrl}/verify-email?token={_jwt.Writer.Write(jwt)}"
+            VerificationLink = $"{request.FrontendBaseAddress}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
         var email = _email.Builders.Employee.BuildVerificationEmail(dto);
         await _email.Sender.SendEmailAsync(email);

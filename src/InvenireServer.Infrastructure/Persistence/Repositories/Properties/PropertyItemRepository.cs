@@ -8,4 +8,10 @@ public class PropertyItemRepository : RepositoryBase<PropertyItem>, IPropertyIte
     public PropertyItemRepository(InvenireServerContext context) : base(context)
     {
     }
+
+    public override void Update(PropertyItem item)
+    {
+        item.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(item);
+    }
 }

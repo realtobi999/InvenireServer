@@ -37,4 +37,10 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
         var threshold = DateTimeOffset.UtcNow.Add(-Employee.INACTIVE_THRESHOLD);
         return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= threshold);
     }
+
+    public override void Update(Employee employee)
+    {
+        employee.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(employee);
+    }
 }

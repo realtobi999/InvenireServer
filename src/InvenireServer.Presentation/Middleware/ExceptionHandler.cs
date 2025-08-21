@@ -71,7 +71,7 @@ public class ExceptionHandler : IExceptionHandler
         {
             Status = (int)HttpStatusCode.InternalServerError,
             Type = exception.GetType().Name,
-            Title = "An unexpected internal error occurred",
+            Title = "An unexpected internal error occurred.",
             Detail = exception.Message,
             Instance = $"{context.Request.Method} {context.Request.Path}"
         };

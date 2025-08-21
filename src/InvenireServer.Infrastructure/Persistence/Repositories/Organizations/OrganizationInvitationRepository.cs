@@ -16,6 +16,12 @@ public class OrganizationInvitationRepository : RepositoryBase<OrganizationInvit
         return IndexAsync(i => i.CreatedAt <= threshold);
     }
 
+    public override void Update(OrganizationInvitation invitation)
+    {
+        invitation.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(invitation);
+    }
+
     protected override IQueryable<OrganizationInvitation> GetQueryable()
     {
         return base.GetQueryable().Include(i => i.Employee);

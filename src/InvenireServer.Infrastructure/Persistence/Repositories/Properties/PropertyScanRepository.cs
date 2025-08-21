@@ -18,4 +18,10 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
     {
         return await IndexAsync(s => s.PropertyId == property.Id && s.Status == PropertyScanStatus.IN_PROGRESS);
     }
+
+    public override void Update(PropertyScan scan)
+    {
+        scan.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(scan);
+    }
 }

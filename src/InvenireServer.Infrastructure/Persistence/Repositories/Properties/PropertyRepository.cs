@@ -21,4 +21,10 @@ public class PropertyRepository : RepositoryBase<Property>, IPropertyRepository
     {
         return await GetAsync(p => p.OrganizationId == organization.Id);
     }
+
+    public override void Update(Property property)
+    {
+        property.LastUpdatedAt = DateTimeOffset.UtcNow;
+        base.Update(property);
+    }
 }

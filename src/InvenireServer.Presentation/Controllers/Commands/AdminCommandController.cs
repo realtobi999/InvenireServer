@@ -48,7 +48,7 @@ public class AdminCommandController : ControllerBase
         return Created($"/api/admin/{result.Admin.Id}", null);
     }
 
-    [EnableRateLimiting("SendVerificationPolicy")]
+    // [EnableRateLimiting("SendVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_ADMIN)]
     [HttpPost("/api/admins/email-verification/send")]
     public async Task<IActionResult> SendVerification()
@@ -56,7 +56,7 @@ public class AdminCommandController : ControllerBase
         await _mediator.Send(new SendVerificationAdminCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
         });
 
         return NoContent();
@@ -74,7 +74,7 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
-    [EnableRateLimiting("LoginPolicy")]
+    //[EnableRateLimiting("LoginPolicy")]
     [HttpPost("/api/admins/login")]
     public async Task<IActionResult> Login([FromBody] LoginAdminCommand command)
     {

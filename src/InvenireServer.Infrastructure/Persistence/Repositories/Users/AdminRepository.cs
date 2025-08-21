@@ -4,6 +4,7 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using System.Linq.Expressions;
 using System.Data.Common;
+using System.ComponentModel;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -37,5 +38,11 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
     {
         var threshold = DateTimeOffset.UtcNow.Add(-Admin.INACTIVE_THRESHOLD);
         return await IndexAsync(e => !e.IsVerified && e.CreatedAt <= threshold);
+    }
+
+    public override void Update(Admin admin)
+    {
+        admin.LastLoginAt = DateTimeOffset.UtcNow;
+        base.Update(admin);
     }
 }

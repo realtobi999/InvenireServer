@@ -48,7 +48,7 @@ public class EmployeeCommandController : ControllerBase
         return Created($"/api/admin/{result.Employee.Id}", null);
     }
 
-    [EnableRateLimiting("SendVerificationPolicy")]
+    // [EnableRateLimiting("SendVerificationPolicy")]
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/employees/email-verification/send")]
     public async Task<IActionResult> SendVerification()
@@ -56,7 +56,7 @@ public class EmployeeCommandController : ControllerBase
         await _mediator.Send(new SendVerificationEmployeeCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            FrontendBaseUrl = _configuration.GetSection("Frontend:BaseUrl").Value ?? throw new NullReferenceException()
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
         });
 
         return NoContent();
