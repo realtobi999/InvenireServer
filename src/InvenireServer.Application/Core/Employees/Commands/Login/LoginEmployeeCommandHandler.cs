@@ -7,7 +7,7 @@ using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
-public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand, LoginEmployeeCommandResponse>
+public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand, LoginEmployeeCommandResult>
 {
     private readonly IJwtManager _jwt;
     private readonly IRepositoryManager _repositories;
@@ -20,7 +20,7 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
         _repositories = repositories;
     }
 
-    public async Task<LoginEmployeeCommandResponse> Handle(LoginEmployeeCommand request, CancellationToken ct)
+    public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials");
 
@@ -33,13 +33,16 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
 
         await _repositories.SaveOrThrowAsync();
 
-        return new LoginEmployeeCommandResponse
-        {
-            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+        var token = _jwt.Builder.Build(
+            [
                 new Claim("role", Jwt.Roles.EMPLOYEE),
                 new Claim("employee_id", employee.Id.ToString()),
                 new Claim("is_verified", bool.TrueString)
-            ]))
+            ]);
+        return new LoginEmployeeCommandResult
+        {
+            Token = token,
+            TokenString = _jwt.Writer.Write(token)
         };
     }
 }

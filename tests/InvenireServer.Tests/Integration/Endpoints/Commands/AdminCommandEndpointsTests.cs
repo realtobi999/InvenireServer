@@ -84,7 +84,7 @@ public class AdminCommandEndpointsTests
     }
 
     [Fact]
-    public async Task Login_ReturnsOk()
+    public async Task Login_ReturnsNoContent()
     {
         // Prepare.
         var admin = AdminFaker.Fake();
@@ -98,7 +98,7 @@ public class AdminCommandEndpointsTests
             EmailAddress = admin.EmailAddress,
             Password = admin.Password
         });
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]

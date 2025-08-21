@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
-public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResponse>
+public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, LoginAdminCommandResult>
 {
     private readonly IJwtManager _jwt;
     private readonly IRepositoryManager _repositories;
@@ -20,7 +20,7 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         _repositories = repositories;
     }
 
-    public async Task<LoginAdminCommandResponse> Handle(LoginAdminCommand request, CancellationToken ct)
+    public async Task<LoginAdminCommandResult> Handle(LoginAdminCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(a => a.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials.");
 
@@ -33,13 +33,16 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
 
         await _repositories.SaveOrThrowAsync();
 
-        return new LoginAdminCommandResponse
-        {
-            Token = _jwt.Writer.Write(_jwt.Builder.Build([
+        var token = _jwt.Builder.Build(
+            [
                 new Claim("role", Jwt.Roles.ADMIN),
                 new Claim("admin_id", admin.Id.ToString()),
                 new Claim("is_verified", bool.TrueString)
-            ]))
+            ]);
+        return new LoginAdminCommandResult
+        {
+            Token = token,
+            TokenString = _jwt.Writer.Write(token)
         };
     }
 }

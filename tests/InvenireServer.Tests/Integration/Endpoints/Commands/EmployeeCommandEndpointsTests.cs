@@ -85,7 +85,7 @@ public class EmployeeCommandEndpointsTests
     }
 
     [Fact]
-    public async Task Login_ReturnsOk()
+    public async Task Login_ReturnsNoContent()
     {
         // Prepare.
         var employee = EmployeeFaker.Fake();
@@ -99,7 +99,7 @@ public class EmployeeCommandEndpointsTests
             EmailAddress = employee.EmailAddress,
             Password = employee.Password
         });
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
