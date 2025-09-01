@@ -126,7 +126,7 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
+    [Authorize()]
     [HttpPut("/api/properties/items/{itemId:guid}/scan")]
     public async Task<IActionResult> ScanItem(Guid itemId)
     {
@@ -202,7 +202,7 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
+    [Authorize()]
     [HttpDelete("/api/properties/suggestions/{suggestionId:guid}")]
     public async Task<IActionResult> DeleteSuggestion(Guid suggestionId)
     {

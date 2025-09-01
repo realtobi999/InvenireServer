@@ -107,7 +107,7 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
     [HttpDelete("/api/organizations/invitations/{invitationId:guid}")]
     public async Task<IActionResult> DeleteInvitation(Guid invitationId)
     {
