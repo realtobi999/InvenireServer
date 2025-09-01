@@ -32,6 +32,7 @@ public class OrganizationInvitationTypeConfiguration : IEntityTypeConfiguration<
         // Relationships.
 
         builder.HasOne(i => i.Employee)
-            .WithMany();
+            .WithMany()
+            .HasForeignKey("employee_id");
     }
 }

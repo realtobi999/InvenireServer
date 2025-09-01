@@ -16,7 +16,7 @@ public class GetByAdminOrganizationQueryHandler : IRequestHandler<GetByAdminOrga
     public async Task<OrganizationDto> Handle(GetByAdminOrganizationQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system");
-        var organization = await _repositories.Organizations.GetAndProjectAsync(o => o.Id == admin.OrganizationId, OrganizationDto.FromOrganizationSelector) ?? throw new NotFound404Exception("The admin doesn't own a organization");
+        var organization = await _repositories.Organizations.GetAndProjectAsync(o => o.Id == admin.OrganizationId, OrganizationDto.GetByAdminQuerySelector) ?? throw new NotFound404Exception("The admin doesn't own a organization");
 
         return organization;
     }

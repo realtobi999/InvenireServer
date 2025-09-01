@@ -9,6 +9,8 @@ namespace InvenireServer.Application.Dtos.Organizations;
 
 public class OrganizationDto
 {
+    // Properties.
+
     [JsonPropertyName("id")]
     public required Guid Id { get; set; }
 
@@ -21,19 +23,53 @@ public class OrganizationDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("admin")]
-    public required AdminDto? Admin { get; set; }
+    public AdminDto? Admin { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("property")]
-    public required PropertyDto? Property { get; set; }
+    public PropertyDto? Property { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("employees")]
-    public required List<EmployeeDto> Employees { get; set; } = [];
+    public List<EmployeeDto>? Employees { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("invitations")]
-    public required List<OrganizationInvitationDto> Invitations { get; set; } = [];
+    public List<OrganizationInvitationDto>? Invitations { get; set; }
 
-    public static Expression<Func<Organization, OrganizationDto>> FromOrganizationSelector
+    // Selectors.
+
+    public static Expression<Func<Organization, OrganizationDto>> GetByIdQuerySelector
+    {
+        get
+        {
+            return o => new OrganizationDto
+            {
+                Id = o.Id,
+                Name = o.Name,
+                CreatedAt = o.CreatedAt,
+                LastUpdatedAt = o.LastUpdatedAt,
+                Admin = o.Admin == null ? null : new AdminDto
+                {
+                    Id = o.Admin.Id,
+                    OrganizationId = o.Admin.OrganizationId,
+                    FirstName = o.Admin.FirstName,
+                    LastName = o.Admin.LastName,
+                    FullName = $"{o.Admin.FirstName} {o.Admin.LastName}",
+                    EmailAddress = o.Admin.EmailAddress,
+                    CreatedAt = o.Admin.CreatedAt,
+                    LastUpdatedAt = o.Admin.LastUpdatedAt
+                },
+                Property = null,
+                Employees = null,
+                Invitations = null
+            };
+        }
+    }
+
+    public static Expression<Func<Organization, OrganizationDto>> GetByAdminQuerySelector
     {
         get
         {

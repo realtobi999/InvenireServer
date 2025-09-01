@@ -76,8 +76,43 @@ public class OrganizationQueryEndpointsTests
         content.Admin!.Id.Should().Be(admin.Id);
         content.Property.Should().NotBeNull();
         content.Property!.Id.Should().Be(property.Id);
-        content.Employees.Count.Should().Be(members.Count);
-        content.Invitations.Count.Should().Be(invitations.Count);
+        content.Employees.Should().NotBeNullOrEmpty();
+        content.Employees!.Count.Should().Be(members.Count);
+        content.Invitations.Should().NotBeNullOrEmpty();
+        content.Invitations!.Count.Should().Be(invitations.Count);
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(organization);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act
+        var response = await _client.GetAsync("/api/organizations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert
+        var content = await response.Content.ReadFromJsonAsync<OrganizationDto>() ?? throw new NullReferenceException();
+
+        content.Id.Should().Be(organization.Id);
+        content.Name.Should().Be(organization.Name);
+        content.CreatedAt.Should().Be(organization.CreatedAt);
+        content.LastUpdatedAt.Should().Be(organization.LastUpdatedAt);
+        content.Admin.Should().NotBeNull();
+        content.Admin!.Id.Should().Be(admin.Id);
     }
 
     [Fact]
