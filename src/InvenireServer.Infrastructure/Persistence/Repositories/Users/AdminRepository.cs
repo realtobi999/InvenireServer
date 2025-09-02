@@ -42,7 +42,7 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 
     public override void Update(Admin admin)
     {
-        admin.LastLoginAt = DateTimeOffset.UtcNow;
+        admin.LastUpdatedAt = DateTimeOffset.UtcNow;
         base.Update(admin);
     }
 }

@@ -31,11 +31,13 @@ public record EmployeeDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; init; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("assigned_items")]
-    public required List<PropertyItemDto> AssignedItems { get; set; } = [];
+    public List<PropertyItemDto>? AssignedItems { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("property_suggestions")]
-    public required List<PropertySuggestionDto> Suggestions { get; set; } = [];
+    public List<PropertySuggestionDto>? Suggestions { get; set; }
 
     public static Expression<Func<Employee, EmployeeDto>> FromEmployeeSelector
     {

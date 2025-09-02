@@ -16,8 +16,7 @@ public class OrganizationInvitationTypeConfiguration : IEntityTypeConfiguration<
         builder.HasKey(i => i.Id);
 
         builder.Property(i => i.Description)
-            .HasColumnName("name")
-            .IsRequired();
+            .HasColumnName("description");
 
         builder.Property(i => i.CreatedAt)
             .HasColumnName("created_at")

@@ -22,7 +22,7 @@ public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
             .HasMaxLength(Admin.MAX_NAME_LENGTH)
             .IsRequired();
 
-        builder.Property(a => a.FirstName)
+        builder.Property(a => a.LastName)
             .HasColumnName("last_name")
             .HasMaxLength(Admin.MAX_NAME_LENGTH)
             .IsRequired();

@@ -121,7 +121,17 @@ public class OrganizationDto
                     Description = i.Description,
                     CreatedAt = i.CreatedAt,
                     LastUpdatedAt = i.LastUpdatedAt,
-                    Employee = null,
+                    Employee = i.Employee == null ? null : new EmployeeDto
+                    {
+                        Id = i.Employee.Id,
+                        OrganizationId = i.Employee.OrganizationId,
+                        FirstName = i.Employee.FirstName,
+                        LastName = i.Employee.LastName,
+                        FullName = $"{i.Employee.FirstName} {i.Employee.LastName}",
+                        EmailAddress = i.Employee.EmailAddress,
+                        CreatedAt = i.Employee.CreatedAt,
+                        LastUpdatedAt = i.Employee.LastUpdatedAt,
+                    },
                 }).ToList()
             };
         }
