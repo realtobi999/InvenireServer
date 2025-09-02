@@ -14,7 +14,10 @@ public record CreateOrganizationInvitationCommand : IRequest<CreateOrganizationI
     public string? Description { get; init; }
 
     [JsonPropertyName("employee_id")]
-    public required Guid EmployeeId { get; init; }
+    public Guid? EmployeeId { get; init; }
+
+    [JsonPropertyName("employee_email_address")]
+    public string? EmployeeEmailAddress { get; set; }
 
     [JsonIgnore]
     public Jwt? Jwt { get; init; }

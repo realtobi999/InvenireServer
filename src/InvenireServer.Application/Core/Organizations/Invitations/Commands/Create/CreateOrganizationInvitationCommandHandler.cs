@@ -1,5 +1,6 @@
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
@@ -16,10 +17,16 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
     public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
-        var employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
+
+        var employee = null as Employee;
+        if (request.EmployeeId is not null)
+            employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        else if (request.EmployeeEmailAddress is not null)
+            employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmployeeEmailAddress) ?? throw new NotFound404Exception("The employee was not found in the system.");
+
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
-        if (await _repositories.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id) is not null)
+        if (await _repositories.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee!.Id && i.OrganizationId == organization.Id) is not null)
             throw new Conflict409Exception("The organization already has a invitation for the employee.");
 
         var invitation = new OrganizationInvitation
