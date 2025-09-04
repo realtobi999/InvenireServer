@@ -8,6 +8,7 @@ using InvenireServer.Domain.Constants;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 using Serilog;
 
 namespace InvenireServer.Presentation;
@@ -23,6 +24,15 @@ public class Program
             {
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
+
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 100; // 100 MB.
+                });
+                builder.Services.Configure<FormOptions>(options =>
+                {
+                    options.MultipartBodyLengthLimit = 1024 * 1024 * 100; // 100 MB.
+                });
 
                 builder.Services.ConfigureJwt(builder.Configuration);
                 builder.Services.ConfigureCors(builder.Configuration);
