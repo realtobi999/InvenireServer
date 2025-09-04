@@ -60,7 +60,7 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
             {
                 location.RuleFor(l => l.Room).NotEmpty().MaximumLength(PropertyItemLocation.MAX_ROOM_LENGTH).WithName("room");
                 location.RuleFor(l => l.Building).NotEmpty().MaximumLength(PropertyItemLocation.MAX_BUILDING_LENGTH).WithName("building");
-                location.RuleFor(l => l.AdditionalNote).NotEmpty().MaximumLength(PropertyItemLocation.MAX_ADDITIONAL_NOTE_LENGTH).WithName("additional_note");
+                location.RuleFor(l => l.AdditionalNote).MaximumLength(PropertyItemLocation.MAX_ADDITIONAL_NOTE_LENGTH).WithName("additional_note");
             });
         RuleFor(c => c.Description)
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
