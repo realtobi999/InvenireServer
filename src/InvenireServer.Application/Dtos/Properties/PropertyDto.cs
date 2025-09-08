@@ -46,6 +46,8 @@ public class PropertyDto
                 {
                     TotalItems = p.Items.Count,
                     TotalValue = p.Items.Sum(i => i.Price),
+                    AveragePrice = p.Items.Average(i => i.Price),
+                    AverageAge = p.Items.Average(i => (DateTime.Now - i.DateOfPurchase).TotalDays / 365.25),
                 },
                 ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary
                 {
@@ -68,6 +70,12 @@ public record PropertyDtoItemsSummary
 
     [JsonPropertyName("total_value")]
     public required double TotalValue { get; set; }
+
+    [JsonPropertyName("average_price")]
+    public required double AveragePrice { get; set; }
+
+    [JsonPropertyName("average_age")]
+    public required double AverageAge { get; set; }
 }
 
 [JsonResponse]

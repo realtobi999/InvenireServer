@@ -1,5 +1,6 @@
 using FluentValidation;
 using InvenireServer.Domain.Entities.Properties;
+using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
@@ -11,8 +12,19 @@ public class CreatePropertyItemsCommandValidator : AbstractValidator<CreatePrope
             .NotEmpty()
             .WithName("items");
 
-        RuleForEach(c => c.Items)
-            .SetValidator(new CreatePropertyItemCommandValidator());
+        RuleFor(c => c.Items)
+            .Custom((items, context) =>
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var result = new CreatePropertyItemCommandValidator().Validate(item);
+
+                    if (!result.IsValid)
+                        foreach (var error in result.Errors)
+                            context.AddFailure($"Item {(string.IsNullOrEmpty(item.InventoryNumber) ? "MISSING_INVENTORY_NUMBER" : item.InventoryNumber)}: {error.ErrorMessage}");
+                }
+            });
     }
 }
 
@@ -33,7 +45,7 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
             .MaximumLength(PropertyItem.MAX_NAME_LENGTH)
             .WithName("name");
         RuleFor(c => c.Price)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(0)
             .WithName("price");
         RuleFor(c => c.SerialNumber)
             .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
@@ -48,6 +60,7 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
             {
                 location.RuleFor(l => l.Room).NotEmpty().MaximumLength(PropertyItemLocation.MAX_ROOM_LENGTH).WithName("room");
                 location.RuleFor(l => l.Building).NotEmpty().MaximumLength(PropertyItemLocation.MAX_BUILDING_LENGTH).WithName("building");
+                location.RuleFor(l => l.AdditionalNote).MaximumLength(PropertyItemLocation.MAX_ADDITIONAL_NOTE_LENGTH).WithName("additional_note");
             });
         RuleFor(c => c.Description)
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)

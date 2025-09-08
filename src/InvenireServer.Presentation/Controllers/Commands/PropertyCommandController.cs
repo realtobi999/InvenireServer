@@ -1,5 +1,15 @@
+using MediatR;
+using System.Text.Json;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Core.Properties.Commands.Update;
+using InvenireServer.Application.Core.Properties.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 using InvenireServer.Application.Core.Properties.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
@@ -12,15 +22,6 @@ using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using InvenireServer.Application.Core.Properties.Commands.Update;
-using InvenireServer.Application.Core.Properties.Commands.Delete;
-using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -80,17 +81,36 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items")]
-    public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command)
+    public async Task<IActionResult> CreateItems()
     {
+        var command = null as CreatePropertyItemsCommand;
+
+        var type = Request.ContentType?.ToLower();
+        if (type?.Contains("application/json") == true)
+        {
+            using var reader = new StreamReader(Request.Body);
+            command = JsonSerializer.Deserialize<CreatePropertyItemsCommand>(await reader.ReadToEndAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else if (type?.Contains("multipart/form-data") == true)
+        {
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file != null && file.Length > 0)
+            {
+                using var stream = file.OpenReadStream();
+                using var reader = new StreamReader(stream);
+                command = JsonSerializer.Deserialize<CreatePropertyItemsCommand>(await reader.ReadToEndAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+        }
+
         if (command is null)
-            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+            throw new ValidationException([new ValidationFailure("", "Request body or file is missing/invalid.")]);
 
         command = command with
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
         };
-        await _mediator.Send(command);
 
+        await _mediator.Send(command);
         return Created();
     }
 
