@@ -3,14 +3,14 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Interfaces.Repositories;
 
-public interface IRepositoryBase<Entity> where Entity : class
+public interface IRepositoryBase<TEntity> where TEntity : class
 {
-    Task<int> CountAsync(Expression<Func<Entity, bool>> predicate);
-    Task<IEnumerable<Entity>> IndexAsync(Expression<Func<Entity, bool>> predicate);
-    Task<IEnumerable<EntityDto>> IndexAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector, PaginationParameters pagination);
-    Task<Entity?> GetAsync(Expression<Func<Entity, bool>> predicate);
-    Task<EntityDto?> GetAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector);
-    void Create(Entity entity);
-    void Update(Entity entity);
-    void Delete(Entity entity);
+    Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<IEnumerable<TEntity>> IndexAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<IEnumerable<TResult>> IndexAsync<TResult>(Expression<Func<TEntity, bool>> predicate, QueryOptions<TEntity, TResult> options);
+    Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<TResult?> GetAsync<TResult>(Expression<Func<TEntity, bool>> predicate, QueryOptions<TEntity, TResult> options);
+    void Create(TEntity entity);
+    void Update(TEntity entity);
+    void Delete(TEntity entity);
 }

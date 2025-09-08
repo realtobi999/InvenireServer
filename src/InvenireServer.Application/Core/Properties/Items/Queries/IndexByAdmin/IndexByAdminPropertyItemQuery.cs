@@ -6,5 +6,5 @@ namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 public record IndexByAdminPropertyItemQuery : IRequest<IndexByAdminPropertyItemQueryResponse>
 {
     public required Jwt Jwt { get; init; }
-    public required PaginationParameters Pagination { get; init; }
+    public required PaginationOptions Pagination { get; init; }
 }

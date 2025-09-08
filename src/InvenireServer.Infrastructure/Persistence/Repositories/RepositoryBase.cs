@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using InvenireServer.Application.Interfaces.Repositories;
 using InvenireServer.Domain.Entities.Common;
+using System.Net.Quic;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
@@ -34,13 +35,28 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().FirstOrDefaultAsync(predicate);
     }
 
-    public virtual async Task<EntityDto?> GetAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector)
+    public virtual async Task<TResult?> GetAsync<TResult>(Expression<Func<Entity, bool>> predicate, QueryOptions<Entity, TResult> options)
     {
-        return await Context.Set<Entity>()
-            .AsNoTracking()
-            .Where(predicate)
-            .Select(selector)
-            .FirstOrDefaultAsync();
+        var query = GetQueryable();
+
+        query = query.Where(predicate);
+
+        if (options.OrderBy is not null)
+            query = options.OrderByDescending ? query.OrderByDescending(options.OrderBy) : query.OrderBy(options.OrderBy);
+
+        if (options.Pagination is not null)
+            query = query.Skip(options.Pagination.Offset).Take(options.Pagination.Limit);
+
+        if (options.Selector is not null)
+        {
+            return await query.Select(options.Selector).FirstOrDefaultAsync();
+        }
+        else
+        {
+            if (typeof(TResult) != typeof(Entity)) throw new InvalidOperationException("The selector for the query must be provided.");
+
+            return (TResult?)(object?)await query.FirstOrDefaultAsync();
+        }
     }
 
     public virtual async Task<IEnumerable<Entity>> IndexAsync(Expression<Func<Entity, bool>> predicate)
@@ -48,15 +64,28 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().Where(predicate).ToListAsync();
     }
 
-    public virtual async Task<IEnumerable<EntityDto>> IndexAndProjectAsync<EntityDto>(Expression<Func<Entity, bool>> predicate, Expression<Func<Entity, EntityDto>> selector, PaginationParameters pagination)
+    public virtual async Task<IEnumerable<TResult>> IndexAsync<TResult>(Expression<Func<Entity, bool>> predicate, QueryOptions<Entity, TResult> options)
     {
-        return await Context.Set<Entity>()
-            .AsNoTracking()
-            .Where(predicate)
-            .Skip(pagination.Offset)
-            .Take(pagination.Limit)
-            .Select(selector)
-            .ToListAsync();
+        var query = GetQueryable();
+
+        query = query.Where(predicate);
+
+        if (options.OrderBy is not null)
+            query = options.OrderByDescending ? query.OrderByDescending(options.OrderBy) : query.OrderBy(options.OrderBy);
+
+        if (options.Pagination is not null)
+            query = query.Skip(options.Pagination.Offset).Take(options.Pagination.Limit);
+
+        if (options.Selector is not null)
+        {
+            return await query.Select(options.Selector).ToListAsync();
+        }
+        else
+        {
+            if (typeof(TResult) != typeof(Entity)) throw new InvalidOperationException("The selector for the query must be provided.");
+
+            return (IEnumerable<TResult>)(object)await query.ToListAsync();
+        }
     }
 
     public async Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)

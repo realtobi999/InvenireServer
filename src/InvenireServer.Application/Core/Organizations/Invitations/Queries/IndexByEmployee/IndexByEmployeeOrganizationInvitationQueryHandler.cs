@@ -1,6 +1,8 @@
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
@@ -19,7 +21,11 @@ public class IndexByEmployeeOrganizationInvitationQueryHandler : IRequestHandler
 
         return new IndexByEmployeeOrganizationInvitationQueryResponse
         {
-            Data = [.. await _repositories.Organizations.Invitations.IndexAndProjectAsync(i => i.Employee!.Id == employee.Id, OrganizationInvitationDto.FromInvitationSelector, request.Pagination)],
+            Data = [.. await _repositories.Organizations.Invitations.IndexAsync(i => i.Employee!.Id == employee.Id, new QueryOptions<OrganizationInvitation, OrganizationInvitationDto>
+            {
+                Selector = OrganizationInvitationDto.FromInvitationSelector,
+                Pagination = request.Pagination,
+            })],
             Limit = request.Pagination.Limit,
             Offset = request.Pagination.Offset,
             TotalCount = await _repositories.Organizations.Invitations.CountAsync(i => i.Employee!.Id == employee.Id)

@@ -53,7 +53,7 @@ public record PropertyItemDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
-    public static Expression<Func<PropertyItem, PropertyItemDto>> FromPropertyItemSelector
+    public static Expression<Func<PropertyItem, PropertyItemDto>> CoreSelector
     {
         get
         {

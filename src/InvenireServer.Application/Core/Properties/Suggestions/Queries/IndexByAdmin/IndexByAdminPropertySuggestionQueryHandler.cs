@@ -2,6 +2,8 @@ using System.Text.Json;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
@@ -21,7 +23,11 @@ public class IndexByAdminPropertySuggestionQueryHandler : IRequestHandler<IndexB
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        var suggestions = await _repositories.Properties.Suggestions.IndexAndProjectAsync(s => s.PropertyId == property.Id, PropertySuggestionDto.IndexByAdminSelector, request.Pagination);
+        var suggestions = await _repositories.Properties.Suggestions.IndexAsync(s => s.PropertyId == property.Id, new QueryOptions<PropertySuggestion, PropertySuggestionDto>
+        {
+            Selector = PropertySuggestionDto.IndexByAdminSelector,
+            Pagination = request.Pagination
+        });
         suggestions = suggestions.Select(suggestion =>
         {
             return suggestion with

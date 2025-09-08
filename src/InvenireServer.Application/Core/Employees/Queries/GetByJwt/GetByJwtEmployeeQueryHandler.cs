@@ -1,6 +1,8 @@
 
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Employees.Queries.GetByJwt;
@@ -15,7 +17,8 @@ public class GetByJwtEmployeeQueryHandler : IRequestHandler<GetByJwtEmployeeQuer
     }
 
     public async Task<EmployeeDto> Handle(GetByJwtEmployeeQuery request, CancellationToken ct)
-    {
-        return await _repositories.Employees.GetAndProjectAsync(request.Jwt, EmployeeDto.FromEmployeeSelector) ?? throw new NotFound404Exception("The employee was not found in the system.");
-    }
+        => await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>
+        {
+            Selector = EmployeeDto.FromEmployeeSelector
+        }) ?? throw new NotFound404Exception("The employee was not found in the system.");
 }

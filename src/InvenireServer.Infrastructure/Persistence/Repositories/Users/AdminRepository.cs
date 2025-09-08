@@ -1,10 +1,7 @@
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Application.Interfaces.Repositories.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
-using System.Linq.Expressions;
-using System.Data.Common;
-using System.ComponentModel;
+using InvenireServer.Application.Interfaces.Repositories.Users;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -24,14 +21,14 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
         return await GetAsync(e => e.Id == id);
     }
 
-    public async Task<EntityDto?> GetAndProjectAsync<EntityDto>(Jwt jwt, Expression<Func<Admin, EntityDto>> selector)
+    public async Task<TResult?> GetAsync<TResult>(Jwt jwt, QueryOptions<Admin, TResult> options)
     {
         var claim = jwt.Payload.FirstOrDefault(c => c.Type == "admin_id" && !string.IsNullOrWhiteSpace(c.Value));
         if (claim is null) throw new BadRequest400Exception("Missing or invalid 'admin_id' claim.");
 
         if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
 
-        return await GetAndProjectAsync(e => e.Id == id, selector);
+        return await GetAsync(e => e.Id == id, options);
     }
 
     public async Task<IEnumerable<Admin>> IndexInactiveAsync()

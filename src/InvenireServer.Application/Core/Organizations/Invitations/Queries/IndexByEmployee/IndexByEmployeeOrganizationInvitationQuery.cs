@@ -5,5 +5,5 @@ namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.Inde
 public record IndexByEmployeeOrganizationInvitationQuery : IRequest<IndexByEmployeeOrganizationInvitationQueryResponse>
 {
     public required Jwt Jwt { get; init; }
-    public required PaginationParameters Pagination { get; init; }
+    public required PaginationOptions Pagination { get; init; }
 }

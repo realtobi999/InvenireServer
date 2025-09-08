@@ -1,5 +1,7 @@
 using InvenireServer.Application.Dtos.Admins;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Admins.Queries.GetByJwt;
@@ -14,5 +16,8 @@ public class GetByJwtAdminQueryHandler : IRequestHandler<GetByJwtAdminQuery, Adm
     }
 
     public async Task<AdminDto> Handle(GetByJwtAdminQuery request, CancellationToken ct)
-        => await _services.Admins.GetAndProjectAsync(request.Jwt, AdminDto.FromAdminSelector) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        => await _services.Admins.GetAsync(request.Jwt, new QueryOptions<Admin, AdminDto>
+        {
+            Selector = AdminDto.FromAdminSelector
+        }) ?? throw new NotFound404Exception("The admin was not found in the system.");
 }

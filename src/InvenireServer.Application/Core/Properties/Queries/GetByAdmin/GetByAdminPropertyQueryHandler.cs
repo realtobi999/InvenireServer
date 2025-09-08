@@ -1,6 +1,8 @@
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
 
@@ -17,8 +19,10 @@ public class GetByAdminPropertyQueryHandler : IRequestHandler<GetByAdminProperty
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
-        var property = await _repositories.Properties.GetAndProjectAsync(p => p.OrganizationId == organization.Id, PropertyDto.FromPropertySelector) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        return property;
+        return await _repositories.Properties.GetAsync(p => p.OrganizationId == organization.Id, new QueryOptions<Property, PropertyDto>
+        {
+            Selector = PropertyDto.FromPropertySelector
+        }) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
     }
 }

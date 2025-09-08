@@ -39,7 +39,7 @@ public class PropertyQueryController : ControllerBase
         return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationParameters(limit, offset),
+            Pagination = new PaginationOptions(limit, offset),
         }));
     }
 
@@ -50,7 +50,7 @@ public class PropertyQueryController : ControllerBase
         return Ok(await _mediator.Send(new IndexByAdminPropertyScanQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationParameters(limit, offset),
+            Pagination = new PaginationOptions(limit, offset),
         }));
     }
 
@@ -61,7 +61,7 @@ public class PropertyQueryController : ControllerBase
         return Ok(await _mediator.Send(new IndexByAdminPropertySuggestionQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationParameters(limit, offset),
+            Pagination = new PaginationOptions(limit, offset),
         }));
     }
 }

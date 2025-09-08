@@ -1,6 +1,8 @@
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 
@@ -21,7 +23,11 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
 
         return new IndexByAdminPropertyScanQueryResponse
         {
-            Data = [.. await _repositories.Properties.Scans.IndexAndProjectAsync(s => s.PropertyId == property.Id, PropertyScanDto.IndexByAdminSelector, request.Pagination)],
+            Data = [.. await _repositories.Properties.Scans.IndexAsync(s => s.PropertyId == property.Id, new QueryOptions<PropertyScan, PropertyScanDto>
+            {
+                Selector = PropertyScanDto.IndexByAdminSelector,
+                Pagination = request.Pagination
+            })],
             Limit = request.Pagination.Limit,
             Offset = request.Pagination.Offset,
             TotalCount = await _repositories.Properties.Scans.CountAsync(s => s.PropertyId == property.Id)

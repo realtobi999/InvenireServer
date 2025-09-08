@@ -36,7 +36,7 @@ public class EmployeeQueryController : ControllerBase
         return Ok((IndexByEmployeeOrganizationInvitationQueryResponse?)await _mediator.Send(new IndexByEmployeeOrganizationInvitationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationParameters(limit, offset)
+            Pagination = new PaginationOptions(limit, offset)
         }));
     }
 }
