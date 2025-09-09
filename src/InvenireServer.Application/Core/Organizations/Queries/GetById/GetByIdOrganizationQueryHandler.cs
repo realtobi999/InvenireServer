@@ -1,6 +1,7 @@
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
 
@@ -16,8 +17,15 @@ public class GetByIdOrganizationQueryHandler : IRequestHandler<GetByIdOrganizati
     }
 
     public async Task<OrganizationDto> Handle(GetByIdOrganizationQuery request, CancellationToken ct)
-        => await _repositories.Organizations.GetAsync(o => o.Id == request.OrganizationId, new QueryOptions<Organization, OrganizationDto>
+        => await _repositories.Organizations.GetAsync(new QueryOptions<Organization, OrganizationDto>
         {
-            Selector = OrganizationDto.GetByIdQuerySelector
+            Selector = OrganizationDto.GetByIdQuerySelector,
+            Filtering = new QueryFilteringOptions<Organization>
+            {
+                Filters =
+                [
+                    o => o.Id == request.OrganizationId
+                ]
+            }
         }) ?? throw new NotFound404Exception("The organization was not found in the system.");
 }

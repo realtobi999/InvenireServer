@@ -2,6 +2,7 @@ using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Interfaces.Repositories.Users;
+using InvenireServer.Domain.Entities.Common.Queries;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -28,7 +29,9 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 
         if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
 
-        return await GetAsync(e => e.Id == id, options);
+        options.Filtering?.Filters.Add(e => e.Id == id);
+
+        return await GetAsync(options);
     }
 
     public async Task<IEnumerable<Admin>> IndexInactiveAsync()

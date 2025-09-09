@@ -1,6 +1,6 @@
-using System.Linq.Expressions;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Common.Queries;
 
 namespace InvenireServer.Application.Interfaces.Repositories.Users;
 

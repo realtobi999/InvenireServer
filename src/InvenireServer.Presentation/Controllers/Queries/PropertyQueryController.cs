@@ -8,6 +8,8 @@ using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -33,13 +35,12 @@ public class PropertyQueryController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items")]
-    public async Task<IActionResult> IndexItemsByAdmin([FromQuery] int? limit, [FromQuery] int? offset)
+    public async Task<IActionResult> IndexItemsByAdmin([FromQuery] IndexByAdminPropertyItemQueryParameters parameters)
     {
-
         return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationOptions(limit, offset),
+            Parameters = parameters
         }));
     }
 
@@ -50,7 +51,7 @@ public class PropertyQueryController : ControllerBase
         return Ok(await _mediator.Send(new IndexByAdminPropertyScanQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationOptions(limit, offset),
+            Pagination = new QueryPaginationOptions(limit, offset),
         }));
     }
 
@@ -61,7 +62,7 @@ public class PropertyQueryController : ControllerBase
         return Ok(await _mediator.Send(new IndexByAdminPropertySuggestionQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationOptions(limit, offset),
+            Pagination = new QueryPaginationOptions(limit, offset),
         }));
     }
 }

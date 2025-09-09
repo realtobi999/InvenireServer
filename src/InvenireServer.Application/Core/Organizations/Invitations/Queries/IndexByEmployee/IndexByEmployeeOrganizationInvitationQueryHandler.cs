@@ -3,6 +3,7 @@ using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Common.Queries;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
@@ -19,16 +20,25 @@ public class IndexByEmployeeOrganizationInvitationQueryHandler : IRequestHandler
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
+        var query = new QueryOptions<OrganizationInvitation, OrganizationInvitationDto>
+        {
+            Selector = OrganizationInvitationDto.FromInvitationSelector,
+            Filtering = new QueryFilteringOptions<OrganizationInvitation>
+            {
+                Filters =
+                [
+                    i => i.Employee!.Id == employee.Id
+                ]
+            },
+            Pagination = request.Pagination,
+        };
+
         return new IndexByEmployeeOrganizationInvitationQueryResponse
         {
-            Data = [.. await _repositories.Organizations.Invitations.IndexAsync(i => i.Employee!.Id == employee.Id, new QueryOptions<OrganizationInvitation, OrganizationInvitationDto>
-            {
-                Selector = OrganizationInvitationDto.FromInvitationSelector,
-                Pagination = request.Pagination,
-            })],
+            Data = [.. await _repositories.Organizations.Invitations.IndexAsync(query)],
             Limit = request.Pagination.Limit,
             Offset = request.Pagination.Offset,
-            TotalCount = await _repositories.Organizations.Invitations.CountAsync(i => i.Employee!.Id == employee.Id)
+            TotalCount = await _repositories.Organizations.Invitations.CountAsync(query.Filtering.Filters!)
         };
     }
 }

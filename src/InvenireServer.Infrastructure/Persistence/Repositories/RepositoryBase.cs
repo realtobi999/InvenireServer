@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using InvenireServer.Application.Interfaces.Repositories;
-using InvenireServer.Domain.Entities.Common;
 using System.Net.Quic;
+using InvenireServer.Domain.Entities.Common.Queries;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
@@ -35,14 +35,20 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().FirstOrDefaultAsync(predicate);
     }
 
-    public virtual async Task<TResult?> GetAsync<TResult>(Expression<Func<Entity, bool>> predicate, QueryOptions<Entity, TResult> options)
+    public virtual async Task<TResult?> GetAsync<TResult>(QueryOptions<Entity, TResult> options)
     {
-        var query = GetQueryable();
+        var query = GetQueryable().AsNoTracking();
 
-        query = query.Where(predicate);
+        if (options.Filtering is not null)
+            foreach (var filter in options.Filtering.Filters)
+            {
+                if (filter is null) continue;
 
-        if (options.OrderBy is not null)
-            query = options.OrderByDescending ? query.OrderByDescending(options.OrderBy) : query.OrderBy(options.OrderBy);
+                query = query.Where(filter);
+            }
+
+        if (options.Ordering is not null && options.Ordering.OrderBy is not null)
+            query = options.Ordering.OrderByDescending ? query.OrderByDescending(options.Ordering.OrderBy) : query.OrderBy(options.Ordering.OrderBy);
 
         if (options.Pagination is not null)
             query = query.Skip(options.Pagination.Offset).Take(options.Pagination.Limit);
@@ -64,14 +70,20 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         return await GetQueryable().Where(predicate).ToListAsync();
     }
 
-    public virtual async Task<IEnumerable<TResult>> IndexAsync<TResult>(Expression<Func<Entity, bool>> predicate, QueryOptions<Entity, TResult> options)
+    public virtual async Task<IEnumerable<TResult>> IndexAsync<TResult>(QueryOptions<Entity, TResult> options)
     {
-        var query = GetQueryable();
+        var query = GetQueryable().AsNoTracking();
 
-        query = query.Where(predicate);
+        if (options.Filtering is not null)
+            foreach (var filter in options.Filtering.Filters)
+            {
+                if (filter is null) continue;
 
-        if (options.OrderBy is not null)
-            query = options.OrderByDescending ? query.OrderByDescending(options.OrderBy) : query.OrderBy(options.OrderBy);
+                query = query.Where(filter);
+            }
+
+        if (options.Ordering is not null && options.Ordering.OrderBy is not null)
+            query = options.Ordering.OrderByDescending ? query.OrderByDescending(options.Ordering.OrderBy) : query.OrderBy(options.Ordering.OrderBy);
 
         if (options.Pagination is not null)
             query = query.Skip(options.Pagination.Offset).Take(options.Pagination.Limit);
@@ -88,12 +100,26 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         }
     }
 
-    public async Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)
+    public virtual async Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)
     {
         return await Context.Set<Entity>()
             .AsNoTracking()
             .Where(predicate)
             .CountAsync();
+    }
+
+    public virtual async Task<int> CountAsync(IEnumerable<Expression<Func<Entity, bool>>> predicates)
+    {
+        var query = GetQueryable().AsNoTracking();
+
+        foreach (var filter in predicates)
+        {
+            if (filter is null) continue;
+
+            query = query.Where(filter);
+        }
+
+        return await query.CountAsync();
     }
 
     protected virtual IQueryable<Entity> GetQueryable()

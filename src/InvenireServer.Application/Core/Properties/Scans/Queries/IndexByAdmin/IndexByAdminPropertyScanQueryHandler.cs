@@ -3,6 +3,7 @@ using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Common.Queries;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 
@@ -21,16 +22,25 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
+        var query = new QueryOptions<PropertyScan, PropertyScanDto>
+        {
+            Selector = PropertyScanDto.IndexByAdminSelector,
+            Filtering = new QueryFilteringOptions<PropertyScan>
+            {
+                Filters =
+                [
+                    s => s.PropertyId == property.Id
+                ]
+            },
+            Pagination = request.Pagination
+        };
+
         return new IndexByAdminPropertyScanQueryResponse
         {
-            Data = [.. await _repositories.Properties.Scans.IndexAsync(s => s.PropertyId == property.Id, new QueryOptions<PropertyScan, PropertyScanDto>
-            {
-                Selector = PropertyScanDto.IndexByAdminSelector,
-                Pagination = request.Pagination
-            })],
+            Data = [.. await _repositories.Properties.Scans.IndexAsync(query)],
             Limit = request.Pagination.Limit,
             Offset = request.Pagination.Offset,
-            TotalCount = await _repositories.Properties.Scans.CountAsync(s => s.PropertyId == property.Id)
+            TotalCount = await _repositories.Properties.Scans.CountAsync(query.Filtering.Filters!)
         };
     }
 }

@@ -1,12 +1,12 @@
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Domain.Entities.Common;
+namespace InvenireServer.Domain.Entities.Common.Queries;
 
-public class PaginationOptions
+public class QueryPaginationOptions
 {
     public const int MAX_LIMIT = 100;
 
-    public PaginationOptions(int? limit, int? offset)
+    public QueryPaginationOptions(int? limit, int? offset)
     {
         if (limit is null)
             throw new BadRequest400Exception("The limit must be set.");
@@ -19,7 +19,7 @@ public class PaginationOptions
         Offset = offset.Value;
     }
 
-    public PaginationOptions(int limit, int offset)
+    public QueryPaginationOptions(int limit, int offset)
     {
         Validate(limit, offset);
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Core.Employees.Queries.GetByJwt;
 using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
@@ -33,10 +34,10 @@ public class EmployeeQueryController : ControllerBase
     [HttpGet("/api/employees/invitations")]
     public async Task<IActionResult> GetInvitationsByEmployee([FromQuery] int? limit, [FromQuery] int? offset)
     {
-        return Ok((IndexByEmployeeOrganizationInvitationQueryResponse?)await _mediator.Send(new IndexByEmployeeOrganizationInvitationQuery
+        return Ok(await _mediator.Send(new IndexByEmployeeOrganizationInvitationQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new PaginationOptions(limit, offset)
+            Pagination = new QueryPaginationOptions(limit, offset)
         }));
     }
 }

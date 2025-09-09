@@ -1,8 +1,8 @@
-using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Application.Dtos.Admins;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Admins.Queries.GetByJwt;
 
