@@ -16,4 +16,11 @@ public record IndexByAdminPropertyItemQueryParameters
 
     public DateTimeOffset? CreatedAtFrom { get; set; }
     public DateTimeOffset? CreatedAtTo { get; set; }
+
+    public Guid? EmployeeId { get; set; }
+
+    public string? Room { get; set; }
+    public string? Building { get; set; }
+
+    public string? SearchQuery { get; set; }
 }

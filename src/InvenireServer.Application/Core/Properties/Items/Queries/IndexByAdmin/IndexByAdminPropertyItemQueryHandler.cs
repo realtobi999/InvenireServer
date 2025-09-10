@@ -1,9 +1,10 @@
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Application.Dtos.Properties;
-using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 
@@ -33,6 +34,9 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
                     // Core Filter.
                     i => i.PropertyId == property.Id,
 
+                    // Search Filter.
+                    request.Parameters.SearchQuery is not null ? _repositories.Properties.Items.BuildSearchExpression(request.Parameters.SearchQuery) : null,
+
                     // Additional Filters.
                     request.Parameters.MaxPrice is not null ? i => i.Price <= request.Parameters.MaxPrice : null,
                     request.Parameters.MinPrice is not null ? i => i.Price >= request.Parameters.MinPrice : null,
@@ -40,14 +44,32 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
                     request.Parameters.DateOfPurchaseTo is not null ? i => i.DateOfPurchase < request.Parameters.DateOfPurchaseTo : null,
                     request.Parameters.CreatedAtFrom is not null ? i => i.CreatedAt > request.Parameters.CreatedAtFrom : null,
                     request.Parameters.CreatedAtTo is not null ? i => i.CreatedAt < request.Parameters.CreatedAtTo : null,
+                    !string.IsNullOrEmpty(request.Parameters.Room) ? i => i.Location.Room.Contains(request.Parameters.Room) : null,
+                    !string.IsNullOrEmpty(request.Parameters.Building) ? i => i.Location.Building.Contains(request.Parameters.Building) : null,
                 ]
             },
             Pagination = new QueryPaginationOptions(request.Parameters.Limit, request.Parameters.Offset)
         };
 
+        var items = await _repositories.Properties.Items.IndexAsync(query);
+
+        // Load all the employees.
+        foreach (var item in items)
+        {
+            item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
+            {
+                Filtering = new QueryFilteringOptions<Employee>
+                {
+                    Filters = [e => e.Id == item.EmployeeId]
+                },
+                Selector = EmployeeDto.BaseSelector
+            });
+        }
+
+
         return new IndexByAdminPropertyItemQueryResponse
         {
-            Data = [.. await _repositories.Properties.Items.IndexAsync(query)],
+            Data = [.. items],
             Limit = request.Parameters.Limit,
             Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Items.CountAsync(query.Filtering.Filters!)

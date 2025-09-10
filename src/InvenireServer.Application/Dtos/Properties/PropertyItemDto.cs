@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
@@ -16,6 +17,10 @@ public record PropertyItemDto
 
     [JsonPropertyName("employee_id")]
     public required Guid? EmployeeId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("employee")]
+    public EmployeeDto? Employee { get; set; }
 
     [JsonPropertyName("inventory_number")]
     public required string InventoryNumber { get; set; }

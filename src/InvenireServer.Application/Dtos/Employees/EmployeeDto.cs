@@ -39,6 +39,25 @@ public record EmployeeDto
     [JsonPropertyName("property_suggestions")]
     public List<PropertySuggestionDto>? Suggestions { get; set; }
 
+
+    public static Expression<Func<Employee, EmployeeDto>> BaseSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
+    }
+
     public static Expression<Func<Employee, EmployeeDto>> FromEmployeeSelector
     {
         get
