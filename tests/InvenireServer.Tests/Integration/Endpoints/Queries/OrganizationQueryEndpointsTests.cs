@@ -157,8 +157,46 @@ public class OrganizationQueryEndpointsTests
         content.EmailAddress.Should().Be(employee.EmailAddress);
         content.CreatedAt.Should().Be(employee.CreatedAt);
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
-        content.AssignedItems.Count.Should().Be(items.Count);
-        content.Suggestions.Count.Should().Be(suggestions.Count);
+        content.AssignedItems.Should().NotBeNullOrEmpty();
+        content.AssignedItems!.Count.Should().Be(items.Count);
+        content.Suggestions.Should().NotBeNullOrEmpty();
+        content.Suggestions!.Count.Should().Be(suggestions.Count);
+    }
+
+    [Fact]
+    public async Task GetEmployeeByEmailAddress_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(employee);
+        context.Add(organization);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.GetAsync($"/api/organizations/employees/{employee.EmailAddress}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert that the response content is correct.
+        var content = await response.Content.ReadFromJsonAsync<EmployeeDto>() ?? throw new NullReferenceException();
+
+        content.Id.Should().Be(employee.Id);
+        content.OrganizationId.Should().Be(employee.OrganizationId);
+        content.FirstName.Should().Be(employee.FirstName);
+        content.LastName.Should().Be(employee.LastName);
+        content.EmailAddress.Should().Be(employee.EmailAddress);
+        content.CreatedAt.Should().Be(employee.CreatedAt);
+        content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
     }
 
     [Fact]

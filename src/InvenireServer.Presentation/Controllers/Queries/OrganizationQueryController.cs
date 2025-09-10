@@ -1,13 +1,14 @@
-using InvenireServer.Application.Core.Employees.Queries.GetById;
-using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
-using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
-using InvenireServer.Application.Core.Organizations.Queries.GetById;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Core.Employees.Queries.GetById;
+using InvenireServer.Application.Core.Organizations.Queries.GetById;
+using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
+using InvenireServer.Application.Core.Employees.Queries.GetByEmailAddress;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -59,6 +60,17 @@ public class OrganizationQueryController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             EmployeeId = employeeId,
+        }));
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/organizations/employees/{employeeAddress}")]
+    public async Task<IActionResult> GetEmployeeByEmailAddress(string employeeAddress)
+    {
+        return Ok(await _mediator.Send(new GetByEmailAddressEmployeeQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            EmployeeEmailAddress = employeeAddress,
         }));
     }
 }
