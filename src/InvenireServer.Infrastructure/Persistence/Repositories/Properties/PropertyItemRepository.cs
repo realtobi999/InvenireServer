@@ -13,11 +13,20 @@ public class PropertyItemRepository : RepositoryBase<PropertyItem>, IPropertyIte
 
     public Expression<Func<PropertyItem, bool>> BuildSearchExpression(string term)
     {
-        Console.WriteLine(term);
-        return i => EF.Functions.ILike(i.Name, $"%{term}%") ||
-                    EF.Functions.ILike(i.DocumentNumber, $"%{term}%") ||
-                    EF.Functions.ILike(i.InventoryNumber, $"%{term}%") ||
-                    EF.Functions.ILike(i.RegistrationNumber, $"%{term}%");
+        if (term.StartsWith('\"') && term.EndsWith('\"'))
+        {
+            term = term.Trim('"');
+        }
+        else
+        {
+            term = $"%{term}%";
+        }
+
+        return i =>
+            EF.Functions.ILike(i.Name, term) ||
+            EF.Functions.ILike(i.DocumentNumber, term) ||
+            EF.Functions.ILike(i.InventoryNumber, term) ||
+            EF.Functions.ILike(i.RegistrationNumber, term);
     }
 
     public override void Update(PropertyItem item)
