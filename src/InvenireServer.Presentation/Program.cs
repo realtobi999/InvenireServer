@@ -27,10 +27,6 @@ public class Program
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
-                builder.WebHost.UseKestrel((context, options) =>
-                {
-                    options.Listen(IPAddress.Any, new Uri(context.Configuration["ASPNETCORE_URLS"]!).Port);
-                });
                 builder.WebHost.ConfigureKestrel(options =>
                 {
                     options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.

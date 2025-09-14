@@ -15,4 +15,6 @@ COPY . .
 
 EXPOSE 5071
 
-CMD ["dotnet", "run", "--project", "src/InvenireServer.Presentation/InvenireServer.Presentation.csproj"]
+ENV DOTNET_RUNNING_URL=http://0.0.0.0:5071
+
+CMD ["sh", "-c", "dotnet run --project src/InvenireServer.Presentation/InvenireServer.Presentation.csproj --urls $DOTNET_RUNNING_URL"]

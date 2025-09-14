@@ -25,7 +25,6 @@ services:
 
       # Frontend
       - Frontend__BaseAddress=http://localhost:5170
-
     volumes:
       - ./src:/app/src
       - ./tests:/app/tests
