@@ -27,9 +27,12 @@ public class Program
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
-                builder.WebHost.ConfigureKestrel((context, options) =>
+                builder.WebHost.UseKestrel((context, options) =>
                 {
                     options.Listen(IPAddress.Any, new Uri(context.Configuration["ASPNETCORE_URLS"]!).Port);
+                });
+                builder.WebHost.ConfigureKestrel(options =>
+                {
                     options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
                 });
                 builder.Services.Configure<FormOptions>(options =>
@@ -57,6 +60,8 @@ public class Program
             }
             var app = builder.Build();
             {
+                Log.Information($"Application running on: {builder.Configuration["ASPNETCORE_URLS"]}");
+
                 app.UseSerilogRequestLogging();
                 app.UseExceptionHandler(_ => { });
 
