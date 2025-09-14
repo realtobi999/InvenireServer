@@ -71,8 +71,10 @@ public class EmployeeQueryEndpointsTests
         content.EmailAddress.Should().Be(employee.EmailAddress);
         content.CreatedAt.Should().Be(employee.CreatedAt);
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
-        content.AssignedItems.Count.Should().Be(items.Count);
-        content.Suggestions.Count.Should().Be(suggestions.Count);
+        content.AssignedItems.Should().NotBeNullOrEmpty();
+        content.AssignedItems!.Count.Should().Be(items.Count);
+        content.Suggestions.Should().NotBeNullOrEmpty();
+        content.Suggestions!.Count.Should().Be(suggestions.Count);
     }
 
     [Fact]

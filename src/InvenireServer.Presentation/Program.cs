@@ -1,14 +1,16 @@
+using System.Net;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Services;
 using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Application.Services.Employees.Backgrounds;
 using InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
 using InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
 using InvenireServer.Domain.Constants;
 using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Presentation.Extensions;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace InvenireServer.Presentation;
@@ -25,13 +27,14 @@ public class Program
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
-                builder.WebHost.ConfigureKestrel(options =>
+                builder.WebHost.ConfigureKestrel((context, options) =>
                 {
-                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 100; // 100 MB.
+                    options.Listen(IPAddress.Any, new Uri(context.Configuration["ASPNETCORE_URLS"]!).Port);
+                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
                 });
                 builder.Services.Configure<FormOptions>(options =>
                 {
-                    options.MultipartBodyLengthLimit = 1024 * 1024 * 100; // 100 MB.
+                    options.MultipartBodyLengthLimit = 1024 * 1024 * 50; // 50 MB.
                 });
 
                 builder.Services.ConfigureJwt(builder.Configuration);
@@ -61,10 +64,11 @@ public class Program
                 {
                     app.UseSwagger();
                     app.UseSwaggerUI();
+                    app.Services.CreateScope().ServiceProvider.GetRequiredService<InvenireServerContext>().Database.Migrate();
                 }
 
-                app.ConfigureStatusCodePages();
                 app.UseCors(CorsConstants.Policies.FRONTEND_POLICY);
+                app.ConfigureStatusCodePages();
                 app.UseAuthorization();
                 app.UseRateLimiter();
                 app.MapControllers();

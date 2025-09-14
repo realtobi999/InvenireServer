@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dev
+WORKDIR /app
+
+COPY InvenireServer.sln ./
+
+COPY src/InvenireServer.Application/InvenireServer.Application.csproj ./src/InvenireServer.Application/
+COPY src/InvenireServer.Domain/InvenireServer.Domain.csproj ./src/InvenireServer.Domain/
+COPY src/InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj ./src/InvenireServer.Infrastructure/
+COPY src/InvenireServer.Presentation/InvenireServer.Presentation.csproj ./src/InvenireServer.Presentation/
+COPY tests/InvenireServer.Tests/InvenireServer.Tests.csproj ./tests/InvenireServer.Tests/
+
+RUN dotnet restore
+
+COPY . .
+
+EXPOSE 5000
+EXPOSE 5001
+
+CMD ["dotnet", "run", "--project", "src/InvenireServer.Presentation/InvenireServer.Presentation.csproj"]
