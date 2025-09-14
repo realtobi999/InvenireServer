@@ -13,7 +13,6 @@ RUN dotnet restore
 
 COPY . .
 
-EXPOSE 5000
-EXPOSE 5001
+EXPOSE 5071
 
 CMD ["dotnet", "run", "--project", "src/InvenireServer.Presentation/InvenireServer.Presentation.csproj"]
