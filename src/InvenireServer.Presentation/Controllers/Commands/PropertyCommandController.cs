@@ -22,6 +22,7 @@ using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
+using InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -132,16 +133,26 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/properties/items")]
-    public async Task<IActionResult> DeleteItems([FromQuery] List<Guid> ids)
+    public async Task<IActionResult> DeleteItems([FromBody] DeletePropertyItemsCommand? command, [FromQuery] bool wipe)
     {
-        if (ids.Count == 0)
-            throw new ValidationException([new ValidationFailure("ids", "At least one ID must be provided.")]);
-
-        await _mediator.Send(new DeletePropertyItemsCommand
+        if (command is null)
         {
-            Ids = ids,
+            if (!wipe) throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+            await _mediator.Send(new DeleteAllPropertyItemsCommand
+            {
+                Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
+            });
+
+            return NoContent();
+        }
+
+        command = command with
+        {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
-        });
+        };
+
+        await _mediator.Send(command);
 
         return NoContent();
     }

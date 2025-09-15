@@ -24,8 +24,8 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         var items = new Dictionary<PropertyItem, UpdatePropertyItemCommand>();
         foreach (var id in request.Items.Select(i => i.Id))
         {
-            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system (key - {id}).");
-            if (item.PropertyId != property.Id) throw new BadRequest400Exception($"The item isn't part of the organization (id - {item.Id}).");
+            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system. (key - {id})");
+            if (item.PropertyId != property.Id) throw new BadRequest400Exception($"The item isn't part of the organization. (key - {id})");
             items[item] = request.Items.FirstOrDefault(i => i.Id == item.Id)!;
         }
 
@@ -33,8 +33,8 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         var employees = new Dictionary<Guid, Employee>();
         foreach (var id in items.Where(pair => pair.Key.EmployeeId != pair.Value.EmployeeId).SelectMany(pair => new[] { pair.Key.EmployeeId, pair.Value.EmployeeId }).OfType<Guid>().ToHashSet())
         {
-            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system (key - {id}).");
-            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee isn't part of the organization (id - {employee.Id}).");
+            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system. (key - {id})");
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee isn't part of the organization. (key - {id})");
             employees[id] = employee;
         }
 

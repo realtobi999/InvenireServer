@@ -24,8 +24,8 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
         var employees = new Dictionary<Guid, Employee>();
         foreach (var id in request.Items.Where(i => i.EmployeeId is not null).Select(i => i.EmployeeId!.Value).ToHashSet())
         {
-            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system (key - {id}).");
-            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee isn't part of the organization (id - {employee.Id}).");
+            var employee = await _repositories.Employees.GetAsync(e => e.Id == id) ?? throw new NotFound404Exception($"The employee was not found in the system. (key - {id})");
+            if (employee.OrganizationId != organization.Id) throw new BadRequest400Exception($"The employee isn't part of the organization. (key - {id})");
             employees[id] = employee;
         }
 

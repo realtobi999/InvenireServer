@@ -24,7 +24,7 @@ services:
       - SMTP__Password=1YMqYWqBXxDdsEdWKC
 
       # Frontend
-      - Frontend__BaseAddress=http://localhost:5170
+      - Frontend__BaseAddress=http://127.0.0.1:5170
     volumes:
       - ./src:/app/src
       - ./tests:/app/tests

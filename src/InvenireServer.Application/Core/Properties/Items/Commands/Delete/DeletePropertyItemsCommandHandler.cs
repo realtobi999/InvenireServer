@@ -21,9 +21,9 @@ public class DeletePropertyItemsCommandHandler : IRequestHandler<DeletePropertyI
 
         foreach (var id in request.Ids)
         {
-            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system (key - {id}).");
+            var item = await _repositories.Properties.Items.GetAsync(i => i.Id == id) ?? throw new NotFound404Exception($"The item was not found in the system. (key - {id})");
 
-            if (item.PropertyId != property.Id) throw new BadRequest400Exception("The item is not from the property.");
+            if (item.PropertyId != property.Id) throw new BadRequest400Exception($"The item isn't part of the property. (key - {id})");
 
             _repositories.Properties.Items.Delete(item);
         }

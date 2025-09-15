@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using InvenireServer.Application.Core.Properties.Commands.Update;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
+using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
@@ -246,7 +247,13 @@ public class PropertyCommandEndpointsTests
         })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
-        var response = await _client.DeleteAsync($"/api/properties/items?ids={string.Join("&ids=", items.Select(i => i.Id))}");
+        var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/api/properties/items")
+        {
+            Content = JsonContent.Create(new DeletePropertyItemsCommand
+            {
+                Ids = [.. items.Select(i => i.Id)],
+            })
+        });
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
