@@ -29,9 +29,7 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
 
         admin.LastLoginAt = DateTimeOffset.UtcNow;
 
-        _repositories.Admins.Update(admin);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Admins.ExecuteUpdateAsync(admin);
 
         var token = _jwt.Builder.Build(
             [

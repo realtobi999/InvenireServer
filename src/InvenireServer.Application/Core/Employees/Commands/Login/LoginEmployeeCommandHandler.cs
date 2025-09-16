@@ -29,9 +29,7 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
 
         employee.LastLoginAt = DateTimeOffset.UtcNow;
 
-        _repositories.Employees.Update(employee);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Employees.ExecuteUpdateAsync(employee);
 
         var token = _jwt.Builder.Build(
             [

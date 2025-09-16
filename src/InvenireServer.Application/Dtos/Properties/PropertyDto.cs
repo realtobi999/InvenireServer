@@ -46,8 +46,8 @@ public class PropertyDto
                 {
                     TotalItems = p.Items.Count,
                     TotalValue = p.Items.Sum(i => i.Price),
-                    AveragePrice = p.Items.Average(i => i.Price),
                     AverageAge = p.Items.Average(i => (DateTime.Now - i.DateOfPurchase).TotalDays / 365.25),
+                    AveragePrice = p.Items.Average(i => i.Price),
                 },
                 ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary
                 {
@@ -56,6 +56,9 @@ public class PropertyDto
                 SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
                 {
                     TotalSuggestions = p.Suggestions.Count,
+                    TotalApprovedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.APPROVED),
+                    TotalPendingSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.PENDING),
+                    TotalDeclinedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.DECLINED)
                 },
             };
         }
@@ -90,4 +93,13 @@ public class PropertyDtoSuggestionsSummary
 {
     [JsonPropertyName("total_suggestions")]
     public required int TotalSuggestions { get; set; }
+
+    [JsonPropertyName("total_approved_suggestions")]
+    public required int TotalApprovedSuggestions { get; set; }
+
+    [JsonPropertyName("total_pending_suggestions")]
+    public required int TotalPendingSuggestions { get; set; }
+
+    [JsonPropertyName("total_declined_suggestions")]
+    public required int TotalDeclinedSuggestions { get; set; }
 }

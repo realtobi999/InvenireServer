@@ -35,8 +35,6 @@ public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdateProp
             suggestion.ResolvedAt = null;
         }
 
-        _repositories.Properties.Suggestions.Update(suggestion);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Suggestions.ExecuteUpdateAsync(suggestion);
     }
 }

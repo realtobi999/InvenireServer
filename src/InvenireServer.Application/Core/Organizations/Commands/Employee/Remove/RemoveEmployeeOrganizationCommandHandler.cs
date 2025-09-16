@@ -21,8 +21,6 @@ public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEm
         if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee isn't part of the organization");
         organization.RemoveEmployee(employee);
 
-        _repositories.Organizations.Update(organization);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Organizations.ExecuteUpdateAsync(organization);
     }
 }

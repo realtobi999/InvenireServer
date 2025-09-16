@@ -18,8 +18,6 @@ public class DeleteAdminCommandHandler : IRequestHandler<DeleteAdminCommand>
 
         if (await _repositories.Organizations.GetForAsync(admin) is not null) throw new BadRequest400Exception("The admin's organization must be deleted before the admin can be removed.");
 
-        _repositories.Admins.Delete(admin);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Admins.ExecuteDeleteAsync(admin);
     }
 }

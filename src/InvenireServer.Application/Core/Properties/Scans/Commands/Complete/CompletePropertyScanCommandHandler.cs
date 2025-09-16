@@ -23,8 +23,6 @@ public class CompletePropertyScanCommandHandler : IRequestHandler<CompleteProper
         scan.Status = PropertyScanStatus.COMPLETED;
         scan.CompletedAt = DateTimeOffset.UtcNow;
 
-        _repositories.Properties.Scans.Update(scan);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Scans.ExecuteUpdateAsync(scan);
     }
 }

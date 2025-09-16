@@ -22,8 +22,6 @@ public class UpdatePropertyScanCommandHandler : IRequestHandler<UpdatePropertySc
         scan.Name = request.Name;
         scan.Description = request.Description;
 
-        _repositories.Properties.Scans.Update(scan);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Scans.ExecuteUpdateAsync(scan);
     }
 }

@@ -22,8 +22,6 @@ public class UpdateOrganizationInvitationCommandHandler : IRequestHandler<Update
 
         invitation.Description = request.Description;
 
-        _repositories.Organizations.Invitations.Update(invitation);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Organizations.Invitations.ExecuteUpdateAsync(invitation);
     }
 }

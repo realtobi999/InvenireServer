@@ -19,8 +19,6 @@ public class UpdateOrganizationCommandHandler : IRequestHandler<UpdateOrganizati
 
         organization.Name = request.Name;
 
-        _repositories.Organizations.Update(organization);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Organizations.ExecuteUpdateAsync(organization);
     }
 }

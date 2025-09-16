@@ -27,9 +27,7 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
 
         scan.ScannedItems.Add(item);
 
-        _repositories.Properties.Scans.Update(scan);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Scans.ExecuteUpdateAsync(scan);
     }
 
     private async Task<PropertyScan> GetScanAsEmployeeAsync(Jwt jwt, PropertyItem item)

@@ -33,9 +33,7 @@ public class CreatePropertyScanCommandHandler : IRequestHandler<CreatePropertySc
             LastUpdatedAt = null,
         };
 
-        _repositories.Properties.Scans.Create(scan);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Scans.ExecuteCreateAsync(scan);
 
         return new CreatePropertyScanCommandResult
         {

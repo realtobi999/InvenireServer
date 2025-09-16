@@ -21,8 +21,6 @@ public class ConfirmVerificationAdminCommandHandler : IRequestHandler<ConfirmVer
 
         admin.Verify();
 
-        _repositories.Admins.Update(admin);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Admins.ExecuteUpdateAsync(admin);
     }
 }

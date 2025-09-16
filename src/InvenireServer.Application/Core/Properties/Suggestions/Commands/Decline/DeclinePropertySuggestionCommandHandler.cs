@@ -27,8 +27,6 @@ public class DeclinePropertySuggestionCommandHandler : IRequestHandler<DeclinePr
         suggestion.Status = PropertySuggestionStatus.DECLINED;
         suggestion.ResolvedAt = DateTimeOffset.UtcNow;
 
-        _repositories.Properties.Suggestions.Update(suggestion);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Suggestions.ExecuteUpdateAsync(suggestion);
     }
 }

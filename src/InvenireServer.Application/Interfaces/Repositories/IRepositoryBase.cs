@@ -12,7 +12,10 @@ public interface IRepositoryBase<TEntity> where TEntity : class
     Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate);
     Task<TResult?> GetAsync<TResult>(QueryOptions<TEntity, TResult> options);
     void Create(TEntity entity);
+    Task ExecuteCreateAsync(TEntity entity);
     void Update(TEntity entity);
+    Task ExecuteUpdateAsync(TEntity entity);
     void Delete(TEntity entity);
+    Task ExecuteDeleteAsync(TEntity entity);
     Task ExecuteDeleteWhereAsync(Expression<Func<TEntity, bool>> predicate);
 }

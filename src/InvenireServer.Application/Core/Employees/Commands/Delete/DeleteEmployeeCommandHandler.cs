@@ -16,8 +16,6 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
 
-        _repositories.Employees.Delete(employee);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Employees.ExecuteDeleteAsync(employee);
     }
 }

@@ -21,8 +21,6 @@ public class ConfirmVerificationEmployeeCommandHandler : IRequestHandler<Confirm
 
         employee.Verify();
 
-        _repositories.Employees.Update(employee);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Employees.ExecuteUpdateAsync(employee);
     }
 }

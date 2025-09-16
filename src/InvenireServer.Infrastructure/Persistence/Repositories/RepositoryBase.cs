@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using EFCore.BulkExtensions;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Repositories;
 
@@ -20,14 +19,32 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
         Context.Set<Entity>().Add(entity);
     }
 
+    public virtual async Task ExecuteCreateAsync(Entity entity)
+    {
+        Context.Set<Entity>().Add(entity);
+        await Context.SaveChangesAsync();
+    }
+
     public virtual void Update(Entity entity)
     {
         Context.Set<Entity>().Update(entity);
     }
 
+    public virtual async Task ExecuteUpdateAsync(Entity entity)
+    {
+        Context.Set<Entity>().Update(entity);
+        await Context.SaveChangesAsync();
+    }
+
     public virtual void Delete(Entity entity)
     {
         Context.Set<Entity>().Remove(entity);
+    }
+
+    public virtual async Task ExecuteDeleteAsync(Entity entity)
+    {
+        Context.Set<Entity>().Remove(entity);
+        await Context.SaveChangesAsync();
     }
 
     public virtual async Task ExecuteDeleteWhereAsync(Expression<Func<Entity, bool>> predicate)
@@ -131,4 +148,5 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
     {
         return Context.Set<Entity>();
     }
+
 }

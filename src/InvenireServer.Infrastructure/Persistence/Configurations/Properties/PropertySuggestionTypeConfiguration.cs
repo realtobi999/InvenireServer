@@ -34,7 +34,8 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
 
         builder.Property(s => s.Status)
             .HasColumnName("status")
-            .IsRequired();
+            .IsRequired()
+            .HasConversion<int>();
 
         builder.Property(s => s.CreatedAt)
             .HasColumnName("created_at")

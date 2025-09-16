@@ -41,7 +41,7 @@ public class PropertySuggestion
 
 public enum PropertySuggestionStatus
 {
-    APPROVED,
-    PENDING,
-    DECLINED,
+    APPROVED = 0,
+    PENDING = 1,
+    DECLINED = 2,
 }

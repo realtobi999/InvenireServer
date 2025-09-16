@@ -29,9 +29,7 @@ public class DeletePropertySuggestionCommandHandler : IRequestHandler<DeleteProp
                 break;
         }
 
-        _repositories.Properties.Suggestions.Delete(suggestion);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Suggestions.ExecuteDeleteAsync(suggestion);
     }
 
     private async Task ValidateForAdminAsync(Jwt jwt, PropertySuggestion suggestion)

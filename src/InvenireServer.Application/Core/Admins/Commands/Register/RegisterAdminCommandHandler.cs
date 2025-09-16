@@ -35,9 +35,7 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         };
         admin.Password = _hasher.HashPassword(admin, admin.Password);
 
-        _repositories.Admins.Create(admin);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Admins.ExecuteCreateAsync(admin);
 
         var token = _jwt.Builder.Build(
             [

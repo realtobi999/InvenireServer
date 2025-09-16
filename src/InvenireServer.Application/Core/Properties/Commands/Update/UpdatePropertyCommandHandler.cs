@@ -18,8 +18,6 @@ public class UpdatePropertyCommandHandler : IRequestHandler<UpdatePropertyComman
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
-        _repositories.Properties.Update(property);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.ExecuteUpdateAsync(property);
     }
 }

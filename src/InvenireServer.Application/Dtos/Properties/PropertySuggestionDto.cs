@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 
 namespace InvenireServer.Application.Dtos.Properties;
 

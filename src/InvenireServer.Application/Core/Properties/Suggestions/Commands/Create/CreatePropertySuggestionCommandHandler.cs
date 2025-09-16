@@ -36,9 +36,7 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
             ResolvedAt = null,
         };
 
-        _repositories.Properties.Suggestions.Create(suggestion);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Properties.Suggestions.ExecuteCreateAsync(suggestion);
 
         return new CreatePropertySuggestionCommandResult
         {

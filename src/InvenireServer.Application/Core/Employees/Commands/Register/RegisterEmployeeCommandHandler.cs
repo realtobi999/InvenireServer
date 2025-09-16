@@ -35,9 +35,7 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         };
         employee.Password = _hasher.HashPassword(employee, employee.Password);
 
-        _repositories.Employees.Create(employee);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Employees.ExecuteCreateAsync(employee);
 
         var token = _jwt.Builder.Build(
             [

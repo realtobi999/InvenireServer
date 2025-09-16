@@ -19,8 +19,6 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
 
-        _repositories.Employees.Update(employee);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Employees.ExecuteUpdateAsync(employee);
     }
 }

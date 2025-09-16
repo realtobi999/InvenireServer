@@ -19,8 +19,6 @@ public class UpdateAdminCommandHandler : IRequestHandler<UpdateAdminCommand>
         admin.FirstName = request.FirstName;
         admin.LastName = request.LastName;
 
-        _repositories.Admins.Update(admin);
-
-        await _repositories.SaveOrThrowAsync();
+        await _repositories.Admins.ExecuteUpdateAsync(admin);
     }
 }
