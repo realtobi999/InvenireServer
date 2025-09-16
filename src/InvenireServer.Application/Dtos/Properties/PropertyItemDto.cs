@@ -73,7 +73,7 @@ public record PropertyItemDto
                 Price = i.Price,
                 SerialNumber = i.SerialNumber,
                 DateOfPurchase = i.DateOfPurchase,
-                DateOfSale = i.DateOfPurchase,
+                DateOfSale = i.DateOfSale,
                 Location = new PropertyItemLocationDto
                 {
                     Room = i.Location.Room,

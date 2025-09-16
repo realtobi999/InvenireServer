@@ -124,6 +124,55 @@ public class PropertyQueryEndpointsTests
         content.TotalCount.Should().Be(items.Count);
     }
 
+    [Fact]
+    public async Task GetItemById_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var item = items.First();
+        var response = await _client.GetAsync($"/api/properties/items/{item.Id}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert that the response content is correct.
+        var content = await response.Content.ReadFromJsonAsync<PropertyItemDto>() ?? throw new NullReferenceException();
+
+        content.Id.Should().Be(item.Id);
+        content.PropertyId.Should().Be(item.PropertyId);
+        content.EmployeeId.Should().Be(item.EmployeeId);
+        content.InventoryNumber.Should().Be(item.InventoryNumber);
+        content.RegistrationNumber.Should().Be(item.RegistrationNumber);
+        content.Name.Should().Be(item.Name);
+        content.Price.Should().Be(item.Price);
+        content.SerialNumber.Should().Be(item.SerialNumber);
+        content.DateOfPurchase.Should().Be(item.DateOfPurchase);
+        content.DateOfSale.Should().Be(item.DateOfSale);
+        content.Location.Should().BeEquivalentTo(item.Location);
+        content.Description.Should().Be(item.Description);
+        content.DocumentNumber.Should().Be(item.DocumentNumber);
+        content.CreatedAt.Should().Be(item.CreatedAt);
+        content.LastUpdatedAt.Should().Be(item.LastUpdatedAt);
+    }
+
 
     [Fact]
     public async Task IndexScansByAdmin_ReturnsOkAndCorrectData()

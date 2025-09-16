@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 
 namespace InvenireServer.Application.Dtos.Properties;
@@ -16,6 +17,10 @@ public record PropertySuggestionDto
 
     [JsonPropertyName("employee_id")]
     public required Guid? EmployeeId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("employee")]
+    public EmployeeDto? Employee { get; set; }
 
     [JsonPropertyName("property_id")]
     public required Guid? PropertyId { get; set; }
@@ -63,7 +68,6 @@ public record PropertySuggestionDto
                 Name = s.Name,
                 Description = s.Description,
                 Feedback = s.Feedback,
-                Payload = null,
                 PayloadString = s.PayloadString,
                 Status = s.Status,
                 CreatedAt = s.CreatedAt,

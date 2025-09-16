@@ -1,7 +1,4 @@
-using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Common.Queries;
-using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 

@@ -59,11 +59,11 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
         {
             item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
             {
+                Selector = EmployeeDto.BaseSelector,
                 Filtering = new QueryFilteringOptions<Employee>
                 {
                     Filters = [e => e.Id == item.EmployeeId]
                 },
-                Selector = EmployeeDto.BaseSelector
             });
         }
 

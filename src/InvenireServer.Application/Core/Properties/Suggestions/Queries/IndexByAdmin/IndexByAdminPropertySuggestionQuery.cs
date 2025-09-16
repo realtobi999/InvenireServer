@@ -6,5 +6,5 @@ namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexBy
 public record IndexByAdminPropertySuggestionQuery : IRequest<IndexByAdminPropertySuggestionQueryResponse>
 {
     public required Jwt Jwt { get; init; }
-    public required QueryPaginationOptions Pagination { get; init; }
+    public required IndexByAdminPropertySuggestionQueryParameters Parameters { get; init; }
 }

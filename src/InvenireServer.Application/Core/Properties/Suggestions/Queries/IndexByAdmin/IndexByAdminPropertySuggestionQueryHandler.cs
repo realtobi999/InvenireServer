@@ -1,10 +1,12 @@
 using System.Text.Json;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
@@ -26,31 +28,46 @@ public class IndexByAdminPropertySuggestionQueryHandler : IRequestHandler<IndexB
 
         var query = new QueryOptions<PropertySuggestion, PropertySuggestionDto>
         {
+            Ordering = new QueryOrderingOptions<PropertySuggestion>(request.Parameters.Order, request.Parameters.Desc),
             Selector = PropertySuggestionDto.IndexByAdminSelector,
             Filtering = new QueryFilteringOptions<PropertySuggestion>
             {
                 Filters =
                 [
-                    s => s.PropertyId == property.Id
+                    // Core Filter.
+                    s => s.PropertyId == property.Id,
+
+                    // Search Filter.
+                    request.Parameters.SearchQuery is not null ? _repositories.Properties.Suggestions.BuildSearchExpression(request.Parameters.SearchQuery) : null,
+
+                    // Additional Filters.
+                    request.Parameters.Status is not null ? s => s.Status == request.Parameters.Status : null
                 ]
             },
-            Pagination = request.Pagination
+            Pagination = new QueryPaginationOptions(request.Parameters.Limit, request.Parameters.Offset)
         };
 
         var suggestions = await _repositories.Properties.Suggestions.IndexAsync(query);
-        suggestions = suggestions.Select(suggestion =>
+
+        // Load all the employees and deserialize payload.
+        foreach (var suggestion in suggestions)
         {
-            return suggestion with
+            suggestion.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
             {
-                Payload = JsonSerializer.Deserialize<PropertySuggestionPayload>(suggestion.PayloadString!)
-            };
-        });
+                Selector = EmployeeDto.BaseSelector,
+                Filtering = new QueryFilteringOptions<Employee>
+                {
+                    Filters = [e => e.Id == suggestion.EmployeeId]
+                },
+            });
+            suggestion.Payload = JsonSerializer.Deserialize<PropertySuggestionPayload>(suggestion.PayloadString!);
+        }
 
         return new IndexByAdminPropertySuggestionQueryResponse
         {
             Data = [.. suggestions],
-            Limit = request.Pagination.Limit,
-            Offset = request.Pagination.Offset,
+            Limit = request.Parameters.Limit,
+            Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Suggestions.CountAsync(query.Filtering.Filters!)
         };
     }
