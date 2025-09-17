@@ -21,7 +21,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
 
     public virtual async Task ExecuteCreateAsync(Entity entity)
     {
-        Context.Set<Entity>().Add(entity);
+        Create(entity);
         await Context.SaveChangesAsync();
     }
 
@@ -32,7 +32,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
 
     public virtual async Task ExecuteUpdateAsync(Entity entity)
     {
-        Context.Set<Entity>().Update(entity);
+        Update(entity);
         await Context.SaveChangesAsync();
     }
 
@@ -43,7 +43,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
 
     public virtual async Task ExecuteDeleteAsync(Entity entity)
     {
-        Context.Set<Entity>().Remove(entity);
+        Delete(entity);
         await Context.SaveChangesAsync();
     }
 

@@ -11,8 +11,19 @@ public class UpdatePropertyItemsCommandValidator : AbstractValidator<UpdatePrope
             .NotEmpty()
             .WithName("items");
 
-        RuleForEach(c => c.Items)
-            .SetValidator(new UpdatePropertyItemCommandValidator());
+        RuleFor(c => c.Items)
+            .Custom((items, context) =>
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    var item = items[i];
+                    var result = new UpdatePropertyItemCommandValidator().Validate(item);
+
+                    if (!result.IsValid)
+                        foreach (var error in result.Errors)
+                            context.AddFailure($"Item {(string.IsNullOrEmpty(item.InventoryNumber) ? "MISSING_INVENTORY_NUMBER" : item.InventoryNumber)}: {error.ErrorMessage}");
+                }
+            });
     }
 }
 
@@ -51,6 +62,7 @@ public class UpdatePropertyItemCommandValidator : AbstractValidator<UpdateProper
             {
                 location.RuleFor(l => l.Room).NotEmpty().MaximumLength(PropertyItemLocation.MAX_ROOM_LENGTH).WithName("room");
                 location.RuleFor(l => l.Building).NotEmpty().MaximumLength(PropertyItemLocation.MAX_BUILDING_LENGTH).WithName("building");
+                location.RuleFor(l => l.AdditionalNote).MaximumLength(PropertyItemLocation.MAX_ADDITIONAL_NOTE_LENGTH).WithName("additional_note");
             });
         RuleFor(c => c.Description)
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
