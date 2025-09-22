@@ -35,7 +35,7 @@ public class PropertyItem
 
     public required string? Description { get; set; }
 
-    public required string DocumentNumber { get; set; }
+    public required string? DocumentNumber { get; set; }
 
     public required DateTimeOffset CreatedAt { get; init; }
 

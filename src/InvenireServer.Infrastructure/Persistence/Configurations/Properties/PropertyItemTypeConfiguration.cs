@@ -59,7 +59,6 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
 
         builder.Property(i => i.DocumentNumber)
             .HasColumnName("document_number")
-            .IsRequired()
             .HasMaxLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH);
 
         builder.Property(i => i.CreatedAt)

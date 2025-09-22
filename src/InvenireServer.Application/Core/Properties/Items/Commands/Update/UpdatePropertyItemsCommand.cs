@@ -48,7 +48,7 @@ public record UpdatePropertyItemCommand
     public string? Description { get; init; }
 
     [JsonPropertyName("document_number")]
-    public required string DocumentNumber { get; init; }
+    public string? DocumentNumber { get; init; }
 
     [JsonPropertyName("employee_id")]
     public Guid? EmployeeId { get; init; }

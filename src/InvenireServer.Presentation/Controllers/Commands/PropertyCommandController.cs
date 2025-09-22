@@ -25,6 +25,8 @@ using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 using InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
 using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromJsonFile;
 using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromExcelFile;
+using InvenireServer.Domain.Exceptions.Http;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -115,6 +117,9 @@ public class PropertyCommandController : ControllerBase
     [HttpPost("/api/properties/items/excel-file")]
     public async Task<IActionResult> CreateItemsFromExcelFile(IFormFile file, [FromQuery] string columns)
     {
+        if (columns is null)
+            throw new BadRequest400Exception($"The '{nameof(columns)}' query parameter is missing or invalid.");
+
         await _mediator.Send(new CreatePropertyItemsFromExcelFileCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),

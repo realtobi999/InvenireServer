@@ -50,7 +50,7 @@ public record PropertyItemDto
     public required string? Description { get; set; }
 
     [JsonPropertyName("document_number")]
-    public required string DocumentNumber { get; set; }
+    public required string? DocumentNumber { get; set; }
 
     [JsonPropertyName("created_at")]
     public required DateTimeOffset CreatedAt { get; init; }

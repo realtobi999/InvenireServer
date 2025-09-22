@@ -24,7 +24,6 @@ public class PropertyItemRepository : RepositoryBase<PropertyItem>, IPropertyIte
 
         return i =>
             EF.Functions.ILike(i.Name, term) ||
-            EF.Functions.ILike(i.DocumentNumber, term) ||
             EF.Functions.ILike(i.InventoryNumber, term) ||
             EF.Functions.ILike(i.RegistrationNumber, term);
     }

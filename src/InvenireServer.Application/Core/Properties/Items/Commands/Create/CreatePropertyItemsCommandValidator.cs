@@ -52,6 +52,7 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
             .WithName("serial_number");
         RuleFor(c => c.DateOfPurchase)
             .NotEmpty()
+            .NotEqual(DateTimeOffset.MinValue)
             .WithName("date_of_purchase");
         RuleFor(c => c.Location)
             .NotEmpty()
@@ -66,7 +67,6 @@ public class CreatePropertyItemCommandValidator : AbstractValidator<CreateProper
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
             .WithName("description");
         RuleFor(c => c.DocumentNumber)
-            .NotEmpty()
             .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
             .WithName("document_number");
     }

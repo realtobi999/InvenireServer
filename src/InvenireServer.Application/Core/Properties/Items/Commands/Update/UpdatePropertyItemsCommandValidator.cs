@@ -68,7 +68,6 @@ public class UpdatePropertyItemCommandValidator : AbstractValidator<UpdateProper
             .MaximumLength(PropertyItem.MAX_DESCRIPTION_LENGTH)
             .WithName("description");
         RuleFor(c => c.DocumentNumber)
-            .NotEmpty()
             .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)
             .WithName("document_number");
     }
