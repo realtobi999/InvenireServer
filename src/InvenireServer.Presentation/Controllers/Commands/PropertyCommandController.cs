@@ -23,6 +23,8 @@ using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 using InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
+using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromJsonFile;
+using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromExcelFile;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -82,29 +84,10 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items")]
-    public async Task<IActionResult> CreateItems()
+    public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command)
     {
-        var command = null as CreatePropertyItemsCommand;
-
-        var type = Request.ContentType?.ToLower();
-        if (type?.Contains("application/json") == true)
-        {
-            using var reader = new StreamReader(Request.Body);
-            command = JsonSerializer.Deserialize<CreatePropertyItemsCommand>(await reader.ReadToEndAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        }
-        else if (type?.Contains("multipart/form-data") == true)
-        {
-            var file = Request.Form.Files.FirstOrDefault();
-            if (file != null && file.Length > 0)
-            {
-                using var stream = file.OpenReadStream();
-                using var reader = new StreamReader(stream);
-                command = JsonSerializer.Deserialize<CreatePropertyItemsCommand>(await reader.ReadToEndAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-        }
-
         if (command is null)
-            throw new ValidationException([new ValidationFailure("", "Request body or file is missing/invalid.")]);
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
 
         command = command with
         {
@@ -112,6 +95,33 @@ public class PropertyCommandController : ControllerBase
         };
 
         await _mediator.Send(command);
+        return Created();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/items/json-file")]
+    public async Task<IActionResult> CreateItemsFromJsonFile(IFormFile file)
+    {
+        await _mediator.Send(new CreatePropertyItemsFromJsonFileCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            Stream = file.OpenReadStream()
+        });
+
+        return Created();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/items/excel-file")]
+    public async Task<IActionResult> CreateItemsFromExcelFile(IFormFile file, [FromQuery] string columns)
+    {
+        await _mediator.Send(new CreatePropertyItemsFromExcelFileCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            Stream = file.OpenReadStream(),
+            ColumnString = columns,
+        });
+
         return Created();
     }
 

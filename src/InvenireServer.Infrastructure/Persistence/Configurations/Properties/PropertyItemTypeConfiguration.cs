@@ -40,10 +40,18 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
 
         builder.Property(i => i.DateOfPurchase)
             .HasColumnName("date_of_purchase")
-            .IsRequired();
+            .IsRequired()
+            .HasConversion(
+                v => v.UtcDateTime,
+                v => new DateTimeOffset(v, TimeSpan.Zero)
+            );
 
         builder.Property(i => i.DateOfSale)
-            .HasColumnName("date_of_sale");
+            .HasColumnName("date_of_sale")
+            .HasConversion(
+                v => v.HasValue ? v.Value.UtcDateTime : (DateTime?)null,
+                v => v.HasValue ? new DateTimeOffset(v.Value, TimeSpan.Zero) : null
+            );
 
         builder.Property(i => i.Description)
             .HasColumnName("description")
@@ -68,7 +76,6 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
             .HasColumnName("employee_id");
 
         // Relationships.
-
         builder.OwnsOne(i => i.Location, locationBuilder =>
         {
             locationBuilder.Property(l => l.Room)
