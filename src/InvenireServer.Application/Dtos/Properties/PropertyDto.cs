@@ -52,6 +52,9 @@ public class PropertyDto
                 ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary
                 {
                     TotalScans = p.Scans.Count,
+                    TotalActiveScans = p.Scans.Count(s => s.CompletedAt == null),
+                    LastActiveScan = p.Scans.Where(s => s.CompletedAt != null).Max(s => s.CompletedAt)
+
                 },
                 SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
                 {
@@ -86,6 +89,12 @@ public record PropertyDtoScansSummary
 {
     [JsonPropertyName("total_scans")]
     public required int TotalScans { get; set; }
+
+    [JsonPropertyName("total_active_scans")]
+    public required int TotalActiveScans { get; set; }
+
+    [JsonPropertyName("last_active_scan")]
+    public required DateTimeOffset? LastActiveScan { get; set; }
 }
 
 [JsonResponse]

@@ -58,12 +58,12 @@ public class PropertyQueryController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/scans")]
-    public async Task<IActionResult> IndexScansByAdmin([FromQuery] int? limit, [FromQuery] int? offset)
+    public async Task<IActionResult> IndexScansByAdmin([FromQuery] IndexByAdminPropertyScanQueryParameters parameters)
     {
         return Ok(await _mediator.Send(new IndexByAdminPropertyScanQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Pagination = new QueryPaginationOptions(limit, offset),
+            Parameters = parameters
         }));
     }
 

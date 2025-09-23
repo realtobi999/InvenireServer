@@ -29,17 +29,21 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
             {
                 Filters =
                 [
-                    s => s.PropertyId == property.Id
+                    // Core Filter.
+                    s => s.PropertyId == property.Id,
+
+                    // Additional Filters.
+                    request.Parameters.Active is not null ? s => request.Parameters.Active == (s.CompletedAt == null) : null
                 ]
             },
-            Pagination = request.Pagination
+            Pagination = new QueryPaginationOptions(request.Parameters.Limit, request.Parameters.Offset)
         };
 
         return new IndexByAdminPropertyScanQueryResponse
         {
             Data = [.. await _repositories.Properties.Scans.IndexAsync(query)],
-            Limit = request.Pagination.Limit,
-            Offset = request.Pagination.Offset,
+            Limit = request.Parameters.Limit,
+            Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Scans.CountAsync(query.Filtering.Filters!)
         };
     }
