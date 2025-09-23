@@ -35,10 +35,6 @@ public class PropertyScanDto
     public required DateTimeOffset? LastUpdatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("scanned_items")]
-    public List<PropertyItemDto>? ScannedItems { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("scanned_items_summary")]
     public PropertyScanDtoScannedItemsSummary? ScannedItemsSummary { get; set; }
 
@@ -60,9 +56,9 @@ public class PropertyScanDto
                 LastUpdatedAt = s.LastUpdatedAt,
                 ScannedItemsSummary = s.ScannedItems.Count == 0 ? null : new PropertyScanDtoScannedItemsSummary
                 {
-                    TotalScannedItems = s.ScannedItems.Count
+                    TotalItemsToScan = s.ScannedItems.Count,
+                    TotalScannedItems = s.ScannedItems.Where(si => si.IsScanned).ToList().Count,
                 },
-                ScannedItems = null,
             };
         }
     }
@@ -73,4 +69,7 @@ public class PropertyScanDtoScannedItemsSummary
 {
     [JsonPropertyName("total_scanned_items")]
     public required int TotalScannedItems { get; set; }
+
+    [JsonPropertyName("total_items_to_scan")]
+    public required int TotalItemsToScan { get; set; }
 }

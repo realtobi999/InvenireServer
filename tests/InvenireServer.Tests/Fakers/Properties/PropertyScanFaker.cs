@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office.CustomUI;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Fakers.Properties;
@@ -21,9 +22,14 @@ public class PropertyScanFaker : Faker<PropertyScan>
 
         if (items is not null)
         {
-            foreach (var i in items)
+            foreach (var item in items)
             {
-                scan.ScannedItems.Add(i);
+                scan.ScannedItems.Add(new PropertyScanPropertyItem
+                {
+                    IsScanned = false,
+                    PropertyItemId = item.Id,
+                    PropertyScanId = scan.Id,
+                });
             }
         }
 

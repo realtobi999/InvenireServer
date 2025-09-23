@@ -49,7 +49,7 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
 
     public virtual async Task ExecuteDeleteWhereAsync(Expression<Func<Entity, bool>> predicate)
     {
-        Console.WriteLine(await Context.Set<Entity>().Where(predicate).ExecuteDeleteAsync());
+        await Context.Set<Entity>().Where(predicate).ExecuteDeleteAsync();
     }
 
     public virtual async Task<Entity?> GetAsync(Expression<Func<Entity, bool>> predicate)

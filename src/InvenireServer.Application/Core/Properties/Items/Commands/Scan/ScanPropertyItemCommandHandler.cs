@@ -25,8 +25,7 @@ public class ScanPropertyItemCommandHandler : IRequestHandler<ScanPropertyItemCo
             _ => throw new Unauthorized401Exception(),
         };
 
-        scan.ScannedItems.Add(item);
-
+        await _repositories.Properties.Items.ScanAsync(item, scan);
         await _repositories.Properties.Scans.ExecuteUpdateAsync(scan);
     }
 

@@ -1,3 +1,5 @@
+using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Interfaces.Repositories.Properties;
 
@@ -7,6 +9,16 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
 {
     public PropertyScanRepository(InvenireServerContext context) : base(context)
     {
+    }
+
+    public async Task RegisterItemsAsync(PropertyScan scan)
+    {
+        await Context.BulkInsertAsync(await Context.Items.Where(i => i.PropertyId == scan.PropertyId).Select(i => new PropertyScanPropertyItem
+        {
+            IsScanned = false,
+            PropertyItemId = i.Id,
+            PropertyScanId = scan.Id
+        }).ToListAsync());
     }
 
     public async Task<PropertyScan?> GetInProgressForAsync(Property property)

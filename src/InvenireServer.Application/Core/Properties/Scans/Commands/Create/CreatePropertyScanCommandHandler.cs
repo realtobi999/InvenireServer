@@ -34,6 +34,7 @@ public class CreatePropertyScanCommandHandler : IRequestHandler<CreatePropertySc
         };
 
         await _repositories.Properties.Scans.ExecuteCreateAsync(scan);
+        await _repositories.Properties.Scans.RegisterItemsAsync(scan);
 
         return new CreatePropertyScanCommandResult
         {

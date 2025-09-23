@@ -52,6 +52,7 @@ public class PropertyQueryEndpointsTests
 
         using var context = _app.GetDatabaseContext();
         context.Add(admin);
+        context.Add(employee);
         context.Add(organization);
         context.Add(property);
         context.AddRange(items);
@@ -213,7 +214,6 @@ public class PropertyQueryEndpointsTests
 
         content.Data.Should().AllSatisfy(s =>
         {
-            s.ScannedItems.Should().BeNullOrEmpty();
             s.ScannedItemsSummary.Should().NotBeNull();
             s.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
         });

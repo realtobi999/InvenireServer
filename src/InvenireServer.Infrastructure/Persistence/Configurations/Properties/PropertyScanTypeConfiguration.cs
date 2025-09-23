@@ -40,25 +40,40 @@ public class PropertyScanTypeConfiguration : IEntityTypeConfiguration<PropertySc
 
         builder.Property(i => i.PropertyId)
             .HasColumnName("property_id");
+    }
+}
+
+public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyScanPropertyItem>
+{
+    public void Configure(EntityTypeBuilder<PropertyScanPropertyItem> builder)
+    {
+
+        // Properties.
+
+        builder.Property(x => x.PropertyScanId)
+            .HasColumnName("property_scan_id")
+            .IsRequired();
+
+        builder.Property(x => x.PropertyItemId)
+            .HasColumnName("property_item_id")
+            .IsRequired();
+
+        builder.HasKey(c => new { c.PropertyScanId, c.PropertyItemId });
+
+        builder.Property(x => x.IsScanned)
+            .HasColumnName("is_scanned")
+            .IsRequired();
 
         // Relationships.
 
-        builder.HasMany(c => c.ScannedItems)
+        builder.HasOne<PropertyScan>()
+            .WithMany(p => p.ScannedItems)
+            .HasForeignKey(x => x.PropertyScanId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<PropertyItem>()
             .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "PropertyCheckPropertyItem",
-
-                // PropertyItem side — do not cascade
-                i => i.HasOne<PropertyItem>()
-                      .WithMany()
-                      .HasForeignKey("PropertyItemId")
-                      .OnDelete(DeleteBehavior.Restrict),
-
-                // PropertyScan side — cascade delete
-                c => c.HasOne<PropertyScan>()
-                      .WithMany()
-                      .HasForeignKey("PropertyCheckId")
-                      .OnDelete(DeleteBehavior.Cascade)
-            );
+            .HasForeignKey(x => x.PropertyItemId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -28,7 +28,19 @@ public class PropertyScan
 
     public Guid? PropertyId { get; set; }
 
-    public ICollection<PropertyItem> ScannedItems { get; set; } = [];
+    public ICollection<PropertyScanPropertyItem> ScannedItems { get; set; } = [];
+}
+
+public class PropertyScanPropertyItem
+{
+    // Core properties.
+
+    public required bool IsScanned { get; set; }
+
+    // Navigational properties.
+
+    public required Guid PropertyItemId { get; set; }
+    public required Guid PropertyScanId { get; set; }
 }
 
 public enum PropertyScanStatus

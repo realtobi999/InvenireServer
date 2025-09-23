@@ -1,9 +1,10 @@
-using InvenireServer.Application.Interfaces.Email;
-using InvenireServer.Tests.Fakers.Common;
+using SQLitePCL;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using InvenireServer.Tests.Fakers.Common;
 using Microsoft.Extensions.DependencyInjection;
+using InvenireServer.Application.Interfaces.Email;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace InvenireServer.Tests.Integration.Server;
 
@@ -21,9 +22,24 @@ public static class ServerFactoryExtensions
         services.AddSingleton<IEmailSender, EmailSenderFaker>();
     }
 
-    public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services, string name) where TContext : DbContext
+    public static void ReplaceWithInMemoryDatabase<TContext>(this IServiceCollection services) where TContext : DbContext
     {
         services.RemoveService<IDbContextOptionsConfiguration<TContext>>();
-        services.AddDbContext<TContext>(options => { options.UseInMemoryDatabase(name).ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)); });
+
+        Batteries.Init();
+
+        var connection = new SqliteConnection("Filename=:memory:");
+        connection.Open();
+
+        services.AddDbContext<TContext>(options =>
+        {
+            options.UseSqlite(connection);
+        });
+
+        // Build a temporary provider to run the migrations.
+        using var sp = services.BuildServiceProvider();
+        using var scope = sp.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TContext>();
+        db.Database.Migrate();
     }
 }

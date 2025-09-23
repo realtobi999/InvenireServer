@@ -5,5 +5,6 @@ namespace InvenireServer.Application.Interfaces.Repositories.Properties;
 
 public interface IPropertyItemRepository : IRepositoryBase<PropertyItem>
 {
+    Task ScanAsync(PropertyItem item, PropertyScan scan);
     Expression<Func<PropertyItem, bool>> BuildSearchExpression(string term);
 }
