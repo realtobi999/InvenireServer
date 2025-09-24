@@ -5,12 +5,11 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
+using InvenireServer.Application.Core.Properties.Items.Queries.GetById;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
-using InvenireServer.Domain.Entities.Common.Queries;
-using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Application.Core.Properties.Items.Queries.GetById;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -64,6 +63,18 @@ public class PropertyQueryController : ControllerBase
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             Parameters = parameters
+        }));
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/properties/scans/{scanId:guid}/items")]
+    public async Task<IActionResult> IndexScansByAdmin(Guid scanId, [FromQuery] IndexByScanPropertyItemQueryParameters parameters)
+    {
+        return Ok(await _mediator.Send(new IndexByScanPropertyItemQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            ScanId = scanId,
+            Parameters = parameters,
         }));
     }
 

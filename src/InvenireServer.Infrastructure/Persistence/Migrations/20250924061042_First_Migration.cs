@@ -134,13 +134,13 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     name = table.Column<string>(type: "character varying(155)", maxLength: 155, nullable: false),
                     price = table.Column<double>(type: "double precision", nullable: false),
                     serial_number = table.Column<string>(type: "character varying(155)", maxLength: 155, nullable: true),
-                    date_of_purchase = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    date_of_sale = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    date_of_purchase = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    date_of_sale = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     room = table.Column<string>(type: "text", nullable: false),
                     building = table.Column<string>(type: "text", nullable: false),
                     additional_note = table.Column<string>(type: "text", nullable: true),
                     description = table.Column<string>(type: "character varying(555)", maxLength: 555, nullable: true),
-                    document_number = table.Column<string>(type: "character varying(155)", maxLength: 155, nullable: false),
+                    document_number = table.Column<string>(type: "character varying(155)", maxLength: 155, nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     last_updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     property_id = table.Column<Guid>(type: "uuid", nullable: true),
@@ -221,24 +221,25 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PropertyCheckPropertyItem",
+                name: "ScansItems",
                 columns: table => new
                 {
-                    PropertyCheckId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PropertyItemId = table.Column<Guid>(type: "uuid", nullable: false)
+                    property_item_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    property_scan_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_scanned = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PropertyCheckPropertyItem", x => new { x.PropertyCheckId, x.PropertyItemId });
+                    table.PrimaryKey("PK_ScansItems", x => new { x.property_scan_id, x.property_item_id });
                     table.ForeignKey(
-                        name: "FK_PropertyCheckPropertyItem_Items_PropertyItemId",
-                        column: x => x.PropertyItemId,
+                        name: "FK_ScansItems_Items_property_item_id",
+                        column: x => x.property_item_id,
                         principalTable: "Items",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PropertyCheckPropertyItem_Scans_PropertyCheckId",
-                        column: x => x.PropertyCheckId,
+                        name: "FK_ScansItems_Scans_property_scan_id",
+                        column: x => x.property_scan_id,
                         principalTable: "Scans",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -300,14 +301,14 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PropertyCheckPropertyItem_PropertyItemId",
-                table: "PropertyCheckPropertyItem",
-                column: "PropertyItemId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Scans_property_id",
                 table: "Scans",
                 column: "property_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScansItems_property_item_id",
+                table: "ScansItems",
+                column: "property_item_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Suggestions_employee_id",
@@ -330,7 +331,7 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 name: "Invitations");
 
             migrationBuilder.DropTable(
-                name: "PropertyCheckPropertyItem");
+                name: "ScansItems");
 
             migrationBuilder.DropTable(
                 name: "Suggestions");

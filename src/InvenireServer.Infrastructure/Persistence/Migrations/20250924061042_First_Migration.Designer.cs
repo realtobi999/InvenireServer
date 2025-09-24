@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvenireServerContext))]
-    [Migration("20250923154132_Fifth_Migration")]
-    partial class Fifth_Migration
+    [Migration("20250924061042_First_Migration")]
+    partial class First_Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,6 +237,27 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.ToTable("Scans");
                 });
 
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyScanPropertyItem", b =>
+                {
+                    b.Property<Guid>("PropertyScanId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("property_scan_id");
+
+                    b.Property<Guid>("PropertyItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("property_item_id");
+
+                    b.Property<bool>("IsScanned")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_scanned");
+
+                    b.HasKey("PropertyScanId", "PropertyItemId");
+
+                    b.HasIndex("PropertyItemId");
+
+                    b.ToTable("ScansItems");
+                });
+
             modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertySuggestion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -419,21 +440,6 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("PropertyScanPropertyItem", b =>
-                {
-                    b.Property<Guid>("PropertyCheckId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PropertyItemId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("PropertyCheckId", "PropertyItemId");
-
-                    b.HasIndex("PropertyItemId");
-
-                    b.ToTable("PropertyScanPropertyItem");
-                });
-
             modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.OrganizationInvitation", b =>
                 {
                     b.HasOne("InvenireServer.Domain.Entities.Organizations.Organization", null)
@@ -507,6 +513,21 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyScanPropertyItem", b =>
+                {
+                    b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyItem", null)
+                        .WithMany()
+                        .HasForeignKey("PropertyItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyScan", null)
+                        .WithMany("ScannedItems")
+                        .HasForeignKey("PropertyScanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertySuggestion", b =>
                 {
                     b.HasOne("InvenireServer.Domain.Entities.Users.Employee", null)
@@ -536,21 +557,6 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("PropertyScanPropertyItem", b =>
-                {
-                    b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyScan", null)
-                        .WithMany()
-                        .HasForeignKey("PropertyCheckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyItem", null)
-                        .WithMany()
-                        .HasForeignKey("PropertyItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("InvenireServer.Domain.Entities.Organizations.Organization", b =>
                 {
                     b.Navigation("Admin");
@@ -569,6 +575,11 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.Navigation("Scans");
 
                     b.Navigation("Suggestions");
+                });
+
+            modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyScan", b =>
+                {
+                    b.Navigation("ScannedItems");
                 });
 
             modelBuilder.Entity("InvenireServer.Domain.Entities.Users.Employee", b =>
