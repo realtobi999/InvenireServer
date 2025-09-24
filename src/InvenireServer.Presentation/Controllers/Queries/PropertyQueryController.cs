@@ -68,7 +68,7 @@ public class PropertyQueryController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/scans/{scanId:guid}/items")]
-    public async Task<IActionResult> IndexScansByAdmin(Guid scanId, [FromQuery] IndexByScanPropertyItemQueryParameters parameters)
+    public async Task<IActionResult> IndexItemsByScan(Guid scanId, [FromQuery] IndexByScanPropertyItemQueryParameters parameters)
     {
         return Ok(await _mediator.Send(new IndexByScanPropertyItemQuery
         {

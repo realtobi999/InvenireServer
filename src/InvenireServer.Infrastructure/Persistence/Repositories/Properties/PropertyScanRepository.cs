@@ -13,12 +13,26 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
 
     public async Task RegisterItemsAsync(PropertyScan scan)
     {
-        await Context.BulkInsertAsync(await Context.Items.Where(i => i.PropertyId == scan.PropertyId).Select(i => new PropertyScanPropertyItem
+        var items = Context.Items.Where(i => i.PropertyId == scan.PropertyId).Select(i => new PropertyScanPropertyItem
         {
             IsScanned = false,
             PropertyItemId = i.Id,
             PropertyScanId = scan.Id
-        }).ToListAsync());
+        });
+
+        // For providers that don't  support  bulk  operations  (e.g.  in-memory
+        // databases), fall back to adding entities individually so the data  is
+        // properly tracked and saved within the context. We do this so  we  can
+        // run this method in tests.
+        if (!Context.Database.IsRelational())
+        {
+            await Context.AddRangeAsync(items);
+            await Context.SaveChangesAsync();
+        }
+        else
+        {
+            await Context.BulkInsertAsync(items);
+        }
     }
 
     public async Task<PropertyScan?> GetInProgressForAsync(Property property)

@@ -46,7 +46,7 @@ public class PropertyDto
                 {
                     TotalItems = p.Items.Count,
                     TotalValue = p.Items.Sum(i => i.Price),
-                    AverageAge = p.Items.Average(i => (DateTime.Now - i.DateOfPurchase).TotalDays / 365.25),
+                    AverageAge = p.Items.Average(i => (DateTimeOffset.UtcNow - i.DateOfPurchase).TotalDays / 365.25),
                     AveragePrice = p.Items.Average(i => i.Price),
                 },
                 ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary

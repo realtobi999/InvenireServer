@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
@@ -215,11 +216,53 @@ public class PropertyQueryEndpointsTests
         content.Data.Should().AllSatisfy(s =>
         {
             s.ScannedItemsSummary.Should().NotBeNull();
-            s.ScannedItemsSummary!.TotalScannedItems.Should().Be(items.Count);
+            s.ScannedItemsSummary!.TotalItemsToScan.Should().Be(items.Count);
         });
         content.Limit.Should().Be(limit);
         content.Offset.Should().Be(offset);
         content.TotalCount.Should().Be(scans.Count);
+    }
+
+    [Fact]
+    public async Task IndexItemsByScan_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
+
+        var scan = PropertyScanFaker.Fake(items: items);
+
+        var admin = AdminFaker.Fake();
+        var property = PropertyFaker.Fake(scans: [scan], items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.Add(scan);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+           new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var limit = 10;
+        var offset = 0;
+        var response = await _client.GetAsync($"/api/properties/scans/{scan.Id}/items?limit={limit}&offset={offset}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Assert that the response content is correct.
+        var content = await response.Content.ReadFromJsonAsync<IndexByScanPropertyItemQueryResponse>() ?? throw new NullReferenceException();
+
+        content.Data.Should().NotBeEmpty();
+        content.Limit.Should().Be(limit);
+        content.Offset.Should().Be(offset);
+        content.TotalCount.Should().Be(items.Count);
     }
 
     [Fact]

@@ -15,7 +15,7 @@ public class ServerFactory<TStartup> : WebApplicationFactory<TStartup> where TSt
         {
             services.RemoveAll<IHostedService>();
             services.ReplaceWithFakeEmailSender();
-            services.ReplaceWithInMemoryDatabase<InvenireServerContext>();
+            services.ReplaceWithInMemoryDatabase<InvenireServerContext>(Guid.NewGuid().ToString());
         });
 
         // Set the hosting environment to Production to simulate production behavior in tests.
