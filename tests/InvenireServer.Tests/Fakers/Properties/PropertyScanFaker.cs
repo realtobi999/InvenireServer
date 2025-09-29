@@ -26,6 +26,7 @@ public class PropertyScanFaker : Faker<PropertyScan>
             {
                 scan.ScannedItems.Add(new PropertyScanPropertyItem
                 {
+                    Id = Guid.NewGuid(),
                     IsScanned = false,
                     PropertyItemId = item.Id,
                     PropertyScanId = scan.Id,

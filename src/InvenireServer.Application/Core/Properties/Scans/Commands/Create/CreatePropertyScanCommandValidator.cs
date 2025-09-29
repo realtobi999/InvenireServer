@@ -3,7 +3,7 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 
-public class CreatePropertyScanCommandValidator : AbstractValidator<PropertyScan>
+public class CreatePropertyScanCommandValidator : AbstractValidator<CreatePropertyScanCommand>
 {
     public CreatePropertyScanCommandValidator()
     {

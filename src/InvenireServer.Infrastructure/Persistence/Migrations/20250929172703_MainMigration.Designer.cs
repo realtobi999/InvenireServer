@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvenireServerContext))]
-    [Migration("20250924061042_First_Migration")]
-    partial class First_Migration
+    [Migration("20250929172703_MainMigration")]
+    partial class MainMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,21 +239,28 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("InvenireServer.Domain.Entities.Properties.PropertyScanPropertyItem", b =>
                 {
-                    b.Property<Guid>("PropertyScanId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("property_scan_id");
-
-                    b.Property<Guid>("PropertyItemId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("property_item_id");
+                        .HasColumnName("id");
 
                     b.Property<bool>("IsScanned")
                         .HasColumnType("boolean")
                         .HasColumnName("is_scanned");
 
-                    b.HasKey("PropertyScanId", "PropertyItemId");
+                    b.Property<Guid?>("PropertyItemId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("property_item_id");
+
+                    b.Property<Guid>("PropertyScanId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("property_scan_id");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("PropertyItemId");
+
+                    b.HasIndex("PropertyScanId");
 
                     b.ToTable("ScansItems");
                 });
@@ -518,8 +525,7 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyItem", null)
                         .WithMany()
                         .HasForeignKey("PropertyItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("InvenireServer.Domain.Entities.Properties.PropertyScan", null)
                         .WithMany("ScannedItems")

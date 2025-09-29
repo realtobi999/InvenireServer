@@ -3,7 +3,7 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
-public class UpdatePropertyScanCommandValidator : AbstractValidator<PropertyScan>
+public class UpdatePropertyScanCommandValidator : AbstractValidator<UpdatePropertyScanCommand>
 {
     public UpdatePropertyScanCommandValidator()
     {

@@ -45,8 +45,8 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
                     request.Parameters.CreatedAtFrom is not null ? i => i.CreatedAt > request.Parameters.CreatedAtFrom : null,
                     request.Parameters.CreatedAtTo is not null ? i => i.CreatedAt < request.Parameters.CreatedAtTo : null,
                     request.Parameters.EmployeeId is not null ? i => i.EmployeeId == request.Parameters.EmployeeId : null,
-                    !string.IsNullOrEmpty(request.Parameters.Room) ? i => i.Location.Room.Contains(request.Parameters.Room) : null,
-                    !string.IsNullOrEmpty(request.Parameters.Building) ? i => i.Location.Building.Contains(request.Parameters.Building) : null,
+                    !string.IsNullOrEmpty(request.Parameters.Room) ? i => i.Location.Room == request.Parameters.Room : null,
+                    !string.IsNullOrEmpty(request.Parameters.Building) ? i => i.Location.Building == request.Parameters.Building : null,
                 ]
             },
             Pagination = new QueryPaginationOptions(request.Parameters.Limit, request.Parameters.Offset)

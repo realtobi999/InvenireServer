@@ -25,6 +25,7 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
         var query = new QueryOptions<PropertyScan, PropertyScanDto>
         {
             Selector = PropertyScanDto.IndexByAdminSelector,
+            Ordering = new QueryOrderingOptions<PropertyScan>(request.Parameters.Order, request.Parameters.Desc),
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
                 Filters =

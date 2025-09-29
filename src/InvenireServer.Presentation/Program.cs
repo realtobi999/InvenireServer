@@ -1,4 +1,5 @@
 using System.Net;
+using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Admins.Backgrounds;
 using InvenireServer.Application.Services.Employees.Backgrounds;
@@ -8,6 +9,7 @@ using InvenireServer.Domain.Constants;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Infrastructure.Persistence.Repositories;
+using InvenireServer.Infrastructure.Utilities.QR;
 using InvenireServer.Presentation.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +49,7 @@ public class Program
 
                 builder.Services.AddScoped<IJwtManager, JwtManager>();
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+                builder.Services.AddScoped<IQuickResponseCodeGenerator, QuickResponseCodeGenerator>();
                 builder.Services.AddSwaggerGen();
                 builder.Services.AddControllers();
                 builder.Services.AddHostedService<AdminCleanupBackgroundService>();

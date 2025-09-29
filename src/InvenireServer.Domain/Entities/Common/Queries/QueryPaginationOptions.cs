@@ -4,7 +4,7 @@ namespace InvenireServer.Domain.Entities.Common.Queries;
 
 public class QueryPaginationOptions
 {
-    public const int MAX_LIMIT = 100;
+    public const int MAX_LIMIT = 200;
 
     public QueryPaginationOptions(int? limit, int? offset)
     {

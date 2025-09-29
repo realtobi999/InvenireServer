@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class First_Migration : Migration
+    public partial class MainMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -224,19 +224,20 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 name: "ScansItems",
                 columns: table => new
                 {
-                    property_item_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    is_scanned = table.Column<bool>(type: "boolean", nullable: false),
                     property_scan_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_scanned = table.Column<bool>(type: "boolean", nullable: false)
+                    property_item_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScansItems", x => new { x.property_scan_id, x.property_item_id });
+                    table.PrimaryKey("PK_ScansItems", x => x.id);
                     table.ForeignKey(
                         name: "FK_ScansItems_Items_property_item_id",
                         column: x => x.property_item_id,
                         principalTable: "Items",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_ScansItems_Scans_property_scan_id",
                         column: x => x.property_scan_id,
@@ -309,6 +310,11 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 name: "IX_ScansItems_property_item_id",
                 table: "ScansItems",
                 column: "property_item_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScansItems_property_scan_id",
+                table: "ScansItems",
+                column: "property_scan_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Suggestions_employee_id",

@@ -47,20 +47,20 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<PropertyScanPropertyItem> builder)
     {
-
         // Properties.
+        builder.Property(si => si.Id)
+            .HasColumnName("id")
+            .IsRequired();
+        builder.HasKey(si => si.Id);
 
-        builder.Property(x => x.PropertyScanId)
+        builder.Property(si => si.PropertyScanId)
             .HasColumnName("property_scan_id")
             .IsRequired();
 
-        builder.Property(x => x.PropertyItemId)
-            .HasColumnName("property_item_id")
-            .IsRequired();
+        builder.Property(si => si.PropertyItemId)
+            .HasColumnName("property_item_id");
 
-        builder.HasKey(c => new { c.PropertyScanId, c.PropertyItemId });
-
-        builder.Property(x => x.IsScanned)
+        builder.Property(si => si.IsScanned)
             .HasColumnName("is_scanned")
             .IsRequired();
 
@@ -68,12 +68,12 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
 
         builder.HasOne<PropertyScan>()
             .WithMany(p => p.ScannedItems)
-            .HasForeignKey(x => x.PropertyScanId)
+            .HasForeignKey(si => si.PropertyScanId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<PropertyItem>()
             .WithMany()
-            .HasForeignKey(x => x.PropertyItemId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(si => si.PropertyItemId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -35,12 +35,15 @@ public class PropertyScanPropertyItem
 {
     // Core properties.
 
+    public required Guid Id { get; set; }
+
     public required bool IsScanned { get; set; }
 
     // Navigational properties.
 
-    public required Guid PropertyItemId { get; set; }
     public required Guid PropertyScanId { get; set; }
+
+    public required Guid? PropertyItemId { get; set; }
 }
 
 public enum PropertyScanStatus

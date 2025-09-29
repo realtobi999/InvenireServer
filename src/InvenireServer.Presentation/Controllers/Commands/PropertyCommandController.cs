@@ -27,6 +27,7 @@ using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromJsonFi
 using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromExcelFile;
 using InvenireServer.Domain.Exceptions.Http;
 using DocumentFormat.OpenXml.Wordprocessing;
+using InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -128,6 +129,23 @@ public class PropertyCommandController : ControllerBase
         });
 
         return Created();
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/properties/items/generate-codes")]
+    public async Task<IActionResult> GenerateCodes([FromBody] GenerateCodesPropertyItemsCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
+        };
+
+        var zip = await _mediator.Send(command);
+
+        return File(zip, "application/zip", "images.zip");
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
