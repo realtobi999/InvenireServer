@@ -58,6 +58,13 @@ public record PropertyItemDto
     [JsonPropertyName("last_updated_at")]
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
+    [JsonPropertyName("last_code_generated_at")]
+    public required DateTimeOffset? LastCodeGeneratedAt { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("last_scanned_at")]
+    public DateTimeOffset? LastScannedAt { get; set; }
+
     public static Expression<Func<PropertyItem, PropertyItemDto>> CoreSelector
     {
         get
@@ -83,7 +90,8 @@ public record PropertyItemDto
                 Description = i.Description,
                 DocumentNumber = i.DocumentNumber,
                 CreatedAt = i.CreatedAt,
-                LastUpdatedAt = i.LastUpdatedAt
+                LastUpdatedAt = i.LastUpdatedAt,
+                LastCodeGeneratedAt = i.LastCodeGeneratedAt,
             };
         }
     }

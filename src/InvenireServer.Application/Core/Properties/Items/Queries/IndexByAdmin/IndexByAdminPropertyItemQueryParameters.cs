@@ -22,5 +22,7 @@ public record IndexByAdminPropertyItemQueryParameters
     public string? Room { get; set; }
     public string? Building { get; set; }
 
+    public bool? WithGeneratedCode { get; set; }
+
     public string? SearchQuery { get; set; }
 }

@@ -28,6 +28,8 @@ public class PropertyScanFaker : Faker<PropertyScan>
                 {
                     Id = Guid.NewGuid(),
                     IsScanned = false,
+                    ScannedAt = null,
+                    CreatedAt = DateTimeOffset.UtcNow,
                     PropertyItemId = item.Id,
                     PropertyScanId = scan.Id,
                 });

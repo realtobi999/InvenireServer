@@ -22,6 +22,8 @@ public record IndexByScanPropertyItemQueryParameters
     public string? Room { get; set; }
     public string? Building { get; set; }
 
+    public bool? WithGeneratedCode { get; set; }
+
     public bool? Scanned { get; set; }
 
     public string? SearchQuery { get; set; }

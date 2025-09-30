@@ -17,6 +17,8 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
         {
             Id = Guid.NewGuid(),
             IsScanned = false,
+            CreatedAt = DateTimeOffset.UtcNow,
+            ScannedAt = null,
             PropertyItemId = i.Id,
             PropertyScanId = scan.Id
         }).ToListAsync();

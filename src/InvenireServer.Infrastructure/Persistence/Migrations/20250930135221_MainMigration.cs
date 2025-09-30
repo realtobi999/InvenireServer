@@ -143,6 +143,7 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     document_number = table.Column<string>(type: "character varying(155)", maxLength: 155, nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     last_updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    last_code_generated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     property_id = table.Column<Guid>(type: "uuid", nullable: true),
                     employee_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -226,6 +227,8 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     is_scanned = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    scanned_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     property_scan_id = table.Column<Guid>(type: "uuid", nullable: false),
                     property_item_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },

@@ -41,6 +41,8 @@ public class PropertyItem
 
     public required DateTimeOffset? LastUpdatedAt { get; set; }
 
+    public required DateTimeOffset? LastCodeGeneratedAt { get; set; }
+
     // Navigational properties.
 
     public Guid? PropertyId { get; set; }

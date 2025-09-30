@@ -53,7 +53,8 @@ public class CreatePropertyItemsCommandHandler : IRequestHandler<CreatePropertyI
                 Description = dto.Description,
                 DocumentNumber = dto.DocumentNumber,
                 CreatedAt = DateTimeOffset.UtcNow,
-                LastUpdatedAt = null
+                LastUpdatedAt = null,
+                LastCodeGeneratedAt = null,
             };
 
             _repositories.Properties.Items.Create(item);

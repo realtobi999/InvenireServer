@@ -48,10 +48,22 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
     public void Configure(EntityTypeBuilder<PropertyScanPropertyItem> builder)
     {
         // Properties.
+
         builder.Property(si => si.Id)
             .HasColumnName("id")
             .IsRequired();
         builder.HasKey(si => si.Id);
+
+        builder.Property(si => si.IsScanned)
+            .HasColumnName("is_scanned")
+            .IsRequired();
+
+        builder.Property(si => si.CreatedAt)
+            .HasColumnName("created_at")
+            .IsRequired();
+
+        builder.Property(si => si.ScannedAt)
+            .HasColumnName("scanned_at");
 
         builder.Property(si => si.PropertyScanId)
             .HasColumnName("property_scan_id")
@@ -59,10 +71,6 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
 
         builder.Property(si => si.PropertyItemId)
             .HasColumnName("property_item_id");
-
-        builder.Property(si => si.IsScanned)
-            .HasColumnName("is_scanned")
-            .IsRequired();
 
         // Relationships.
 

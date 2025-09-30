@@ -5,6 +5,8 @@ using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
+using System.Linq.Expressions;
+using InvenireServer.Application.Extensions;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 
@@ -75,15 +77,17 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
                     request.Parameters.EmployeeId is not null ? i => i.EmployeeId == request.Parameters.EmployeeId : null,
                     !string.IsNullOrEmpty(request.Parameters.Room) ? i => i.Location.Room == request.Parameters.Room : null,
                     !string.IsNullOrEmpty(request.Parameters.Building) ? i => i.Location.Building == request.Parameters.Building : null,
+                    request.Parameters.WithGeneratedCode is not null ? request.Parameters.WithGeneratedCode.Value ? i => i.LastCodeGeneratedAt != null : i => i.LastCodeGeneratedAt == null : null
                 ]
             },
             Pagination = new QueryPaginationOptions(request.Parameters.Limit, request.Parameters.Offset)
         };
         var items = await _repositories.Properties.Items.IndexAsync(query);
 
-        // Load all the employees.
+        // Assign all extra data.
         foreach (var item in items)
         {
+            item.LastScannedAt = scan.ScannedItems.First(si => si.PropertyItemId == item.Id).ScannedAt;
             item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
             {
                 Selector = EmployeeDto.BaseSelector,

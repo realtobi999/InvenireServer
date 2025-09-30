@@ -93,7 +93,8 @@ public record EmployeeDto
                     Description = i.Description,
                     DocumentNumber = i.DocumentNumber,
                     CreatedAt = i.CreatedAt,
-                    LastUpdatedAt = i.LastUpdatedAt
+                    LastUpdatedAt = i.LastUpdatedAt,
+                    LastCodeGeneratedAt = i.LastCodeGeneratedAt,
                 }).ToList(),
                 Suggestions = e.Suggestions.Select(s => new PropertySuggestionDto
                 {

@@ -42,10 +42,13 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
             {
                 var code = _generator.GenerateCodeWithLabel(content: $"api/properties/items/{item.Id}/scan", label: item.InventoryNumber);
 
-                var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}.png", CompressionLevel.Fastest);
-                using var entryStream = entry.Open();
-                await entryStream.WriteAsync(code, ct);
+                using var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}.png", CompressionLevel.Fastest).Open();
+                await entry.WriteAsync(code, ct);
+
+                item.LastCodeGeneratedAt = DateTimeOffset.UtcNow;
+                _repositories.Properties.Items.Update(item);
             }
+            await _repositories.SaveOrThrowAsync();
         }
         stream.Seek(0, SeekOrigin.Begin);
 

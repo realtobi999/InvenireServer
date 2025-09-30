@@ -39,6 +39,10 @@ public class PropertyScanPropertyItem
 
     public required bool IsScanned { get; set; }
 
+    public required DateTimeOffset CreatedAt { get; init; }
+
+    public required DateTimeOffset? ScannedAt { get; set; }
+
     // Navigational properties.
 
     public required Guid PropertyScanId { get; set; }

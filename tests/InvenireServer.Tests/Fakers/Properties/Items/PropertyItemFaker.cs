@@ -19,6 +19,7 @@ public sealed class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.DocumentNumber, f => f.Random.AlphaNumeric(15));
         RuleFor(i => i.CreatedAt, f => f.Date.PastOffset(5));
         RuleFor(i => i.LastUpdatedAt, f => f.Date.RecentOffset(30));
+        RuleFor(i => i.LastCodeGeneratedAt, f => f.Date.RecentOffset(30));
     }
 
     public static PropertyItem Fake()

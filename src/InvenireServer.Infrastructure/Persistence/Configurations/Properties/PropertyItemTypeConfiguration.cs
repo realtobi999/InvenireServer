@@ -68,6 +68,9 @@ public class PropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyIt
         builder.Property(i => i.LastUpdatedAt)
             .HasColumnName("last_updated_at");
 
+        builder.Property(i => i.LastCodeGeneratedAt)
+            .HasColumnName("last_code_generated_at");
+
         builder.Property(i => i.PropertyId)
             .HasColumnName("property_id");
 

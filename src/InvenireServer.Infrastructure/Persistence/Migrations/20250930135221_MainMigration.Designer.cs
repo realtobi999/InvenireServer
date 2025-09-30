@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvenireServerContext))]
-    [Migration("20250929172703_MainMigration")]
+    [Migration("20250930135221_MainMigration")]
     partial class MainMigration
     {
         /// <inheritdoc />
@@ -154,6 +154,10 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(155)")
                         .HasColumnName("inventory_number");
 
+                    b.Property<DateTimeOffset?>("LastCodeGeneratedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_code_generated_at");
+
                     b.Property<DateTimeOffset?>("LastUpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_updated_at");
@@ -244,6 +248,10 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<bool>("IsScanned")
                         .HasColumnType("boolean")
                         .HasColumnName("is_scanned");
@@ -255,6 +263,10 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("PropertyScanId")
                         .HasColumnType("uuid")
                         .HasColumnName("property_scan_id");
+
+                    b.Property<DateTimeOffset?>("ScannedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("scanned_at");
 
                     b.HasKey("Id");
 

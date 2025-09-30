@@ -13,7 +13,10 @@ public class PropertyItemRepository : RepositoryBase<PropertyItem>, IPropertyIte
 
     public async Task ScanAsync(PropertyItem item, PropertyScan scan)
     {
-        (await Context.ScansItems.FirstAsync(si => si.PropertyItemId == item.Id && si.PropertyScanId == scan.Id)).IsScanned = true;
+        var field = await Context.ScansItems.FirstAsync(si => si.PropertyItemId == item.Id && si.PropertyScanId == scan.Id);
+
+        field.ScannedAt = DateTimeOffset.UtcNow;
+        field.IsScanned = true;
     }
 
     public Expression<Func<PropertyItem, bool>> BuildSearchExpression(string term)
