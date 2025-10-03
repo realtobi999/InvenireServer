@@ -1,4 +1,3 @@
-
 using System.Text.Json;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Properties;

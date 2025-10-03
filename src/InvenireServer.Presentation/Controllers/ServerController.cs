@@ -8,6 +8,20 @@ namespace InvenireServer.Presentation.Controllers;
 [ApiController]
 public class ServerController : ControllerBase
 {
+    [HttpPost("/api/logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Append("JWT", "", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UtcNow.AddDays(-1)
+        });
+
+        return Ok();
+    }
+
     [HttpGet("/api/server/health-check")]
     public IActionResult HealthCheck()
     {

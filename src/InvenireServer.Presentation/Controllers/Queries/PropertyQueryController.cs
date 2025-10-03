@@ -1,15 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.GetById;
+using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Globalization;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -23,25 +28,60 @@ public class PropertyQueryController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
     [HttpGet("/api/properties")]
-    public async Task<IActionResult> GetByAdmin()
+    public async Task<IActionResult> GetByJwt()
     {
-        return Ok(await _mediator.Send(new GetByAdminPropertyQuery
+        var jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken());
+
+        switch (jwt.GetRole())
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-        }));
+            case Jwt.Roles.ADMIN:
+                return Ok(await _mediator.Send(new GetByAdminPropertyQuery
+                {
+                    Jwt = jwt,
+                }));
+            case Jwt.Roles.EMPLOYEE:
+                return Ok(await _mediator.Send(new GetByEmployeePropertyQuery
+                {
+                    Jwt = jwt,
+                }));
+            default:
+                throw new Unauthorized401Exception();
+        }
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
     [HttpGet("/api/properties/items")]
-    public async Task<IActionResult> IndexItemsByAdmin([FromQuery] IndexByAdminPropertyItemQueryParameters parameters)
+    public async Task<IActionResult> IndexItemsByJwt()
     {
-        return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
+        var jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken());
+
+        // Each role requires slightly different parameters, so  we  parse  them
+        // manually instead of relying on automatic ASP.NET model binding.
+        switch (jwt.GetRole())
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Parameters = parameters
-        }));
+            case Jwt.Roles.ADMIN:
+                var adminQueryParameters = new IndexByAdminPropertyItemQueryParameters();
+                await TryUpdateModelAsync(adminQueryParameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
+                {
+                    Jwt = jwt,
+                    Parameters = adminQueryParameters,
+                }));
+            case Jwt.Roles.EMPLOYEE:
+                var employeeQueryParameters = new IndexByEmployeePropertyItemQueryParameters();
+                await TryUpdateModelAsync(employeeQueryParameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                return Ok(await _mediator.Send(new IndexByEmployeePropertyItemQuery
+                {
+                    Jwt = jwt,
+                    Parameters = employeeQueryParameters
+                }));
+            default:
+                throw new Unauthorized401Exception();
+        }
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]

@@ -43,7 +43,7 @@ public class Employee
 
     // Navigational Properties.
 
-    public Guid? OrganizationId { get; private set; }
+    public Guid? OrganizationId { get; set; }
 
     public Collection<PropertyItem> AssignedItems { get; } = [];
 

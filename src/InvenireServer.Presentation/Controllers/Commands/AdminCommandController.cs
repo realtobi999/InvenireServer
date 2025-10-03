@@ -1,19 +1,18 @@
+using MediatR;
 using FluentValidation;
 using FluentValidation.Results;
-using InvenireServer.Application.Core.Admins.Commands.Delete;
-using InvenireServer.Application.Core.Admins.Commands.Login;
-using InvenireServer.Application.Core.Admins.Commands.Register;
-using InvenireServer.Application.Core.Admins.Commands.Update;
-using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
-using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
-using InvenireServer.Domain.Constants;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Presentation.Extensions;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
+using InvenireServer.Domain.Constants;
+using Microsoft.AspNetCore.Authorization;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Presentation.Extensions;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Application.Core.Admins.Commands.Login;
+using InvenireServer.Application.Core.Admins.Commands.Update;
+using InvenireServer.Application.Core.Admins.Commands.Delete;
+using InvenireServer.Application.Core.Admins.Commands.Register;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
+using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 

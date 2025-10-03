@@ -41,7 +41,7 @@ public class OrganizationDto
 
     // Selectors.
 
-    public static Expression<Func<Organization, OrganizationDto>> GetByIdQuerySelector
+    public static Expression<Func<Organization, OrganizationDto>> CoreSelector
     {
         get
         {

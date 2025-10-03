@@ -71,17 +71,21 @@ public class PropertyDto
 [JsonResponse]
 public record PropertyDtoItemsSummary
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_items")]
-    public required int TotalItems { get; set; }
+    public int? TotalItems { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_value")]
-    public required double TotalValue { get; set; }
+    public double? TotalValue { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("average_price")]
-    public required double AveragePrice { get; set; }
+    public double? AveragePrice { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("average_age")]
-    public required double AverageAge { get; set; }
+    public double? AverageAge { get; set; }
 }
 
 [JsonResponse]

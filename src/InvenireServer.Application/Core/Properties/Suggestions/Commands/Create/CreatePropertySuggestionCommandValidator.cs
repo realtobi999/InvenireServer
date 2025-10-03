@@ -19,10 +19,27 @@ public class CreatePropertySuggestionCommandValidator : AbstractValidator<Create
         RuleFor(c => c.Payload)
             .NotEmpty()
             .WithName("payload")
-            .ChildRules(body =>
+            .ChildRules(payload =>
             {
-                body.RuleForEach(b => b.CreateCommands).SetValidator(new CreatePropertyItemCommandValidator());
-                body.RuleForEach(b => b.UpdateCommands).SetValidator(new UpdatePropertyItemCommandValidator());
+                payload.RuleFor(p => p.UpdateCommands)
+                    .Custom((commands, context) =>
+                    {
+                        if (commands != null && commands.Count != 0)
+                        {
+                            var result = new UpdatePropertyItemsCommandValidator().Validate(new UpdatePropertyItemsCommand
+                            {
+                                Items = commands
+                            });
+
+                            if (!result.IsValid)
+                            {
+                                foreach (var error in result.Errors)
+                                {
+                                    context.AddFailure(error);
+                                }
+                            }
+                        }
+                    });
             });
     }
 }

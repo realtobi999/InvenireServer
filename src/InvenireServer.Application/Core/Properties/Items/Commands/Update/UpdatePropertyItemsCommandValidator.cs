@@ -47,7 +47,7 @@ public class UpdatePropertyItemCommandValidator : AbstractValidator<UpdateProper
             .MaximumLength(PropertyItem.MAX_NAME_LENGTH)
             .WithName("name");
         RuleFor(c => c.Price)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(0)
             .WithName("price");
         RuleFor(c => c.SerialNumber)
             .MaximumLength(PropertyItem.MAX_IDENTIFICATION_NUMBER_LENGTH)

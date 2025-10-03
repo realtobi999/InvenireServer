@@ -9,6 +9,8 @@ using InvenireServer.Application.Core.Organizations.Queries.GetById;
 using InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 using InvenireServer.Application.Core.Employees.Queries.GetByEmailAddress;
 using InvenireServer.Application.Core.Organizations.Invitations.Queries.GetById;
+using InvenireServer.Application.Core.Organizations.Queries.GetByEmployee;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -22,14 +24,27 @@ public class OrganizationQueryController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
     [HttpGet("/api/organizations")]
-    public async Task<IActionResult> GetByAdmin()
+    public async Task<IActionResult> GetByJwt()
     {
-        return Ok(await _mediator.Send(new GetByAdminOrganizationQuery
+        var jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken());
+
+        switch (jwt.GetRole())
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-        }));
+            case Jwt.Roles.ADMIN:
+                return Ok(await _mediator.Send(new GetByAdminOrganizationQuery
+                {
+                    Jwt = jwt,
+                }));
+            case Jwt.Roles.EMPLOYEE:
+                return Ok(await _mediator.Send(new GetByEmployeeOrganizationQuery
+                {
+                    Jwt = jwt,
+                }));
+            default:
+                throw new Unauthorized401Exception();
+        }
     }
 
     [HttpGet("/api/organizations/{organizationId:guid}")]

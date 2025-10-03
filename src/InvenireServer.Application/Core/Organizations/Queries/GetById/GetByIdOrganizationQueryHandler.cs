@@ -19,7 +19,7 @@ public class GetByIdOrganizationQueryHandler : IRequestHandler<GetByIdOrganizati
     public async Task<OrganizationDto> Handle(GetByIdOrganizationQuery request, CancellationToken ct)
         => await _repositories.Organizations.GetAsync(new QueryOptions<Organization, OrganizationDto>
         {
-            Selector = OrganizationDto.GetByIdQuerySelector,
+            Selector = OrganizationDto.CoreSelector,
             Filtering = new QueryFilteringOptions<Organization>
             {
                 Filters =
