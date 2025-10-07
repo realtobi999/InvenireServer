@@ -1,8 +1,10 @@
 using MediatR;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Entities.Common;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using InvenireServer.Presentation.Extensions;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
@@ -11,10 +13,10 @@ using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
-using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Globalization;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
+using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
+using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByEmployee;
+using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -62,23 +64,29 @@ public class PropertyQueryController : ControllerBase
         switch (jwt.GetRole())
         {
             case Jwt.Roles.ADMIN:
-                var adminQueryParameters = new IndexByAdminPropertyItemQueryParameters();
-                await TryUpdateModelAsync(adminQueryParameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
-
-                return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
                 {
-                    Jwt = jwt,
-                    Parameters = adminQueryParameters,
-                }));
+                    var parameters = new IndexByAdminPropertyItemQueryParameters();
+                    await TryUpdateModelAsync(parameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                    return Ok(await _mediator.Send(new IndexByAdminPropertyItemQuery
+                    {
+                        Jwt = jwt,
+                        Parameters = parameters,
+                    }));
+
+                }
             case Jwt.Roles.EMPLOYEE:
-                var employeeQueryParameters = new IndexByEmployeePropertyItemQueryParameters();
-                await TryUpdateModelAsync(employeeQueryParameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
-
-                return Ok(await _mediator.Send(new IndexByEmployeePropertyItemQuery
                 {
-                    Jwt = jwt,
-                    Parameters = employeeQueryParameters
-                }));
+                    var parameters = new IndexByEmployeePropertyItemQueryParameters();
+                    await TryUpdateModelAsync(parameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                    return Ok(await _mediator.Send(new IndexByEmployeePropertyItemQuery
+                    {
+                        Jwt = jwt,
+                        Parameters = parameters
+                    }));
+
+                }
             default:
                 throw new Unauthorized401Exception();
         }
@@ -106,7 +114,17 @@ public class PropertyQueryController : ControllerBase
         }));
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
+    [HttpGet("/api/properties/scans/active")]
+    public async Task<IActionResult> GetActiveScan()
+    {
+        return Ok(await _mediator.Send(new GetActivePropertyScanQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+        }));
+    }
+
+    [Authorize()]
     [HttpGet("/api/properties/scans/{scanId:guid}/items")]
     public async Task<IActionResult> IndexItemsByScan(Guid scanId, [FromQuery] IndexByScanPropertyItemQueryParameters parameters)
     {
@@ -118,15 +136,40 @@ public class PropertyQueryController : ControllerBase
         }));
     }
 
-    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [Authorize()]
     [HttpGet("/api/properties/suggestions")]
-    public async Task<IActionResult> IndexSuggestionsByAdmin([FromQuery] IndexByAdminPropertySuggestionQueryParameters parameters)
+    public async Task<IActionResult> IndexSuggestionsByJwt()
     {
-        Console.WriteLine("Status: " + parameters.Status.ToString());
-        return Ok(await _mediator.Send(new IndexByAdminPropertySuggestionQuery
+        var jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken());
+
+        // Each role requires slightly different parameters, so  we  parse  them
+        // manually instead of relying on automatic ASP.NET model binding.
+        switch (jwt.GetRole())
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            Parameters = parameters
-        }));
+            case Jwt.Roles.ADMIN:
+                {
+                    var parameters = new IndexByAdminPropertySuggestionQueryParameters();
+                    await TryUpdateModelAsync(parameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                    return Ok(await _mediator.Send(new IndexByAdminPropertySuggestionQuery
+                    {
+                        Jwt = jwt,
+                        Parameters = parameters,
+                    }));
+                }
+            case Jwt.Roles.EMPLOYEE:
+                {
+                    var parameters = new IndexByEmployeePropertySuggestionQueryParameters();
+                    await TryUpdateModelAsync(parameters, prefix: "", new QueryStringValueProvider(BindingSource.Query, HttpContext.Request.Query, CultureInfo.InvariantCulture));
+
+                    return Ok(await _mediator.Send(new IndexByEmployeePropertySuggestionQuery
+                    {
+                        Jwt = jwt,
+                        Parameters = parameters
+                    }));
+                }
+            default:
+                throw new Unauthorized401Exception();
+        }
     }
 }

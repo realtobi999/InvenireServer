@@ -11,7 +11,7 @@ public record UpdatePropertySuggestionCommand : IRequest
     public string? Description { get; init; }
 
     [JsonPropertyName("payload")]
-    public required PropertySuggestionPayload? Payload { get; init; }
+    public required PropertySuggestionPayload Payload { get; init; }
 
     [JsonIgnore]
     public Jwt? Jwt { get; init; }

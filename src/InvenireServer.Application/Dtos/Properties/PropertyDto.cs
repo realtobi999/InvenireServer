@@ -92,27 +92,31 @@ public record PropertyDtoItemsSummary
 public record PropertyDtoScansSummary
 {
     [JsonPropertyName("total_scans")]
-    public required int TotalScans { get; set; }
+    public int TotalScans { get; set; }
 
     [JsonPropertyName("total_active_scans")]
-    public required int TotalActiveScans { get; set; }
+    public int TotalActiveScans { get; set; }
 
     [JsonPropertyName("last_active_scan")]
-    public required DateTimeOffset? LastActiveScan { get; set; }
+    public DateTimeOffset? LastActiveScan { get; set; }
 }
 
 [JsonResponse]
-public class PropertyDtoSuggestionsSummary
+public record PropertyDtoSuggestionsSummary
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_suggestions")]
-    public required int TotalSuggestions { get; set; }
+    public int? TotalSuggestions { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_approved_suggestions")]
-    public required int TotalApprovedSuggestions { get; set; }
+    public int? TotalApprovedSuggestions { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_pending_suggestions")]
-    public required int TotalPendingSuggestions { get; set; }
+    public int? TotalPendingSuggestions { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_declined_suggestions")]
-    public required int TotalDeclinedSuggestions { get; set; }
+    public int? TotalDeclinedSuggestions { get; set; }
 }

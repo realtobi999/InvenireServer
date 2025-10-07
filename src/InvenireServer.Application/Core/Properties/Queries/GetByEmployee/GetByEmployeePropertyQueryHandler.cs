@@ -49,7 +49,13 @@ public class GetByEmployeePropertyQueryHandler : IRequestHandler<GetByEmployeePr
                     TotalItems = p.Items.Count,
                 },
                 ScansSummary = null,
-                SuggestionsSummary = null,
+                SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
+                {
+                    TotalSuggestions = p.Suggestions.Count,
+                    TotalApprovedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.APPROVED),
+                    TotalPendingSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.PENDING),
+                    TotalDeclinedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.DECLINED)
+                }
             };
         }
     }

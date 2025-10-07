@@ -7,6 +7,8 @@ using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
 using System.Linq.Expressions;
 using InvenireServer.Application.Extensions;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 
@@ -21,9 +23,22 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
 
     public async Task<IndexByScanPropertyItemQueryResponse> Handle(IndexByScanPropertyItemQuery request, CancellationToken ct)
     {
-        var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
-        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
+        var role = request.Jwt.GetRole();
+        var organization = role switch
+        {
+            Jwt.Roles.ADMIN => await GetOrganizationByAdmin(request.Jwt),
+            Jwt.Roles.EMPLOYEE => await GetOrganizationByEmployee(request.Jwt),
+            _ => throw new Unauthorized401Exception(),
+        };
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
+
+        // If the request originates from an employee, ensure no employee filter
+        // is applied and then set the filter to the employee’s id.
+        if (role == Jwt.Roles.EMPLOYEE)
+        {
+            if (request.Parameters.EmployeeId is not null) throw new Unauthorized401Exception();
+            request.Parameters.EmployeeId = Guid.Parse(request.Jwt.Payload.FirstOrDefault(c => c.Type == "employee_id")?.Value ?? throw new BadRequest400Exception("The JWT is missing 'employee_id' claim."));
+        }
 
         // Retrieve the scan and project all helper fields of the scanned  items
         // into it. This approach works efficiently  even  with  large  datasets
@@ -47,8 +62,8 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
                 Filters =
-                [
-                    s => s.Id == request.ScanId && s.PropertyId == property.Id,
+            [
+                s => s.Id == request.ScanId && s.PropertyId == property.Id,
                 ]
             },
         }) ?? throw new NotFound404Exception("The scan was not found in the system.");
@@ -105,5 +120,17 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
             Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Items.CountAsync(query.Filtering.Filters!)
         };
+    }
+
+    private async Task<Organization> GetOrganizationByEmployee(Jwt jwt)
+    {
+        var employee = await _repositories.Employees.GetAsync(jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        return await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
+    }
+
+    private async Task<Organization> GetOrganizationByAdmin(Jwt jwt)
+    {
+        var admin = await _repositories.Admins.GetAsync(jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        return await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
     }
 }

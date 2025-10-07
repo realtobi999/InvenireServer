@@ -12,10 +12,30 @@ public class UpdatePropertySuggestionCommandValidator : AbstractValidator<Update
         RuleFor(c => c.Description)
             .MaximumLength(PropertySuggestion.MAX_DESCRIPTION_LENGTH)
             .WithName("description");
-        When(c => c.Payload != null, () =>
-        {
-            RuleForEach(c => c.Payload!.CreateCommands).SetValidator(new CreatePropertyItemCommandValidator());
-            RuleForEach(c => c.Payload!.UpdateCommands).SetValidator(new UpdatePropertyItemCommandValidator());
-        });
+        RuleFor(c => c.Payload)
+            .NotEmpty()
+            .WithName("payload")
+            .ChildRules(payload =>
+            {
+                payload.RuleFor(p => p.UpdateCommands)
+                    .Custom((commands, context) =>
+                    {
+                        if (commands != null && commands.Count != 0)
+                        {
+                            var result = new UpdatePropertyItemsCommandValidator().Validate(new UpdatePropertyItemsCommand
+                            {
+                                Items = commands
+                            });
+
+                            if (!result.IsValid)
+                            {
+                                foreach (var error in result.Errors)
+                                {
+                                    context.AddFailure(error);
+                                }
+                            }
+                        }
+                    });
+            });
     }
 }
