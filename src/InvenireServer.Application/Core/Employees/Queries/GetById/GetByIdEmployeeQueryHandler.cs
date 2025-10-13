@@ -1,7 +1,6 @@
-
+using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
@@ -24,7 +23,7 @@ public class GetByIdEmployeeQueryHandler : IRequestHandler<GetByIdEmployeeQuery,
 
         var employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
         {
-            Selector = EmployeeDto.FromEmployeeSelector,
+            Selector = EmployeeDtoSelector,
             Filtering = new QueryFilteringOptions<Employee>
             {
                 Filters =
@@ -37,5 +36,23 @@ public class GetByIdEmployeeQueryHandler : IRequestHandler<GetByIdEmployeeQuery,
         if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee is not from the admin's organization.");
 
         return employee;
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
     }
 }

@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Dtos.Properties;
-using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
 
@@ -23,7 +23,7 @@ public class GetByEmployeePropertyQueryHandler : IRequestHandler<GetByEmployeePr
 
         return await _repositories.Properties.GetAsync(new QueryOptions<Property, PropertyDto>
         {
-            Selector = Selector,
+            Selector = PropertyDtoSelector,
             Filtering = new QueryFilteringOptions<Property>
             {
                 Filters =
@@ -34,7 +34,7 @@ public class GetByEmployeePropertyQueryHandler : IRequestHandler<GetByEmployeePr
         }) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
     }
 
-    private static Expression<Func<Property, PropertyDto>> Selector
+    private static Expression<Func<Property, PropertyDto>> PropertyDtoSelector
     {
         get
         {
@@ -48,7 +48,6 @@ public class GetByEmployeePropertyQueryHandler : IRequestHandler<GetByEmployeePr
                 {
                     TotalItems = p.Items.Count,
                 },
-                ScansSummary = null,
                 SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
                 {
                     TotalSuggestions = p.Suggestions.Count,

@@ -1,10 +1,12 @@
+using System.Linq.Expressions;
 using System.Text.Json;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByEmployee;
@@ -27,7 +29,7 @@ public class IndexByEmployeePropertySuggestionQueryHandler : IRequestHandler<Ind
         var query = new QueryOptions<PropertySuggestion, PropertySuggestionDto>
         {
             Ordering = new QueryOrderingOptions<PropertySuggestion>(request.Parameters.Order, request.Parameters.Desc),
-            Selector = PropertySuggestionDto.IndexByAdminSelector,
+            Selector = PropertySuggestionDtoSelector,
             Filtering = new QueryFilteringOptions<PropertySuggestion>
             {
                 Filters =
@@ -47,7 +49,7 @@ public class IndexByEmployeePropertySuggestionQueryHandler : IRequestHandler<Ind
         var suggestions = await _repositories.Properties.Suggestions.IndexAsync(query);
 
         // Load the employee and deserialize payload.
-        var dto = EmployeeDto.BaseSelector.Compile()(employee);
+        var dto = EmployeeDtoSelector.Compile()(employee);
         foreach (var suggestion in suggestions)
         {
             suggestion.Employee = dto;
@@ -61,5 +63,44 @@ public class IndexByEmployeePropertySuggestionQueryHandler : IRequestHandler<Ind
             Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Suggestions.CountAsync(query.Filtering.Filters!)
         };
+    }
+
+    public static Expression<Func<PropertySuggestion, PropertySuggestionDto>> PropertySuggestionDtoSelector
+    {
+        get
+        {
+            return s => new PropertySuggestionDto
+            {
+                Id = s.Id,
+                EmployeeId = s.EmployeeId,
+                PropertyId = s.PropertyId,
+                Name = s.Name,
+                Description = s.Description,
+                Feedback = s.Feedback,
+                PayloadString = s.PayloadString,
+                Status = s.Status,
+                CreatedAt = s.CreatedAt,
+                ResolvedAt = s.ResolvedAt,
+                LastUpdatedAt = s.LastUpdatedAt,
+            };
+        }
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
     }
 }

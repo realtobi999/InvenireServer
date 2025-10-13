@@ -1,7 +1,5 @@
-using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
-using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
@@ -9,81 +7,39 @@ namespace InvenireServer.Application.Dtos.Properties;
 public class PropertyDto
 {
     [JsonPropertyName("id")]
-    public required Guid Id { get; set; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("organization_id")]
-    public required Guid? OrganizationId { get; set; }
+    public Guid? OrganizationId { get; set; }
 
     [JsonPropertyName("created_at")]
-    public required DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     [JsonPropertyName("last_updated_at")]
-    public required DateTimeOffset? LastUpdatedAt { get; set; }
+    public DateTimeOffset? LastUpdatedAt { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("items_summary")]
     public PropertyDtoItemsSummary? ItemsSummary { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("scans_summary")]
     public PropertyDtoScansSummary? ScansSummary { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("suggestions_summary")]
     public PropertyDtoSuggestionsSummary? SuggestionsSummary { get; set; }
-
-    public static Expression<Func<Property, PropertyDto>> FromPropertySelector
-    {
-        get
-        {
-            return p => new PropertyDto
-            {
-                Id = p.Id,
-                OrganizationId = p.OrganizationId,
-                CreatedAt = p.CreatedAt,
-                LastUpdatedAt = p.LastUpdatedAt,
-                ItemsSummary = p.Items.Count == 0 ? null : new PropertyDtoItemsSummary
-                {
-                    TotalItems = p.Items.Count,
-                    TotalValue = p.Items.Sum(i => i.Price),
-                    AverageAge = p.Items.Average(i => (DateTimeOffset.UtcNow - i.DateOfPurchase).TotalDays / 365.25),
-                    AveragePrice = p.Items.Average(i => i.Price),
-                },
-                ScansSummary = p.Scans.Count == 0 ? null : new PropertyDtoScansSummary
-                {
-                    TotalScans = p.Scans.Count,
-                    TotalActiveScans = p.Scans.Count(s => s.CompletedAt == null),
-                    LastActiveScan = p.Scans.Where(s => s.CompletedAt != null).Max(s => s.CompletedAt)
-
-                },
-                SuggestionsSummary = p.Suggestions.Count == 0 ? null : new PropertyDtoSuggestionsSummary
-                {
-                    TotalSuggestions = p.Suggestions.Count,
-                    TotalApprovedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.APPROVED),
-                    TotalPendingSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.PENDING),
-                    TotalDeclinedSuggestions = p.Suggestions.Count(s => s.Status == PropertySuggestionStatus.DECLINED)
-                },
-            };
-        }
-    }
 }
 
 [JsonResponse]
 public record PropertyDtoItemsSummary
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_items")]
     public int? TotalItems { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_value")]
     public double? TotalValue { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("average_price")]
     public double? AveragePrice { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("average_age")]
     public double? AverageAge { get; set; }
 }
@@ -104,19 +60,15 @@ public record PropertyDtoScansSummary
 [JsonResponse]
 public record PropertyDtoSuggestionsSummary
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_suggestions")]
     public int? TotalSuggestions { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_approved_suggestions")]
     public int? TotalApprovedSuggestions { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_pending_suggestions")]
     public int? TotalPendingSuggestions { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("total_declined_suggestions")]
     public int? TotalDeclinedSuggestions { get; set; }
 }

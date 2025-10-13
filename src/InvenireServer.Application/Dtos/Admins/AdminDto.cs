@@ -1,7 +1,5 @@
-using System.Linq.Expressions;
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
-using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Dtos.Admins;
 
@@ -9,44 +7,26 @@ namespace InvenireServer.Application.Dtos.Admins;
 public record AdminDto
 {
     [JsonPropertyName("id")]
-    public required Guid Id { get; init; }
+    public Guid Id { get; init; }
 
     [JsonPropertyName("organization_id")]
-    public required Guid? OrganizationId { get; init; }
+    public Guid? OrganizationId { get; init; }
 
     [JsonPropertyName("first_name")]
-    public required string FirstName { get; init; }
+    public string? FirstName { get; init; }
 
     [JsonPropertyName("last_name")]
-    public required string LastName { get; init; }
+    public string? LastName { get; init; }
 
     [JsonPropertyName("full_name")]
-    public required string FullName { get; init; }
+    public string? FullName { get; init; }
 
     [JsonPropertyName("email_address")]
-    public required string EmailAddress { get; init; }
+    public string? EmailAddress { get; init; }
 
     [JsonPropertyName("created_at")]
-    public required DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
 
     [JsonPropertyName("last_updated_at")]
-    public required DateTimeOffset? LastUpdatedAt { get; init; }
-
-    public static Expression<Func<Admin, AdminDto>> FromAdminSelector
-    {
-        get
-        {
-            return a => new AdminDto
-            {
-                Id = a.Id,
-                OrganizationId = a.OrganizationId,
-                FirstName = a.FirstName,
-                LastName = a.LastName,
-                FullName = $"{a.FirstName} {a.LastName}",
-                EmailAddress = a.EmailAddress,
-                CreatedAt = a.CreatedAt,
-                LastUpdatedAt = a.LastUpdatedAt
-            };
-        }
-    }
+    public DateTimeOffset? LastUpdatedAt { get; init; }
 }

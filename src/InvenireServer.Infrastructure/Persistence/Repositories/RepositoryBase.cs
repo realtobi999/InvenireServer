@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Repositories;
+using InvenireServer.Domain.Entities.Common.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
@@ -28,6 +28,12 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
     public virtual void Update(Entity entity)
     {
         Context.Set<Entity>().Update(entity);
+    }
+
+    public void Update(IEnumerable<Entity> entities)
+    {
+        foreach (var entity in entities)
+            Update(entity);
     }
 
     public virtual async Task ExecuteUpdateAsync(Entity entity)
@@ -148,5 +154,4 @@ public abstract class RepositoryBase<Entity> : IRepositoryBase<Entity> where Ent
     {
         return Context.Set<Entity>();
     }
-
 }

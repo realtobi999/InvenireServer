@@ -1,18 +1,18 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
-using InvenireServer.Presentation;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Tests.Integration.Server;
+using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Presentation;
 using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Properties;
 using InvenireServer.Tests.Fakers.Properties.Items;
 using InvenireServer.Tests.Fakers.Users;
-using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
+using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
@@ -33,22 +33,14 @@ public class EmployeeQueryEndpointsTests
     public async Task GetByJwt_ReturnsOkAndCorrectData()
     {
         // Prepare.
-        var items = new List<PropertyItem>();
-        for (int i = 0; i < 100; i++) items.Add(PropertyItemFaker.Fake());
-
-        var suggestions = new List<PropertySuggestion>();
-        for (int i = 0; i < 10; i++) suggestions.Add(PropertySuggestionFaker.Fake());
-
         var admin = AdminFaker.Fake();
-        var employee = EmployeeFaker.Fake(items: items, suggestions: suggestions);
+        var employee = EmployeeFaker.Fake();
         var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
 
         using var context = _app.GetDatabaseContext();
         context.Add(admin);
         context.Add(employee);
         context.Add(organization);
-        context.AddRange(items);
-        context.AddRange(suggestions);
         context.SaveChanges();
 
         _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
@@ -71,10 +63,6 @@ public class EmployeeQueryEndpointsTests
         content.EmailAddress.Should().Be(employee.EmailAddress);
         content.CreatedAt.Should().Be(employee.CreatedAt);
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
-        content.AssignedItems.Should().NotBeNullOrEmpty();
-        content.AssignedItems!.Count.Should().Be(items.Count);
-        content.Suggestions.Should().NotBeNullOrEmpty();
-        content.Suggestions!.Count.Should().Be(suggestions.Count);
     }
 
     [Fact]

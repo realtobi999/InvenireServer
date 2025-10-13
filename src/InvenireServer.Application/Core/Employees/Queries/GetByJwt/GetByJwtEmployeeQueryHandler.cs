@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common.Queries;
@@ -16,8 +17,28 @@ public class GetByJwtEmployeeQueryHandler : IRequestHandler<GetByJwtEmployeeQuer
     }
 
     public async Task<EmployeeDto> Handle(GetByJwtEmployeeQuery request, CancellationToken ct)
-        => await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>
+    {
+        return await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>
         {
-            Selector = EmployeeDto.FromEmployeeSelector
+            Selector = EmployeeDtoSelector
         }) ?? throw new NotFound404Exception("The employee was not found in the system.");
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
+    }
 }

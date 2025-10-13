@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Dtos.Admins;
-using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Queries.GetByEmployee;
 
@@ -23,7 +23,7 @@ public class GetByEmployeeOrganizationQueryHandler : IRequestHandler<GetByEmploy
 
         return await _repositories.Organizations.GetAsync(new QueryOptions<Organization, OrganizationDto>()
         {
-            Selector = Selector,
+            Selector = OrganizationDtoSelector,
             Filtering = new QueryFilteringOptions<Organization>
             {
                 Filters =
@@ -34,7 +34,7 @@ public class GetByEmployeeOrganizationQueryHandler : IRequestHandler<GetByEmploy
         }) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
     }
 
-    private static Expression<Func<Organization, OrganizationDto>> Selector
+    private static Expression<Func<Organization, OrganizationDto>> OrganizationDtoSelector
     {
         get
         {
@@ -55,9 +55,6 @@ public class GetByEmployeeOrganizationQueryHandler : IRequestHandler<GetByEmploy
                     CreatedAt = o.Admin.CreatedAt,
                     LastUpdatedAt = o.Admin.LastUpdatedAt
                 },
-                Property = null,
-                Employees = null,
-                Invitations = null
             };
         }
     }

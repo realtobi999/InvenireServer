@@ -1,9 +1,9 @@
-using InvenireServer.Domain.Exceptions.Http;
+using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 
@@ -24,7 +24,7 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
 
         var query = new QueryOptions<PropertyScan, PropertyScanDto>
         {
-            Selector = PropertyScanDto.IndexByAdminSelector,
+            Selector = PropertyScanDtoSelector,
             Ordering = new QueryOrderingOptions<PropertyScan>(request.Parameters.Order, request.Parameters.Desc),
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
@@ -47,5 +47,28 @@ public class IndexByAdminPropertyScanQueryHandler : IRequestHandler<IndexByAdmin
             Offset = request.Parameters.Offset,
             TotalCount = await _repositories.Properties.Scans.CountAsync(query.Filtering.Filters!)
         };
+    }
+
+    private static Expression<Func<PropertyScan, PropertyScanDto>> PropertyScanDtoSelector
+    {
+        get
+        {
+            return s => new PropertyScanDto
+            {
+                Id = s.Id,
+                PropertyId = s.PropertyId,
+                Name = s.Name,
+                Description = s.Description,
+                Status = s.Status,
+                CreatedAt = s.CreatedAt,
+                CompletedAt = s.CompletedAt,
+                LastUpdatedAt = s.LastUpdatedAt,
+                ScannedItemsSummary = s.ScannedItems.Count == 0 ? null : new PropertyScanDtoScannedItemsSummary
+                {
+                    TotalItemsToScan = s.ScannedItems.Count,
+                    TotalScannedItems = s.ScannedItems.Where(si => si.IsScanned).ToList().Count,
+                },
+            };
+        }
     }
 }

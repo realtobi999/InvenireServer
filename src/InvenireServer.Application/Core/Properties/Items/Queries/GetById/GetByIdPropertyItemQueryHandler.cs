@@ -1,10 +1,11 @@
-using InvenireServer.Domain.Exceptions.Http;
+using System.Linq.Expressions;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.GetById;
 
@@ -25,7 +26,7 @@ public class GetByIdPropertyItemQueryHandler : IRequestHandler<GetByIdPropertyIt
 
         var item = await _repositories.Properties.Items.GetAsync(new QueryOptions<PropertyItem, PropertyItemDto>
         {
-            Selector = PropertyItemDto.CoreSelector,
+            Selector = PropertyItemDtoSelector,
             Filtering = new QueryFilteringOptions<PropertyItem>
             {
                 Filters =
@@ -37,7 +38,7 @@ public class GetByIdPropertyItemQueryHandler : IRequestHandler<GetByIdPropertyIt
 
         item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
         {
-            Selector = EmployeeDto.BaseSelector,
+            Selector = EmployeeDtoSelector,
             Filtering = new QueryFilteringOptions<Employee>
             {
                 Filters = [e => e.Id == item.EmployeeId]
@@ -45,5 +46,54 @@ public class GetByIdPropertyItemQueryHandler : IRequestHandler<GetByIdPropertyIt
         });
 
         return item;
+    }
+
+    private static Expression<Func<PropertyItem, PropertyItemDto>> PropertyItemDtoSelector
+    {
+        get
+        {
+            return i => new PropertyItemDto
+            {
+                Id = i.Id,
+                PropertyId = i.PropertyId,
+                EmployeeId = i.EmployeeId,
+                InventoryNumber = i.InventoryNumber,
+                RegistrationNumber = i.RegistrationNumber,
+                Name = i.Name,
+                Price = i.Price,
+                SerialNumber = i.SerialNumber,
+                DateOfPurchase = i.DateOfPurchase,
+                DateOfSale = i.DateOfSale,
+                Location = new PropertyItemLocationDto
+                {
+                    Room = i.Location.Room,
+                    Building = i.Location.Building,
+                    AdditionalNote = i.Location.AdditionalNote,
+                },
+                Description = i.Description,
+                DocumentNumber = i.DocumentNumber,
+                CreatedAt = i.CreatedAt,
+                LastUpdatedAt = i.LastUpdatedAt,
+                LastCodeGeneratedAt = i.LastCodeGeneratedAt,
+            };
+        }
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
     }
 }

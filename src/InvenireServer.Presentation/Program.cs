@@ -1,4 +1,4 @@
-using System.Net;
+using System.Text.Json.Serialization;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Services.Admins.Backgrounds;
@@ -51,7 +51,7 @@ public class Program
                 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
                 builder.Services.AddScoped<IQuickResponseCodeGenerator, QuickResponseCodeGenerator>();
                 builder.Services.AddSwaggerGen();
-                builder.Services.AddControllers();
+                builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
                 builder.Services.AddHostedService<AdminCleanupBackgroundService>();
                 builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
                 builder.Services.AddHostedService<PropertySuggestionCleanupBackgroundService>();

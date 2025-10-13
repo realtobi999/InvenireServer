@@ -1,14 +1,15 @@
+using System.Linq.Expressions;
+using InvenireServer.Application.Dtos.Employees;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Domain.Entities.Common.Queries;
-using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Employees.Queries.GetByEmailAddress;
 
 public class GetByEmailAddressEmployeeQueryHandler : IRequestHandler<GetByEmailAddressEmployeeQuery, EmployeeDto>
 {
-    private IRepositoryManager _repositories;
+    private readonly IRepositoryManager _repositories;
 
     public GetByEmailAddressEmployeeQueryHandler(IRepositoryManager repositories)
     {
@@ -22,7 +23,7 @@ public class GetByEmailAddressEmployeeQueryHandler : IRequestHandler<GetByEmailA
 
         var employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
         {
-            Selector = EmployeeDto.BaseSelector,
+            Selector = EmployeeDtoSelector,
             Filtering = new QueryFilteringOptions<Employee>
             {
                 Filters =
@@ -35,5 +36,23 @@ public class GetByEmailAddressEmployeeQueryHandler : IRequestHandler<GetByEmailA
         if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee is not from the admin's organization.");
 
         return employee;
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
+            };
+        }
     }
 }

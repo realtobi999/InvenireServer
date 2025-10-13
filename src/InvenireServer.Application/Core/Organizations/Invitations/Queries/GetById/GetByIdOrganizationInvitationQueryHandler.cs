@@ -1,6 +1,7 @@
+using System.Linq.Expressions;
+using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;
@@ -23,7 +24,7 @@ public class GetByIdOrganizationInvitationQueryHandler : IRequestHandler<GetById
 
         var invitation = await _repositories.Organizations.Invitations.GetAsync(new QueryOptions<OrganizationInvitation, OrganizationInvitationDto>
         {
-            Selector = OrganizationInvitationDto.FromInvitationSelector,
+            Selector = OrganizationInvitationDtoSelector,
             Filtering = new QueryFilteringOptions<OrganizationInvitation>
             {
                 Filters =
@@ -36,5 +37,31 @@ public class GetByIdOrganizationInvitationQueryHandler : IRequestHandler<GetById
         if (invitation.OrganizationId != organization.Id) throw new Unauthorized401Exception("The invitation is not from the admin's organization.");
 
         return invitation;
+    }
+
+    private static Expression<Func<OrganizationInvitation, OrganizationInvitationDto>> OrganizationInvitationDtoSelector
+    {
+        get
+        {
+            return i => new OrganizationInvitationDto
+            {
+                Id = i.Id,
+                OrganizationId = i.OrganizationId,
+                Description = i.Description,
+                CreatedAt = i.CreatedAt,
+                LastUpdatedAt = i.LastUpdatedAt,
+                Employee = i.Employee == null ? null : new EmployeeDto
+                {
+                    Id = i.Employee.Id,
+                    OrganizationId = i.Employee.OrganizationId,
+                    FirstName = i.Employee.FirstName,
+                    LastName = i.Employee.LastName,
+                    FullName = $"{i.Employee.FirstName} {i.Employee.LastName}",
+                    EmailAddress = i.Employee.EmailAddress,
+                    CreatedAt = i.Employee.CreatedAt,
+                    LastUpdatedAt = i.Employee.LastUpdatedAt,
+                }
+            };
+        }
     }
 }

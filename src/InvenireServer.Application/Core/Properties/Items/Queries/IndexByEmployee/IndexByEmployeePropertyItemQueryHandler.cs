@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
-using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 
@@ -25,7 +26,7 @@ public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEm
 
         var query = new QueryOptions<PropertyItem, PropertyItemDto>
         {
-            Selector = Selector,
+            Selector = PropertyItemDtoSelector,
             Ordering = new QueryOrderingOptions<PropertyItem>(request.Parameters.Order, request.Parameters.Desc),
             Filtering = new QueryFilteringOptions<PropertyItem>
             {
@@ -54,7 +55,7 @@ public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEm
         var items = (await _repositories.Properties.Items.IndexAsync(query)).ToList();
 
         // Load the employee into the items.
-        var dto = EmployeeDto.BaseSelector.Compile()(employee);
+        var dto = EmployeeDtoSelector.Compile()(employee);
         items.ForEach(i => i.Employee = dto);
 
         return new IndexByEmployeePropertyItemQueryResponse
@@ -66,7 +67,7 @@ public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEm
         };
     }
 
-    private static Expression<Func<PropertyItem, PropertyItemDto>> Selector
+    private static Expression<Func<PropertyItem, PropertyItemDto>> PropertyItemDtoSelector
     {
         get
         {
@@ -93,6 +94,24 @@ public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEm
                 CreatedAt = i.CreatedAt,
                 LastUpdatedAt = i.LastUpdatedAt,
                 LastCodeGeneratedAt = i.LastCodeGeneratedAt,
+            };
+        }
+    }
+
+    private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector
+    {
+        get
+        {
+            return e => new EmployeeDto
+            {
+                Id = e.Id,
+                OrganizationId = e.OrganizationId,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                FullName = $"{e.FirstName} {e.LastName}",
+                EmailAddress = e.EmailAddress,
+                CreatedAt = e.CreatedAt,
+                LastUpdatedAt = e.LastUpdatedAt,
             };
         }
     }

@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Dtos.Properties;
-using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Organizations;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
 
@@ -30,7 +30,7 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActiveProper
 
         var query = new QueryOptions<PropertyScan, PropertyScanDto>
         {
-            Selector = Selector,
+            Selector = PropertyScanDtoSelector,
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
                 Filters =
@@ -56,7 +56,7 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActiveProper
         return await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
     }
 
-    private static Expression<Func<PropertyScan, PropertyScanDto>> Selector
+    private static Expression<Func<PropertyScan, PropertyScanDto>> PropertyScanDtoSelector
     {
         get
         {

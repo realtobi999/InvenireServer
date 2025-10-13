@@ -14,6 +14,7 @@ public interface IRepositoryBase<TEntity> where TEntity : class
     void Create(TEntity entity);
     Task ExecuteCreateAsync(TEntity entity);
     void Update(TEntity entity);
+    void Update(IEnumerable<TEntity> entities);
     Task ExecuteUpdateAsync(TEntity entity);
     void Delete(TEntity entity);
     Task ExecuteDeleteAsync(TEntity entity);
