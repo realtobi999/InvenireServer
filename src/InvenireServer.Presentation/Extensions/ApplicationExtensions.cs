@@ -11,15 +11,13 @@ public static class ApplicationExtensions
         {
             var response = context.HttpContext.Response;
 
-            switch (response.StatusCode)
+            return response.StatusCode switch
             {
-                case (int)HttpStatusCode.Unauthorized:
-                    throw new Unauthorized401Exception();
-                case (int)HttpStatusCode.Forbidden:
-                    throw new Forbidden403Exception();
-            }
-
-            return Task.CompletedTask;
+                (int)HttpStatusCode.Forbidden => throw new Forbidden403Exception(),
+                (int)HttpStatusCode.Unauthorized => throw new Unauthorized401Exception(),
+                (int)HttpStatusCode.MethodNotAllowed => throw new MethodNotAllowed405Exception(),
+                _ => Task.CompletedTask,
+            };
         });
     }
 }

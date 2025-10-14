@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Application.Interfaces.Managers;
+using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
@@ -38,11 +38,11 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         await _repositories.Admins.ExecuteCreateAsync(admin);
 
         var token = _jwt.Builder.Build(
-            [
-                new Claim("role", Jwt.Roles.ADMIN),
-                new Claim("admin_id", admin.Id.ToString()),
-                new Claim("is_verified", bool.FalseString)
-            ]);
+        [
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.FalseString)
+        ]);
         return new RegisterAdminCommandResult
         {
             Admin = admin,

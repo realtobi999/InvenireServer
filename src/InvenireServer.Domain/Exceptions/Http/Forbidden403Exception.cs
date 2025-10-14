@@ -1,5 +1,5 @@
+using System.Net;
 using InvenireServer.Domain.Interfaces.Exceptions;
-using Microsoft.AspNetCore.Http;
 
 namespace InvenireServer.Domain.Exceptions.Http;
 
@@ -13,7 +13,6 @@ public class Forbidden403Exception : Exception, IHttpException
     {
     }
 
-    public int StatusCode => StatusCodes.Status403Forbidden;
-
+    public int StatusCode => (int)HttpStatusCode.Forbidden;
     public string Title => "Forbidden";
 }

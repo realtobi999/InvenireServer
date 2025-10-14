@@ -1,5 +1,5 @@
-using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Update;
 

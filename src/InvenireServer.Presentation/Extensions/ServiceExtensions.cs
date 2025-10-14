@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using FluentValidation;
 using InvenireServer.Application;
@@ -15,6 +16,7 @@ using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Presentation.Middleware;
+using InvenireServer.Presentation.Policies;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -166,5 +168,15 @@ public static class ServiceExtensions
         services.AddValidatorsFromAssembly(typeof(ApplicationAssembly).Assembly);
         services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>)));
         services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)));
+    }
+
+    public static void ConfigureControllers(this IServiceCollection services)
+    {
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCasePolicy();
+            options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCasePolicy();
+        });
     }
 }

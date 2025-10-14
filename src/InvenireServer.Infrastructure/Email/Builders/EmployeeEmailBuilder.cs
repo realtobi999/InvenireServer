@@ -14,11 +14,10 @@ public class EmployeeEmailBuilder : BaseEmailBuilder, IEmployeeEmailBuilder
     {
         var message = new MailMessage(SourceAddress, dto.EmployeeAddress)
         {
-            IsBodyHtml = true
+            Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "employee_verification_email_template.html"), dto),
+            Subject = "Ověřte svojí emailovou adresu.",
+            IsBodyHtml = true,
         };
-
-        message.Subject = "Please verify your email to complete your registration";
-        message.Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "employee_verification_email_template.html"), dto);
 
         return message;
     }

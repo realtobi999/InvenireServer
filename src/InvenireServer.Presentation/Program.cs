@@ -68,7 +68,6 @@ public class Program
                 {
                     app.UseSwagger();
                     app.UseSwaggerUI();
-                    app.Services.CreateScope().ServiceProvider.GetRequiredService<InvenireServerContext>().Database.Migrate();
                 }
 
                 app.UseCors(CorsConstants.Policies.FRONTEND_POLICY);

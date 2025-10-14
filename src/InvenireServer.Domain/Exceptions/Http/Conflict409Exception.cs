@@ -14,6 +14,5 @@ public class Conflict409Exception : Exception, IHttpException
     }
 
     public int StatusCode => (int)HttpStatusCode.Conflict;
-
     public string Title => "Conflict";
 }

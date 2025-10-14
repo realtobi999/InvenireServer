@@ -1,9 +1,10 @@
 using InvenireServer.Application.Core.Admins.Commands.Delete;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
 
@@ -11,6 +12,7 @@ namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
 public class DeleteAdminCommandHandlerTests
 {
+    private readonly JwtManager _jwt;
     private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteAdminCommandHandler _handler;
 
@@ -18,28 +20,45 @@ public class DeleteAdminCommandHandlerTests
     {
         _repositories = new Mock<IRepositoryManager>();
         _handler = new DeleteAdminCommandHandler(_repositories.Object);
+        _jwt = JwtManagerFaker.Initiate();
     }
 
     [Fact]
-    public async Task Handle_DeletesAdminCorrectly()
+    public async Task Handle_ThrowsNoException()
     {
         // Prepare.
         var admin = AdminFaker.Fake();
-
         var command = new DeleteAdminCommand
         {
-            Jwt = new Jwt([], [])
+            Jwt = _jwt.Builder.Build([])
         };
 
+        // Prepare - repository.
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
-        _repositories.Setup(r => r.Admins.Delete(It.IsAny<Admin>()));
-        _repositories.Setup(r => r.SaveOrThrowAsync());
+        _repositories.Setup(r => r.Admins.ExecuteDeleteAsync(admin)).Returns(Task.CompletedTask);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
-
         await action.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenAdminIsNotFound()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var command = new DeleteAdminCommand
+        {
+            Jwt = _jwt.Builder.Build([])
+        };
+
+        // Prepare - repository.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
     [Fact]
@@ -48,20 +67,17 @@ public class DeleteAdminCommandHandlerTests
         // Prepare.
         var admin = AdminFaker.Fake();
         var organization = OrganizationFaker.Fake(admin: admin);
-
         var command = new DeleteAdminCommand
         {
-            Jwt = new Jwt([], [])
+            Jwt = _jwt.Builder.Build([])
         };
 
+        // Prepare - repository.
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
-        _repositories.Setup(r => r.Admins.Delete(It.IsAny<Admin>()));
-        _repositories.Setup(r => r.SaveOrThrowAsync());
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
-
-        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization must be deleted before the admin can be removed.");
+        await action.Should().ThrowAsync<Conflict409Exception>().WithMessage("The admin's organization must be deleted before the admin can be removed.");
     }
 }

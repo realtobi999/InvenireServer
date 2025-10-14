@@ -13,7 +13,6 @@ public class NotFound404Exception : Exception, IHttpException
     {
     }
 
-    public string Title => "Resource Not Found";
-
     public int StatusCode => (int)HttpStatusCode.NotFound;
+    public string Title => "Resource Not Found";
 }

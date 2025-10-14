@@ -14,6 +14,5 @@ public class BadRequest400Exception : Exception, IHttpException
     }
 
     public int StatusCode => (int)HttpStatusCode.BadRequest;
-
     public string Title => "Bad Request";
 }

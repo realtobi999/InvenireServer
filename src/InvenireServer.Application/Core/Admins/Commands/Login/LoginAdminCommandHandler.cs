@@ -28,15 +28,14 @@ public class LoginAdminCommandHandler : IRequestHandler<LoginAdminCommand, Login
         if (_hasher.VerifyHashedPassword(admin, admin.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");
 
         admin.LastLoginAt = DateTimeOffset.UtcNow;
-
         await _repositories.Admins.ExecuteUpdateAsync(admin);
 
         var token = _jwt.Builder.Build(
-            [
-                new Claim("role", Jwt.Roles.ADMIN),
-                new Claim("admin_id", admin.Id.ToString()),
-                new Claim("is_verified", bool.TrueString)
-            ]);
+        [
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]);
         return new LoginAdminCommandResult
         {
             Token = token,
