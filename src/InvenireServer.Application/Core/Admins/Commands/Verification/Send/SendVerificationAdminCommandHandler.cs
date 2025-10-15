@@ -29,7 +29,7 @@ public class SendVerificationAdminCommandHandler : IRequestHandler<SendVerificat
         var email = _email.Builders.Admin.BuildVerificationEmail(new AdminVerificationEmailDto
         {
             AdminAddress = admin.EmailAddress,
-            AdminName = admin.FirstName,
+            AdminFirstName = admin.FirstName,
             VerificationLink = $"{request.FrontendBaseAddress}/verify-email?token={_jwt.Writer.Write(jwt)}"
         });
         await _email.Sender.SendEmailAsync(email);

@@ -5,11 +5,11 @@ using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Presentation;
+using InvenireServer.Tests.Extensions.Organizations;
 using InvenireServer.Tests.Extensions.Users;
 using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
-using InvenireServer.Tests.Extensions.Organizations;
 using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;

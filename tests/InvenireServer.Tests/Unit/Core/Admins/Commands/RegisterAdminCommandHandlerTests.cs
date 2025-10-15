@@ -1,22 +1,22 @@
 using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Unit.Helpers;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
-public class RegisterAdminCommandHandlerTests : CommandHandlerTester<RegisterAdminCommandHandler>
+public class RegisterAdminCommandHandlerTests : CommandHandlerTester
 {
-    public RegisterAdminCommandHandlerTests() : base(repos =>
+    private readonly PasswordHasher<Admin> _hasher;
+    private readonly RegisterAdminCommandHandler _handler;
+
+    public RegisterAdminCommandHandlerTests()
     {
-        var jwt = JwtManagerFaker.Initiate();
-        var hasher = new PasswordHasher<Admin>();
-        return new RegisterAdminCommandHandler(jwt, hasher, repos.Object);
-    })
-    { }
+        _hasher = new PasswordHasher<Admin>();
+        _handler = new RegisterAdminCommandHandler(_jwt, _hasher, _repositories.Object);
+    }
 
     [Fact]
     public async Task Handle_ThrowsNoException()

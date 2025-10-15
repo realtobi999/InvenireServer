@@ -1,29 +1,21 @@
-using System.Linq.Expressions;
 using InvenireServer.Application.Core.Admins.Commands.Login;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Tests.Unit.Helpers;
 using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
-public class LoginAdminCommandHandlerTests
+public class LoginAdminCommandHandlerTests : CommandHandlerTester
 {
-    private readonly JwtManager _jwt;
-    private readonly IPasswordHasher<Admin> _hasher;
-    private readonly Mock<IRepositoryManager> _repositories;
+    private readonly PasswordHasher<Admin> _hasher;
     private readonly LoginAdminCommandHandler _handler;
 
     public LoginAdminCommandHandlerTests()
     {
-        _repositories = new Mock<IRepositoryManager>();
         _hasher = new PasswordHasher<Admin>();
-        _jwt = JwtManagerFaker.Initiate();
-
         _handler = new LoginAdminCommandHandler(_jwt, _hasher, _repositories.Object);
     }
 
@@ -45,7 +37,7 @@ public class LoginAdminCommandHandlerTests
 
         // Prepare - repositories.
         _repositories.Setup(r => r.Admins.GetAsync(a => a.EmailAddress == command.EmailAddress)).ReturnsAsync(admin);
-        _repositories.Setup(r => r.Admins.ExecuteUpdateAsync(It.IsAny<Admin>())).Returns(Task.CompletedTask);
+        _repositories.Setup(r => r.Admins.ExecuteUpdateAsync(admin)).Returns(Task.CompletedTask);
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

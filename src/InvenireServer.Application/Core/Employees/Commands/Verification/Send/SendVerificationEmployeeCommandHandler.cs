@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Application.Dtos.Employees.Email;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Verification.Send;
@@ -30,7 +30,7 @@ public class SendVerificationEmployeeCommandHandler : IRequestHandler<SendVerifi
         var dto = new EmployeeVerificationEmailDto
         {
             EmployeeAddress = employee.EmailAddress,
-            EmployeeName = employee.FirstName,
+            EmployeeFirstName = employee.FirstName,
             VerificationLink = $"{request.FrontendBaseAddress}/verify-email?token={_jwt.Writer.Write(jwt)}"
         };
         var email = _email.Builders.Employee.BuildVerificationEmail(dto);

@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Application.Interfaces.Managers;
+using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
@@ -22,7 +22,7 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
 
     public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken ct)
     {
-        var employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials");
+        var employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials.");
 
         if (!employee.IsVerified) throw new Unauthorized401Exception("Verification is required to proceed with login.");
         if (_hasher.VerifyHashedPassword(employee, employee.Password, request.Password) == PasswordVerificationResult.Failed) throw new Unauthorized401Exception("Invalid credentials.");

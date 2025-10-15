@@ -6,8 +6,8 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Extensions.Users;
-using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Fakers.Common;
+using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;

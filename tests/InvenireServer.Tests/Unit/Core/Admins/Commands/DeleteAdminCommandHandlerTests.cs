@@ -1,26 +1,20 @@
 using InvenireServer.Application.Core.Admins.Commands.Delete;
-using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
+using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
-public class DeleteAdminCommandHandlerTests
+public class DeleteAdminCommandHandlerTests : CommandHandlerTester
 {
-    private readonly JwtManager _jwt;
-    private readonly Mock<IRepositoryManager> _repositories;
     private readonly DeleteAdminCommandHandler _handler;
 
     public DeleteAdminCommandHandlerTests()
     {
-        _repositories = new Mock<IRepositoryManager>();
         _handler = new DeleteAdminCommandHandler(_repositories.Object);
-        _jwt = JwtManagerFaker.Initiate();
     }
 
     [Fact]
