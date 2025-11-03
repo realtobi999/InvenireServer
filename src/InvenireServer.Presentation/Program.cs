@@ -7,7 +7,6 @@ using InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
 using InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
 using InvenireServer.Domain.Constants;
 using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Infrastructure.Persistence.Repositories;
 using InvenireServer.Infrastructure.Utilities.QR;
 using InvenireServer.Presentation.Extensions;
@@ -29,13 +28,13 @@ public class Program
                 builder.Host.ConfigureSerilog(builder.Configuration);
                 builder.Host.ConfigureConfiguration();
 
-                builder.WebHost.ConfigureKestrel(options =>
-                {
-                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
-                });
                 builder.Services.Configure<FormOptions>(options =>
                 {
                     options.MultipartBodyLengthLimit = 1024 * 1024 * 50; // 50 MB.
+                });
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
                 });
 
                 builder.Services.ConfigureJwt(builder.Configuration);

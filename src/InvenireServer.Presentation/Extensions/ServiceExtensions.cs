@@ -16,7 +16,6 @@ using InvenireServer.Infrastructure.Email;
 using InvenireServer.Infrastructure.Persistence;
 using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Presentation.Middleware;
-using InvenireServer.Presentation.Policies;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -175,8 +174,6 @@ public static class ServiceExtensions
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-            options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCasePolicy();
-            options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCasePolicy();
         });
     }
 }

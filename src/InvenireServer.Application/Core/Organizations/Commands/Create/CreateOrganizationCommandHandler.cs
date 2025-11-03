@@ -39,7 +39,7 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
             AdminAddress = admin.EmailAddress,
             AdminFirstName = admin.FirstName,
             OrganizationName = organization.Name,
-            DashboardLink = $"{request.FrontendBaseAddress}/dashboard"
+            DashboardLink = $"{request.FrontendBaseAddress}/dashboard",
         });
         await _email.Sender.SendEmailAsync(email);
 

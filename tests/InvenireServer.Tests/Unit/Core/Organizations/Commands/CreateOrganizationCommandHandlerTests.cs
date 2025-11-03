@@ -1,6 +1,8 @@
 using System.Net.Mail;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
 using InvenireServer.Application.Dtos.Admins.Email;
+using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Unit.Helpers;
@@ -19,12 +21,13 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
+        // Prepare.
         var admin = AdminFaker.Fake();
         var organization = OrganizationFaker.Fake();
         var command = new CreateOrganizationCommand
         {
-            Name = organization.Name,
             Jwt = _jwt.Builder.Build([]),
+            Name = organization.Name,
             FrontendBaseAddress = "https://www.invenire.com",
         };
 
@@ -51,5 +54,26 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
 
         // Assert that the admin is assigned to the organization.
         admin.OrganizationId.Should().Be(result.Organization.Id);
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenAdminIsNotFound()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+        var command = new CreateOrganizationCommand
+        {
+            Jwt = _jwt.Builder.Build([]),
+            Name = organization.Name,
+            FrontendBaseAddress = "https://www.invenire.com",
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 }
