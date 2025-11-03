@@ -41,7 +41,7 @@ public class Admin
 
     // Navigational Properties.
 
-    public Guid? OrganizationId { get; private set; }
+    public Guid? OrganizationId { get; set; }
 
     // Methods.
 

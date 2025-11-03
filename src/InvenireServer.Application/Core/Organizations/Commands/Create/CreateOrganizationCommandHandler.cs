@@ -27,21 +27,20 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
             CreatedAt = DateTimeOffset.UtcNow,
             LastUpdatedAt = null,
         };
-        organization.AssignAdmin(admin);
+        admin.OrganizationId = organization.Id;
 
         _repositories.Admins.Update(admin);
         _repositories.Organizations.Create(organization);
 
         await _repositories.SaveOrThrowAsync();
 
-        var dto = new AdminOrganizationCreationEmailDto
+        var email = _email.Builders.Admin.BuildOrganizationCreationEmail(new AdminOrganizationCreationEmailDto
         {
             AdminAddress = admin.EmailAddress,
             AdminFirstName = admin.FirstName,
             OrganizationName = organization.Name,
             DashboardLink = $"{request.FrontendBaseAddress}/dashboard"
-        };
-        var email = _email.Builders.Admin.BuildOrganizationCreationEmail(dto);
+        });
         await _email.Sender.SendEmailAsync(email);
 
         return new CreateOrganizationCommandResult
