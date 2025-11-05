@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office.CustomUI;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
@@ -124,6 +126,65 @@ public class PropertyQueryEndpointsTests
         content.Limit.Should().Be(limit);
         content.Offset.Should().Be(offset);
         content.TotalCount.Should().Be(items.Count);
+    }
+
+    [Fact]
+    public async Task ExportItemsToExcel_ReturnsOkAndCorrectData()
+    {
+        // Prepare.
+        var items = new List<PropertyItem>();
+        for (var _ = 0; _ < 100; _++) items.Add(PropertyItemFaker.Fake());
+
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake(items: items);
+        var property = PropertyFaker.Fake(items: items);
+        var organization = OrganizationFaker.Fake(admin: admin, property: property, employees: [employee]);
+
+        using var context = _app.GetDatabaseContext();
+        context.Add(admin);
+        context.Add(employee);
+        context.Add(organization);
+        context.Add(property);
+        context.AddRange(items);
+        context.SaveChanges();
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        // Act & Assert.
+        var response = await _client.GetAsync("/api/properties/items/export/excel");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content.Headers.ContentType!.ToString().Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.Content.Headers.ContentLength.Should().BeGreaterThan(0);
+
+        var content = await response.Content.ReadAsStreamAsync();
+        using var workbook = new XLWorkbook(content);
+        var worksheet = workbook.Worksheets.First();
+
+        var rows = worksheet.RowsUsed().Skip(1).ToList();
+        rows.Count.Should().Be(items.Count);
+
+        foreach (var row in rows.Take(5))
+        {
+            var item = items.FirstOrDefault(i => i.InventoryNumber == row.Cell(1).GetString());
+            item.Should().NotBeNull();
+            row.Cell(2).GetString().Should().Be(item!.RegistrationNumber);
+            row.Cell(3).GetString().Should().Be(item.Name);
+            row.Cell(4).GetString().Should().Be(item.Price.ToString());
+            row.Cell(5).GetString().Should().Be(item.SerialNumber ?? "");
+            row.Cell(6).GetString().Should().Be(item.DateOfPurchase.ToString("yyyy-MM-dd"));
+            row.Cell(7).GetString().Should().Be(item.DateOfSale?.ToString("yyyy-MM-dd") ?? "");
+            row.Cell(8).GetString().Should().Be(item.Location.Building);
+            row.Cell(9).GetString().Should().Be(item.Location.Room);
+            row.Cell(10).GetString().Should().Be(item.Location.AdditionalNote ?? "");
+            row.Cell(11).GetString().Should().Be($"{employee.FirstName} {employee.LastName}");
+            row.Cell(12).GetString().Should().Be(employee.EmailAddress);
+            row.Cell(13).GetString().Should().Be(item.Description ?? "");
+            row.Cell(14).GetString().Should().Be(item.DocumentNumber ?? "");
+        }
     }
 
     [Fact]

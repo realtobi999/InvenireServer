@@ -1,22 +1,23 @@
-using MediatR;
 using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Common;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using InvenireServer.Presentation.Extensions;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
+using InvenireServer.Application.Core.Properties.Items.Queries.ExportToExcel;
 using InvenireServer.Application.Core.Properties.Items.Queries.GetById;
-using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
-using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
-using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
+using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
+using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
+using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
+using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
+using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByEmployee;
-using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Domain.Exceptions.Http;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Presentation.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
@@ -90,6 +91,18 @@ public class PropertyQueryController : ControllerBase
             default:
                 throw new Unauthorized401Exception();
         }
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/properties/items/export/excel")]
+    public async Task<IActionResult> ExportItemsToExcel()
+    {
+        var excel = await _mediator.Send(new ExportToExcelPropertyItemQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+        });
+
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]

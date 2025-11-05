@@ -3,18 +3,18 @@ using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
-namespace InvenireServer.Application.Core.Properties.Items.Commands.CreateFromJsonFile;
+namespace InvenireServer.Application.Core.Properties.Items.Commands.ImportFromJson;
 
-public class CreatePropertyItemsFromJsonFileCommandHandler : IRequestHandler<CreatePropertyItemsFromJsonFileCommand>
+public class ImportFromJsonPropertyItemsCommandHandler : IRequestHandler<ImportFromJsonPropertyItemsCommand>
 {
     private readonly IMediator _mediator;
 
-    public CreatePropertyItemsFromJsonFileCommandHandler(IMediator mediator)
+    public ImportFromJsonPropertyItemsCommandHandler(IMediator mediator)
     {
         _mediator = mediator;
     }
 
-    public async Task Handle(CreatePropertyItemsFromJsonFileCommand request, CancellationToken ct)
+    public async Task Handle(ImportFromJsonPropertyItemsCommand request, CancellationToken ct)
     {
         var command = JsonSerializer.Deserialize<CreatePropertyItemsCommand>(await new StreamReader(request.Stream).ReadToEndAsync(ct));
 

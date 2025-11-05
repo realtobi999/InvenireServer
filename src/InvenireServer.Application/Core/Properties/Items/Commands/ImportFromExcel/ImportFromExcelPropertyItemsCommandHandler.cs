@@ -4,20 +4,48 @@ using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Core.Properties.Items.Commands.CreateFromExcelFile;
+namespace InvenireServer.Application.Core.Properties.Items.Commands.ImportFromExcel;
 
-public class CreatePropertyItemsFromExcelFileCommandHandler : IRequestHandler<CreatePropertyItemsFromExcelFileCommand>
+public class ImportFromExcelPropertyItemsCommandHandler : IRequestHandler<ImportFromExcelPropertyItemsCommand>
 {
     private readonly IMediator _mediator;
     private readonly IRepositoryManager _repositories;
 
-    public CreatePropertyItemsFromExcelFileCommandHandler(IMediator mediator, IRepositoryManager repositories)
+    public ImportFromExcelPropertyItemsCommandHandler(IMediator mediator, IRepositoryManager repositories)
     {
         _mediator = mediator;
         _repositories = repositories;
     }
 
-    public async Task Handle(CreatePropertyItemsFromExcelFileCommand request, CancellationToken ct)
+    public static readonly string[] PropertyKeys =
+    [
+        "InventoryNumber",
+        "RegistrationNumber",
+        "Name",
+        "Price",
+        "SerialNumber",
+        "DateOfPurchase",
+        "DateOfSale",
+        "LocationRoom",
+        "LocationBuilding",
+        "LocationAdditionalNote",
+        "Description",
+        "DocumentNumber",
+        "EmployeeEmailAddress"
+    ];
+
+    public static readonly string[] RequiredPropertyKey =
+    [
+        "InventoryNumber",
+        "RegistrationNumber",
+        "Name",
+        "Price",
+        "DateOfPurchase",
+        "LocationRoom",
+        "LocationBuilding",
+    ];
+
+    public async Task Handle(ImportFromExcelPropertyItemsCommand request, CancellationToken ct)
     {
         // Extract headers from the column string and validate:
         //  1. All required property keys are present.
@@ -29,11 +57,11 @@ public class CreatePropertyItemsFromExcelFileCommandHandler : IRequestHandler<Cr
             headers[parts[0]] = parts[1];
         }
 
-        var missing = CreatePropertyItemsFromExcelFileConfiguration.RequiredPropertyKey.Where(k => !headers.ContainsKey(k) || string.IsNullOrWhiteSpace(headers[k]));
+        var missing = RequiredPropertyKey.Where(k => !headers.ContainsKey(k) || string.IsNullOrWhiteSpace(headers[k]));
         if (missing.Any())
             throw new BadRequest400Exception($"The excel file is missing required columns: {string.Join(", ", missing)}");
-        if (headers.Count > CreatePropertyItemsFromExcelFileConfiguration.TotalProperties)
-            throw new BadRequest400Exception($"The excel file contains too many columns. Expected up to {CreatePropertyItemsFromExcelFileConfiguration.TotalProperties}, but found {headers.Count}.");
+        if (headers.Count > PropertyKeys.Length)
+            throw new BadRequest400Exception($"The excel file contains too many columns. Expected up to {PropertyKeys.Length}, but found {headers.Count}.");
 
         // Extract row values using the  headers  and  build  the  commands  for
         // creating the items. Set any missing required fields to an empty value
@@ -43,9 +71,28 @@ public class CreatePropertyItemsFromExcelFileCommandHandler : IRequestHandler<Cr
         using var workbook = new XLWorkbook(request.Stream);
         foreach (var row in workbook.Worksheets.First().RowsUsed().Skip(1))
         {
-            double GetDouble(string key) => double.TryParse(GetValue(key), out var result) ? result : 0;
-            string? GetValue(string key) => headers.TryGetValue(key, out var columnLetter) && !string.IsNullOrWhiteSpace(columnLetter) ? string.IsNullOrWhiteSpace(row.Cell(columnLetter).GetString()) ? null : row.Cell(columnLetter).GetString() : null;
-            DateTimeOffset? GetDate(string key) => DateTimeOffset.TryParse(GetValue(key), out var result) ? result : null;
+            // Small functions for retrieving the data from the excel file.
+            string? GetValue(string key)
+            {
+                if (!headers.TryGetValue(key, out var columnLetter))
+                    return null;
+
+                if (string.IsNullOrWhiteSpace(columnLetter))
+                    return null;
+
+                var value = row.Cell(columnLetter).GetString();
+                return string.IsNullOrWhiteSpace(value) ? null : value;
+            }
+
+            double GetDouble(string key)
+            {
+                return double.TryParse(GetValue(key), out var value) ? value : 0;
+            }
+
+            DateTimeOffset? GetDate(string key)
+            {
+                return DateTimeOffset.TryParse(GetValue(key), out var value) ? value : null;
+            }
 
             var email = GetValue("EmployeeEmailAddress");
             var employee = (Employee?)null;

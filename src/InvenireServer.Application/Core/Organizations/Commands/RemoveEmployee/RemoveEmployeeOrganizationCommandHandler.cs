@@ -3,7 +3,7 @@ using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
+namespace InvenireServer.Application.Core.Organizations.Commands.RemoveEmployee;
 
 public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEmployeeOrganizationCommand>
 {

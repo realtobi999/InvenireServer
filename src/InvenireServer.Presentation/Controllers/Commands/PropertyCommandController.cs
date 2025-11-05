@@ -1,33 +1,31 @@
-using MediatR;
-using System.Text.Json;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Authorization;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Presentation.Extensions;
-using InvenireServer.Infrastructure.Authentication;
-using InvenireServer.Application.Core.Properties.Commands.Update;
-using InvenireServer.Application.Core.Properties.Commands.Delete;
-using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 using InvenireServer.Application.Core.Properties.Commands.Create;
+using InvenireServer.Application.Core.Properties.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Commands.Update;
 using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
+using InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
+using InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
+using InvenireServer.Application.Core.Properties.Items.Commands.ImportFromExcel;
+using InvenireServer.Application.Core.Properties.Items.Commands.ImportFromJson;
 using InvenireServer.Application.Core.Properties.Items.Commands.Scan;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Complete;
 using InvenireServer.Application.Core.Properties.Scans.Commands.Create;
-using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
+using InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
+using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
-using InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
-using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromJsonFile;
-using InvenireServer.Application.Core.Properties.Items.Commands.CreateFromExcelFile;
+using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
-using DocumentFormat.OpenXml.Wordprocessing;
-using InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Presentation.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -103,9 +101,9 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/json-file")]
-    public async Task<IActionResult> CreateItemsFromJsonFile(IFormFile file)
+    public async Task<IActionResult> ImportItemsFromJson(IFormFile file)
     {
-        await _mediator.Send(new CreatePropertyItemsFromJsonFileCommand
+        await _mediator.Send(new ImportFromJsonPropertyItemsCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             Stream = file.OpenReadStream()
@@ -116,12 +114,12 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/excel-file")]
-    public async Task<IActionResult> CreateItemsFromExcelFile(IFormFile file, [FromQuery] string columns)
+    public async Task<IActionResult> ImportItemsFromExcel(IFormFile file, [FromQuery] string columns)
     {
         if (columns is null)
             throw new BadRequest400Exception($"The '{nameof(columns)}' query parameter is missing or invalid.");
 
-        await _mediator.Send(new CreatePropertyItemsFromExcelFileCommand
+        await _mediator.Send(new ImportFromExcelPropertyItemsCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             Stream = file.OpenReadStream(),

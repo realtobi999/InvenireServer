@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Application.Dtos.Employees;
-using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
@@ -48,7 +47,7 @@ public record PropertyItemDto
     public string? DocumentNumber { get; set; }
 
     [JsonPropertyName("created_at")]
-    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? CreatedAt { get; init; }
 
     [JsonPropertyName("last_updated_at")]
     public DateTimeOffset? LastUpdatedAt { get; set; }

@@ -1,5 +1,5 @@
-using System.Reflection;
 using System.Linq.Expressions;
+using System.Reflection;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Common.Queries;
@@ -25,7 +25,7 @@ public class QueryOrderingOptions<TEntity> where TEntity : class
         OrderByDescending = descending.Value;
     }
 
-    public QueryOrderingOptions(Expression<Func<TEntity, object>> order, bool descending)
+    public QueryOrderingOptions(Expression<Func<TEntity, object>> order, bool descending = false)
     {
         OrderBy = order;
         OrderByDescending = descending;

@@ -1,19 +1,19 @@
-using MediatR;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using InvenireServer.Domain.Entities.Common;
-using InvenireServer.Presentation.Extensions;
-using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
+using InvenireServer.Application.Core.Organizations.Commands.Delete;
+using InvenireServer.Application.Core.Organizations.Commands.RemoveEmployee;
+using InvenireServer.Application.Core.Organizations.Commands.Update;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
-using InvenireServer.Application.Core.Organizations.Commands.Update;
-using InvenireServer.Application.Core.Organizations.Commands.Delete;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
-using InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
+using InvenireServer.Domain.Entities.Common;
+using InvenireServer.Infrastructure.Authentication;
+using InvenireServer.Presentation.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 

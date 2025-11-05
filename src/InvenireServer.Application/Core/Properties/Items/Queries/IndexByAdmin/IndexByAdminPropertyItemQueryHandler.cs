@@ -59,6 +59,7 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
         // Load all the employees.
         foreach (var item in items)
         {
+            if (item.EmployeeId is null) continue;
             item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>
             {
                 Selector = EmployeeDtoSelector,
@@ -66,7 +67,7 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
                 {
                     Filters = [e => e.Id == item.EmployeeId]
                 },
-            });
+            }) ?? throw new NotFound404Exception("The employee was not found in the system.");
         }
 
         return new IndexByAdminPropertyItemQueryResponse

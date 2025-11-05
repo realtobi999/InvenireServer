@@ -1,6 +1,6 @@
 using InvenireServer.Domain.Entities.Common;
 
-namespace InvenireServer.Application.Core.Organizations.Commands.Employee.Remove;
+namespace InvenireServer.Application.Core.Organizations.Commands.RemoveEmployee;
 
 public record RemoveEmployeeOrganizationCommand : IRequest
 {
