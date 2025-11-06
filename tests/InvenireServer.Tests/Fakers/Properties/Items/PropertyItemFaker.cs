@@ -12,14 +12,14 @@ public sealed class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.Name, f => f.Commerce.ProductName());
         RuleFor(i => i.Price, f => (double)f.Finance.Amount(1, 10000));
         RuleFor(i => i.SerialNumber, f => f.Random.Bool(0.7f) ? f.Commerce.Ean13() : null);
-        RuleFor(i => i.DateOfPurchase, f => f.Date.Past(5));
-        RuleFor(i => i.DateOfSale, (f, p) => f.Random.Bool(0.3f) ? f.Date.Between(p.DateOfPurchase.DateTime, DateTimeOffset.UtcNow.DateTime) : null);
+        RuleFor(i => i.DateOfPurchase, f => f.Date.Past(5).ToUniversalTime());
+        RuleFor(i => i.DateOfSale, (f, p) => f.Random.Bool(0.3f) ? f.Date.Between(p.DateOfPurchase.DateTime, DateTimeOffset.UtcNow.DateTime).ToUniversalTime() : null);
         RuleFor(i => i.Location, _ => PropertyItemLocationFaker.Fake());
         RuleFor(i => i.Description, f => f.Random.Bool(0.5f) ? f.Commerce.ProductDescription() : null);
         RuleFor(i => i.DocumentNumber, f => f.Random.AlphaNumeric(15));
-        RuleFor(i => i.CreatedAt, f => f.Date.PastOffset(5));
-        RuleFor(i => i.LastUpdatedAt, f => f.Date.RecentOffset(30));
-        RuleFor(i => i.LastCodeGeneratedAt, f => f.Date.RecentOffset(30));
+        RuleFor(i => i.CreatedAt, f => f.Date.PastOffset(5).ToUniversalTime());
+        RuleFor(i => i.LastUpdatedAt, f => f.Date.RecentOffset(30).ToUniversalTime());
+        RuleFor(i => i.LastCodeGeneratedAt, f => f.Date.RecentOffset(30).ToUniversalTime());
     }
 
     public static PropertyItem Fake()

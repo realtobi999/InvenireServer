@@ -1,5 +1,6 @@
 using System.Globalization;
 using InvenireServer.Application.Core.Properties.Items.Queries.ExportToExcel;
+using InvenireServer.Application.Core.Properties.Items.Queries.ExportToJson;
 using InvenireServer.Application.Core.Properties.Items.Queries.GetById;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
@@ -103,6 +104,18 @@ public class PropertyQueryController : ControllerBase
         });
 
         return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    }
+
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpGet("/api/properties/items/export/json")]
+    public async Task<IActionResult> ExportItemsToJson()
+    {
+        var json = await _mediator.Send(new ExportToJsonPropertyItemQuery
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+        });
+
+        return File(json, "application/json");
     }
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
