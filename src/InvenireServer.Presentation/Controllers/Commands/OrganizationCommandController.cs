@@ -137,6 +137,7 @@ public class OrganizationCommandController : ControllerBase
     [HttpDelete("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> RemoveEmployee(Guid employeeId)
     {
+
         await _mediator.Send(new RemoveEmployeeOrganizationCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),

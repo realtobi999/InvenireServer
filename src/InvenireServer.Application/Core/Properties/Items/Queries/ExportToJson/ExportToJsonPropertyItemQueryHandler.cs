@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Text;
 using System.Text.Json;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
@@ -27,7 +26,7 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         var stream = new MemoryStream();
-        using var writer = new Utf8JsonWriter(stream);
+        using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
 
         var limit = QueryPaginationOptions.MAX_LIMIT;
         var employees = new List<EmployeeDto>();
@@ -36,9 +35,10 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
         var total = await _repositories.Properties.Items.CountAsync(i => i.PropertyId == property.Id);
         for (int offset = 0; offset < total; offset += limit)
         {
-            var items = await _repositories.Properties.Items.IndexAsync(new QueryOptions<PropertyItem, PropertyItemDto>
+            var batch = await _repositories.Properties.Items.IndexAsync(new QueryOptions<PropertyItem, PropertyItemDto>
             {
                 Selector = PropertyItemDtoSelector,
+                Ordering = new QueryOrderingOptions<PropertyItem>(i => i.Id),
                 Filtering = new QueryFilteringOptions<PropertyItem>
                 {
                     Filters =
@@ -48,9 +48,9 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
                 },
                 Pagination = new QueryPaginationOptions(limit, offset),
             });
-            if (!items.Any()) break;
+            if (!batch.Any()) break;
 
-            foreach (var item in items)
+            foreach (var item in batch)
             {
                 if (item.EmployeeId is not null)
                 {
@@ -93,7 +93,6 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
             return i => new PropertyItemDto
             {
                 Id = i.Id,
-                PropertyId = i.PropertyId,
                 EmployeeId = i.EmployeeId,
                 InventoryNumber = i.InventoryNumber,
                 RegistrationNumber = i.RegistrationNumber,
@@ -110,9 +109,6 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
                 },
                 Description = i.Description,
                 DocumentNumber = i.DocumentNumber,
-                CreatedAt = i.CreatedAt,
-                LastUpdatedAt = i.LastUpdatedAt,
-                LastCodeGeneratedAt = i.LastCodeGeneratedAt,
             };
         }
     }

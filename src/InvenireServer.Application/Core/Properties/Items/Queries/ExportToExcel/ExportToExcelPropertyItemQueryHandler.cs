@@ -42,9 +42,10 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
         var total = await _repositories.Properties.Items.CountAsync(i => i.PropertyId == property.Id);
         for (int offset = 0; offset < total; offset += limit)
         {
-            var items = await _repositories.Properties.Items.IndexAsync(new QueryOptions<PropertyItem, PropertyItemDto>
+            var batch = await _repositories.Properties.Items.IndexAsync(new QueryOptions<PropertyItem, PropertyItemDto>
             {
                 Selector = PropertyItemDtoSelector,
+                Ordering = new QueryOrderingOptions<PropertyItem>(i => i.Id),
                 Filtering = new QueryFilteringOptions<PropertyItem>
                 {
                     Filters =
@@ -54,9 +55,9 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
                 },
                 Pagination = new QueryPaginationOptions(limit, offset),
             });
-            if (!items.Any()) break;
+            if (!batch.Any()) break;
 
-            foreach (var item in items)
+            foreach (var item in batch)
             {
                 if (item.EmployeeId is not null)
                 {
