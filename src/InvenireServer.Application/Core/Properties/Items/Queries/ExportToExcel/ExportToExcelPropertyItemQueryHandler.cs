@@ -92,7 +92,8 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
 
         var stream = new MemoryStream();
         workbook.SaveAs(stream);
-        stream.Position = 0;
+
+        stream.Seek(0, SeekOrigin.Begin); ;
         return stream;
     }
 

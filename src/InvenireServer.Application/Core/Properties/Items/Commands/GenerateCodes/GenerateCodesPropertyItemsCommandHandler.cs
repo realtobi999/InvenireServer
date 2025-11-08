@@ -4,6 +4,8 @@ using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Interfaces.Common;
 using InvenireServer.Domain.Entities.Common.Queries;
 using InvenireServer.Application.Interfaces.Managers;
+using System.Linq.Expressions;
+using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
 
@@ -17,6 +19,8 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
         _generator = generator;
         _repositories = repositories;
     }
+
+    public const int MAX_LABEL_NAME_LENGTH = 15;
 
     public async Task<Stream> Handle(GenerateCodesPropertyItemsCommand request, CancellationToken ct)
     {
@@ -38,11 +42,12 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
         var stream = new MemoryStream();
         using (var archive = new ZipArchive(stream, ZipArchiveMode.Create, true))
         {
-            foreach (var item in items)
+            foreach (var item in items.OrderBy(i => i.Location.Building).ThenBy(i => i.Location.Room))
             {
-                var code = _generator.GenerateCodeWithLabel(content: $"api/properties/items/{item.Id}/scan", label: item.InventoryNumber);
+                var labels = new List<string> { item.InventoryNumber, item.Name[..Math.Min(item.Name.Length, MAX_LABEL_NAME_LENGTH)] };
+                var code = _generator.GenerateCodeWithLabels(content: $"api/properties/items/{item.Id}/scan", labels: labels);
 
-                using var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}.png", CompressionLevel.Fastest).Open();
+                using var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}____{item.Location.Building}_{item.Location.Room}.png", CompressionLevel.Fastest).Open();
                 await entry.WriteAsync(code, ct);
 
                 item.LastCodeGeneratedAt = DateTimeOffset.UtcNow;
@@ -54,4 +59,24 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
 
         return stream;
     }
+
+    private static Expression<Func<PropertyItem, PropertyItemDto>> PropertyItemDtoSelector
+    {
+        get
+        {
+            return i => new PropertyItemDto
+            {
+                Id = i.Id,
+                InventoryNumber = i.InventoryNumber,
+                Name = i.Name,
+                Location = new PropertyItemLocationDto
+                {
+                    Room = i.Location.Room,
+                    Building = i.Location.Building,
+                },
+            };
+        }
+    }
+
+
 }

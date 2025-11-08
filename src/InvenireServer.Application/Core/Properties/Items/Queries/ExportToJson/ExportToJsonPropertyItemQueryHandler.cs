@@ -82,7 +82,7 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
         writer.WriteEndArray();
         writer.Flush();
 
-        stream.Position = 0;
+        stream.Seek(0, SeekOrigin.Begin); ;
         return stream;
     }
 
