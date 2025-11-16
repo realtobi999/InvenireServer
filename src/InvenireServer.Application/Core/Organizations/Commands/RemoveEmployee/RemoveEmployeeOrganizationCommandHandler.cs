@@ -17,8 +17,8 @@ public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEm
     public async Task Handle(RemoveEmployeeOrganizationCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
-        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
         if (employee.OrganizationId is null) throw new BadRequest400Exception("The employee isn't part of any organization");
         if (employee.OrganizationId != organization.Id) throw new Unauthorized401Exception("The employee isn't part of the organization");

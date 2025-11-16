@@ -18,10 +18,12 @@ public class GetByJwtEmployeeQueryHandler : IRequestHandler<GetByJwtEmployeeQuer
 
     public async Task<EmployeeDto> Handle(GetByJwtEmployeeQuery request, CancellationToken ct)
     {
-        return await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>
+        var employee = await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>
         {
             Selector = EmployeeDtoSelector
         }) ?? throw new NotFound404Exception("The employee was not found in the system.");
+
+        return employee;
     }
 
     private static Expression<Func<Employee, EmployeeDto>> EmployeeDtoSelector

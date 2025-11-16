@@ -29,7 +29,17 @@ public class AdminRepository : RepositoryBase<Admin>, IAdminRepository
 
         if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'admin_id' claim.");
 
-        options.Filtering?.Filters.Add(e => e.Id == id);
+        if (options.Filtering is null)
+            options.Filtering = new QueryFilteringOptions<Admin>()
+            {
+                Filters =
+                [
+                    e => e.Id == id
+                ]
+            };
+        else
+            options.Filtering.Filters.Add(e => e.Id == id);
+
 
         return await GetAsync(options);
     }

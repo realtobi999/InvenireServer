@@ -1,15 +1,13 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Common.Queries;
-using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
-namespace InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
+namespace InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByAdmin;
 
-public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActivePropertyScanQuery, PropertyScanDto>
+public class GetActivePropertyScanQueryHandler : IRequestHandler<GetByAdminActivePropertyScanQuery, PropertyScanDto>
 {
     private readonly IRepositoryManager _repositories;
 
@@ -18,14 +16,10 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActiveProper
         _repositories = repositories;
     }
 
-    public async Task<PropertyScanDto> Handle(GetActivePropertyScanQuery request, CancellationToken ct)
+    public async Task<PropertyScanDto> Handle(GetByAdminActivePropertyScanQuery request, CancellationToken ct)
     {
-        var organization = request.Jwt.GetRole() switch
-        {
-            Jwt.Roles.ADMIN => await GetOrganizationByAdmin(request.Jwt),
-            Jwt.Roles.EMPLOYEE => await GetOrganizationByEmployee(request.Jwt),
-            _ => throw new Unauthorized401Exception(),
-        };
+        var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
+        var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
         var query = new QueryOptions<PropertyScan, PropertyScanDto>
@@ -42,18 +36,6 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActiveProper
         var scan = await _repositories.Properties.Scans.GetAsync(query) ?? throw new NotFound404Exception("The property doesn't have a active scan.");
 
         return scan;
-    }
-
-    private async Task<Organization> GetOrganizationByEmployee(Jwt jwt)
-    {
-        var employee = await _repositories.Employees.GetAsync(jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");
-        return await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
-    }
-
-    private async Task<Organization> GetOrganizationByAdmin(Jwt jwt)
-    {
-        var admin = await _repositories.Admins.GetAsync(jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");
-        return await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
     }
 
     private static Expression<Func<PropertyScan, PropertyScanDto>> PropertyScanDtoSelector
@@ -73,7 +55,7 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetActiveProper
                 ScannedItemsSummary = s.ScannedItems.Count == 0 ? null : new PropertyScanDtoScannedItemsSummary
                 {
                     TotalItemsToScan = s.ScannedItems.Count,
-                    TotalScannedItems = s.ScannedItems.Where(si => si.IsScanned).ToList().Count,
+                    TotalScannedItems = s.ScannedItems.Count(si => si.IsScanned)
                 },
             };
         }

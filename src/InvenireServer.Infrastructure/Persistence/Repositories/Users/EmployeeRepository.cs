@@ -3,6 +3,7 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Interfaces.Repositories.Users;
 using InvenireServer.Domain.Entities.Common.Queries;
+using SQLitePCL;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
@@ -29,7 +30,16 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
 
         if (!Guid.TryParse(claim.Value, out var id)) throw new BadRequest400Exception("Invalid format for 'employee_id' claim.");
 
-        options.Filtering?.Filters.Add(e => e.Id == id);
+        if (options.Filtering is null)
+            options.Filtering = new QueryFilteringOptions<Employee>()
+            {
+                Filters =
+                [
+                    e => e.Id == id
+                ]
+            };
+        else
+            options.Filtering.Filters.Add(e => e.Id == id);
 
         return await GetAsync(options);
     }

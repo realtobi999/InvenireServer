@@ -24,10 +24,12 @@ public class EmployeeQueryController : ControllerBase
     [HttpGet("/api/employees/profile")]
     public async Task<IActionResult> GetByJwt()
     {
-        return Ok(await _mediator.Send(new GetByJwtEmployeeQuery
+        var command = await _mediator.Send(new GetByJwtEmployeeQuery
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-        }));
+        });
+
+        return Ok(command);
     }
 
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]

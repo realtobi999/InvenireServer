@@ -62,8 +62,8 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
                 Filters =
-            [
-                s => s.Id == request.ScanId && s.PropertyId == property.Id,
+                [
+                    s => s.Id == request.ScanId && s.PropertyId == property.Id,
                 ]
             },
         }) ?? throw new NotFound404Exception("The scan was not found in the system.");

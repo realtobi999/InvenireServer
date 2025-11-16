@@ -8,6 +8,8 @@ using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
 using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
 using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
+using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByAdmin;
+using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByEmployee;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
 using InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByEmployee;
@@ -144,10 +146,25 @@ public class PropertyQueryController : ControllerBase
     [HttpGet("/api/properties/scans/active")]
     public async Task<IActionResult> GetActiveScan()
     {
-        return Ok(await _mediator.Send(new GetActivePropertyScanQuery
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-        }));
+            var jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken());
+
+            switch (jwt.GetRole())
+            {
+                case Jwt.Roles.ADMIN:
+                    return Ok(await _mediator.Send(new GetByAdminActivePropertyScanQuery
+                    {
+                        Jwt = jwt,
+                    }));
+                case Jwt.Roles.EMPLOYEE:
+                    return Ok(await _mediator.Send(new GetByEmployeeActivePropertyScanQuery
+                    {
+                        Jwt = jwt,
+                    }));
+                default:
+                    throw new Unauthorized401Exception();
+            }
+        }
     }
 
     [Authorize()]

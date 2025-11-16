@@ -72,6 +72,9 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
         builder.Property(si => si.PropertyItemId)
             .HasColumnName("property_item_id");
 
+        builder.Property(si => si.PropertyItemEmployeeId)
+            .HasColumnName("property_item_employee_id");
+
         // Relationships.
 
         builder.HasOne<PropertyScan>()

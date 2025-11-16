@@ -19,8 +19,9 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
             IsScanned = false,
             CreatedAt = DateTimeOffset.UtcNow,
             ScannedAt = null,
+            PropertyScanId = scan.Id,
             PropertyItemId = i.Id,
-            PropertyScanId = scan.Id
+            PropertyItemEmployeeId = i.EmployeeId
         }).ToListAsync();
 
         // For providers that don't  support  bulk  operations  (e.g.  in-memory

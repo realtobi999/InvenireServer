@@ -48,6 +48,8 @@ public class PropertyScanPropertyItem
     public required Guid PropertyScanId { get; set; }
 
     public required Guid? PropertyItemId { get; set; }
+
+    public required Guid? PropertyItemEmployeeId { get; set; }
 }
 
 public enum PropertyScanStatus
