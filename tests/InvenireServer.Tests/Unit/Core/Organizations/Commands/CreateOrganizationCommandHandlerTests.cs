@@ -1,6 +1,4 @@
-using System.Net.Mail;
 using InvenireServer.Application.Core.Organizations.Commands.Create;
-using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
@@ -15,7 +13,7 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
 
     public CreateOrganizationCommandHandlerTests()
     {
-        _handler = new CreateOrganizationCommandHandler(_email.Object, _repositories.Object);
+        _handler = new CreateOrganizationCommandHandler(_repositories.Object);
     }
 
     [Fact]
@@ -36,10 +34,6 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Admins.Update(admin));
         _repositories.Setup(r => r.Organizations.Create(organization));
         _repositories.Setup(r => r.SaveOrThrowAsync()).Returns(Task.CompletedTask);
-
-        // Prepare - email.
-        _email.Setup(e => e.Builders.Admin.BuildOrganizationCreationEmail(It.IsAny<AdminOrganizationCreationEmailDto>()));
-        _email.Setup(e => e.Sender.SendEmailAsync(It.IsAny<MailMessage>()));
 
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);

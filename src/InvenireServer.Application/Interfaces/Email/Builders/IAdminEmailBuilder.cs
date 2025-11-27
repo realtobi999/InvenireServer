@@ -5,6 +5,6 @@ namespace InvenireServer.Application.Interfaces.Email.Builders;
 
 public interface IAdminEmailBuilder
 {
+    MailMessage BuildRecoveryEmail(AdminRecoveryEmailDto dto);
     MailMessage BuildVerificationEmail(AdminVerificationEmailDto dto);
-    MailMessage BuildOrganizationCreationEmail(AdminOrganizationCreationEmailDto dto);
 }

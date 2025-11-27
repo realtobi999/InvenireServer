@@ -38,8 +38,11 @@ public class RemoveEmployeeOrganizationCommandHandler : IRequestHandler<RemoveEm
                 }
             })).ToList();
 
-            items.ForEach(item => item.EmployeeId = null);
-            _repositories.Properties.Items.Update(items);
+            foreach (var item in items)
+            {
+                item.EmployeeId = null;
+                _repositories.Properties.Items.Update(item);
+            }
         }
 
         employee.OrganizationId = null;

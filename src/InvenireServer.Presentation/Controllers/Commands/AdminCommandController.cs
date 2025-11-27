@@ -13,6 +13,9 @@ using InvenireServer.Application.Core.Admins.Commands.Delete;
 using InvenireServer.Application.Core.Admins.Commands.Register;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Send;
 using InvenireServer.Application.Core.Admins.Commands.Verification.Confirm;
+using InvenireServer.Application.Core.Admins.Commands.Recover.Recover;
+using InvenireServer.Application.Core.Admins.Commands.Recover.Send;
+using System.Runtime.InteropServices;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
@@ -89,6 +92,37 @@ public class AdminCommandController : ControllerBase
             SameSite = SameSiteMode.None,
             HttpOnly = true,
         });
+
+        return NoContent();
+    }
+
+    [HttpPost("/api/admins/password-recovery/send")]
+    public async Task<IActionResult> SendPasswordRecovery([FromBody] SendPasswordRecoveryAdminCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Roles = Jwt.Roles.ADMIN)]
+    [HttpPost("/api/admins/password-recovery/recover")]
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordAdminCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
+        };
+        await _mediator.Send(command);
 
         return NoContent();
     }

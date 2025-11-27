@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Ověření e-mailu | Invenire</title>
+    <title>Obnovení hesla | Invenire</title>
 
     <style>
         body {
@@ -114,9 +114,7 @@
             color: #6e7496;
         }
 
-        .footer p {
-            margin: 0;
-        }
+        .footer p { margin: 0; }
 
         .signature-title {
             margin: 0 0 6px;
@@ -142,32 +140,33 @@
 
                             <div class="brand-label">Invenire</div>
 
-                            <h1 class="title">Ověřte svůj e-mail, @Model.EmployeeFirstName</h1>
+                            <h1 class="title">Obnovení hesla</h1>
 
                             <p class="subtext">
-                                Potvrďte prosím svou e-mailovou adresu, ať můžeme zaručit bezpečný přístup do vaší organizace.
+                                Dostali jsme požadavek na obnovení hesla k účtu spojenému s touto e-mailovou adresou.
+                                Pokračujte kliknutím na tlačítko níže.
                             </p>
 
                             <div class="button-wrapper">
-                                <a href="@Model.VerificationLink"
+                                <a href="@Model.RecoveryLink"
                                    target="_blank"
                                    class="button">
-                                    Potvrdit e-mail
+                                    Obnovit heslo
                                 </a>
                             </div>
-                            
+
                             <div class="tip-box">
                                 <p class="fallback-text">
-                                    Pokud tlačítko nefunguje, zkopírujte následující adresu do prohlížeče:
+                                    Pokud tlačítko nefunguje, můžete použít tento odkaz:
                                 </p>
 
                                 <p class="fallback-link">
-                                    <a href="@Model.VerificationLink">@Model.VerificationLink</a>
+                                    <a href="@Model.RecoveryLink">@Model.RecoveryLink</a>
                                 </p>
                             </div>
 
                             <div class="tip-box">
-                                Tip: pokud jste e-mail našli ve složce Spam nebo Promo, přidejte si adresu Invenire mezi důvěryhodné kontakty.
+                                TIP: Pokud jste o obnovení hesla nežádali, doporučujeme změnit heslo a zkontrolovat zabezpečení účtu.
                             </div>
 
                             <p class="signature-title">Děkujeme,</p>

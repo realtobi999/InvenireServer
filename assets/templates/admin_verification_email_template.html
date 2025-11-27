@@ -1,85 +1,190 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Ověření e-mailu</title>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ověření e-mailu | Invenire</title>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .header h2 {
             margin: 0;
+            padding: 0;
+            font-family: 'Inter','Segoe UI',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+            color: #f6f6fb;
         }
 
-        .content {
-            padding: 20px;
+        .bg-main {
+            background-color: #030305;
+            background-attachment: fixed;
+            background-image:
+                radial-gradient(circle at top, rgba(122, 90, 248, 0.18), transparent 60%),
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.04), transparent 45%),
+                radial-gradient(circle at 80% 90%, rgba(122, 90, 248, 0.12), transparent 55%),
+                linear-gradient(180deg, rgba(5, 6, 15, 0), rgba(5, 6, 15, 0.85));
         }
 
-        .content p {
-            margin-bottom: 20px;
+        .wrapper {
+            padding: 36px 16px;
+        }
+
+        .card-container {
+            max-width: 560px;
+            border-radius: 22px;
+            background-color: #0b0f1d;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+            overflow: hidden;
+        }
+
+        .card {
+            padding: 40px 38px;
+        }
+
+        .brand-label {
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: #a6aecf;
+            margin-bottom: 16px;
+        }
+
+        h1.title {
+            margin: 0 0 12px;
+            font-size: 26px;
+            line-height: 1.3;
+            color: #ffffff;
+        }
+
+        .subtext {
+            margin: 0 0 28px;
+            color: #a6aecf;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .button-wrapper {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         .button {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #007bff;
-            color: #fff;
+            padding: 14px 34px;
+            border-radius: 999px;
+            background-image: linear-gradient(135deg,#7a5af8,#b794ff);
+            color: #090512;
+            font-weight: 600;
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .fallback-text {
+            margin: 0 0 18px;
+            color: #a6aecf;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .fallback-link {
+            word-break: break-all;
+        }
+
+        .fallback-link a {
+            color: #b794ff;
+            text-decoration: none;
+        }
+
+        .tip-box {
+            padding: 16px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            color: #a6aecf;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 32px;
         }
 
         .footer {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
+            padding: 18px 26px;
+            background-color: #070912;
+            border-top: 1px solid rgba(255,255,255,0.05);
             text-align: center;
-            clear: both;
+            font-size: 12px;
+            color: #6e7496;
         }
 
-        .content a {
-            word-break: break-all;
-            overflow-wrap: break-word;
+        .footer p {
+            margin: 0;
+        }
+
+        .signature-title {
+            margin: 0 0 6px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .signature-subtext {
+            margin: 0;
+            color: #a6aecf;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>Ověření e-mailu</h2>
-        </div>
-        <div class="content">
-            <p>Vážený/á @Model.AdminFirstName,</p>
-            <p>Děkujeme za registraci. Pro dokončení nastavení účtu prosím potvrďte svou e-mailovou adresu.</p>
-            <p style="text-align: center;">
-                <a class="button" href="@Model.VerificationLink" target="_blank">Potvrdit e-mailovou adresu</a>
-            </p>
-            <p>Pokud tlačítko výše nefunguje, můžete následující odkaz zkopírovat a vložit do svého prohlížeče:</p>
-            <p><a href="@Model.VerificationLink">@Model.VerificationLink</a></p>
-            <p>S pozdravem,</p>
-            <p>Tým Invenire</p>
-        </div>
-        <div class="footer">
-            <p>&copy; Invenire</p>
-        </div>
-    </div>
+
+<body class="bg-main">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" class="wrapper">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" class="card-container">
+
+                    <tr>
+                        <td class="card">
+
+                            <div class="brand-label">Invenire</div>
+
+                            <h1 class="title">Ověřte svůj e-mail, @Model.AdminFirstName</h1>
+
+                            <p class="subtext">
+                                Potvrďte prosím svou e-mailovou adresu, ať můžeme zaručit bezpečný přístup do vaší organizace.
+                            </p>
+
+                            <div class="button-wrapper">
+                                <a href="@Model.VerificationLink"
+                                   target="_blank"
+                                   class="button">
+                                    Potvrdit e-mail
+                                </a>
+                            </div>
+                            
+                            <div class="tip-box">
+                                <p class="fallback-text">
+                                    Pokud tlačítko nefunguje, zkopírujte následující adresu do prohlížeče:
+                                </p>
+
+                                <p class="fallback-link">
+                                    <a href="@Model.VerificationLink">@Model.VerificationLink</a>
+                                </p>
+                            </div>
+
+                            <div class="tip-box">
+                                Tip: pokud jste e-mail našli ve složce Spam nebo Promo, přidejte si adresu Invenire mezi důvěryhodné kontakty.
+                            </div>
+
+                            <p class="signature-title">Děkujeme,</p>
+                            <p class="signature-subtext">Tým Invenire</p>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="footer">
+                            Tento e-mail byl odeslán automaticky. &copy; Invenire
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

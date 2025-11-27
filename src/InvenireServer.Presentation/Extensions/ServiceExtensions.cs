@@ -75,10 +75,22 @@ public static class ServiceExtensions
                 {
                     OnMessageReceived = context =>
                     {
+                        // Attempt to  extract  the  JWT  from  the  cookie;  if
+                        // missing,  use  the  Bearer  token  from  the  request
+                        // header.
                         if (context.Request.Cookies.TryGetValue(CookieConstants.JWT, out var token))
                         {
                             context.Token = token;
                         }
+                        else
+                        {
+                            var header = context.Request.Headers.Authorization.FirstOrDefault();
+                            if (!string.IsNullOrEmpty(header) && header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = header["Bearer ".Length..].Trim();
+                            }
+                        }
+
                         return Task.CompletedTask;
                     }
                 };

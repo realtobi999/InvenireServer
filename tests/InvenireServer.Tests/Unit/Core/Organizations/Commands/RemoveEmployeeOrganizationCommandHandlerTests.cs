@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
-using DocumentFormat.OpenXml.Office.CustomUI;
 using InvenireServer.Application.Core.Organizations.Commands.RemoveEmployee;
 using InvenireServer.Application.Dtos.Properties;
 using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Entities.Users;
+using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Properties;
 using InvenireServer.Tests.Fakers.Properties.Items;
@@ -62,5 +64,73 @@ public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTeste
         await action.Should().NotThrowAsync();
 
         employee.OrganizationId.Should().BeNull();
+    }
+
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenAdminIsNotFound()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var command = new RemoveEmployeeOrganizationCommand
+        {
+            Jwt = _jwt.Builder.Build([]),
+            EmployeeId = employee.Id,
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync((Admin?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
+    }
+
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
+    {
+        // Prepare.
+
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var command = new RemoveEmployeeOrganizationCommand
+        {
+            Jwt = _jwt.Builder.Build([]),
+            EmployeeId = employee.Id,
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync((Employee?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
+    }
+
+
+    [Fact]
+    public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin, employees: [employee]);
+        var command = new RemoveEmployeeOrganizationCommand
+        {
+            Jwt = _jwt.Builder.Build([]),
+            EmployeeId = employee.Id,
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Employees.GetAsync(e => e.Id == command.EmployeeId)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync((Organization?)null);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 }

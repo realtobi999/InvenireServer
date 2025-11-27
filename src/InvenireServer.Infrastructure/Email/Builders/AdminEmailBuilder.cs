@@ -10,12 +10,12 @@ public class AdminEmailBuilder : BaseEmailBuilder, IAdminEmailBuilder
     {
     }
 
-    public MailMessage BuildOrganizationCreationEmail(AdminOrganizationCreationEmailDto dto)
+    public MailMessage BuildRecoveryEmail(AdminRecoveryEmailDto dto)
     {
         var message = new MailMessage(SourceAddress, dto.AdminAddress)
         {
-            Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "admin_organization_creation_email_template.html"), dto),
-            Subject = "Organizace úspěšně vytvořena!",
+            Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "admin_recovery_email_template.html"), dto),
+            Subject = "Obnovení účtu.",
             IsBodyHtml = true,
         };
 

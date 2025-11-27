@@ -30,8 +30,9 @@ public class PropertyScanFaker : Faker<PropertyScan>
                     IsScanned = false,
                     ScannedAt = null,
                     CreatedAt = DateTimeOffset.UtcNow,
-                    PropertyItemId = item.Id,
                     PropertyScanId = scan.Id,
+                    PropertyItemId = item.Id,
+                    PropertyItemEmployeeId = item.EmployeeId,
                 });
             }
         }

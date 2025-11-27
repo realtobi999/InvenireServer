@@ -7,12 +7,10 @@ namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
 public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizationCommand, CreateOrganizationCommandResult>
 {
-    private readonly IEmailManager _email;
     private readonly IRepositoryManager _repositories;
 
-    public CreateOrganizationCommandHandler(IEmailManager email, IRepositoryManager repositories)
+    public CreateOrganizationCommandHandler(IRepositoryManager repositories)
     {
-        _email = email;
         _repositories = repositories;
     }
 
@@ -33,15 +31,6 @@ public class CreateOrganizationCommandHandler : IRequestHandler<CreateOrganizati
         _repositories.Organizations.Create(organization);
 
         await _repositories.SaveOrThrowAsync();
-
-        var email = _email.Builders.Admin.BuildOrganizationCreationEmail(new AdminOrganizationCreationEmailDto
-        {
-            AdminAddress = admin.EmailAddress,
-            AdminFirstName = admin.FirstName,
-            OrganizationName = organization.Name,
-            DashboardLink = $"{request.FrontendBaseAddress}/dashboard",
-        });
-        await _email.Sender.SendEmailAsync(email);
 
         return new CreateOrganizationCommandResult
         {
