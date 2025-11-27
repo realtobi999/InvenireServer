@@ -10,6 +10,18 @@ public class EmployeeEmailBuilder : BaseEmailBuilder, IEmployeeEmailBuilder
     {
     }
 
+    public MailMessage BuildRecoveryEmail(EmployeeRecoveryEmailDto dto)
+    {
+        var message = new MailMessage(SourceAddress, dto.EmployeeAddress)
+        {
+            Body = ParseHtmlTemplate(Path.Combine(AppContext.BaseDirectory, "assets", "templates", "employee_recovery_email_template.html"), dto),
+            Subject = "Obnovení účtu.",
+            IsBodyHtml = true,
+        };
+
+        return message;
+    }
+
     public MailMessage BuildVerificationEmail(EmployeeVerificationEmailDto dto)
     {
         var message = new MailMessage(SourceAddress, dto.EmployeeAddress)

@@ -2,6 +2,8 @@ using FluentValidation;
 using FluentValidation.Results;
 using InvenireServer.Application.Core.Employees.Commands.Delete;
 using InvenireServer.Application.Core.Employees.Commands.Login;
+using InvenireServer.Application.Core.Employees.Commands.Recover.Recover;
+using InvenireServer.Application.Core.Employees.Commands.Recover.Send;
 using InvenireServer.Application.Core.Employees.Commands.Register;
 using InvenireServer.Application.Core.Employees.Commands.Update;
 using InvenireServer.Application.Core.Employees.Commands.Verification.Confirm;
@@ -90,6 +92,37 @@ public class EmployeeCommandController : ControllerBase
             SameSite = SameSiteMode.None,
             HttpOnly = true,
         });
+
+        return NoContent();
+    }
+
+    [HttpPost("/api/employees/password-recovery/send")]
+    public async Task<IActionResult> SendPasswordRecovery([FromBody] SendPasswordRecoveryEmployeeCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
+        };
+        await _mediator.Send(command);
+
+        return NoContent();
+    }
+
+    [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
+    [HttpPost("/api/employees/password-recovery/recover")]
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordEmployeeCommand command)
+    {
+        if (command is null)
+            throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
+
+        command = command with
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
+        };
+        await _mediator.Send(command);
 
         return NoContent();
     }

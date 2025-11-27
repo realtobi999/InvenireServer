@@ -230,7 +230,8 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     scanned_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     property_scan_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    property_item_id = table.Column<Guid>(type: "uuid", nullable: true)
+                    property_item_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    property_item_employee_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {

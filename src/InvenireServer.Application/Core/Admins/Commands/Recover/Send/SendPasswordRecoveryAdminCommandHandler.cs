@@ -21,7 +21,7 @@ public class SendPasswordRecoveryAdminCommandHandler : IRequestHandler<SendPassw
 
     public async Task Handle(SendPasswordRecoveryAdminCommand request, CancellationToken ct)
     {
-        var admin = await _repositories.Admins.GetAsync(a => a.EmailAddress == request.EmailAddress) ?? throw new NotFound404Exception("Admin was not found in the system.");
+        var admin = await _repositories.Admins.GetAsync(a => a.EmailAddress == request.EmailAddress) ?? throw new NotFound404Exception("The admin was not found in the system.");
 
         var jwt = _jwt.Builder.Build(
         [
@@ -33,7 +33,6 @@ public class SendPasswordRecoveryAdminCommandHandler : IRequestHandler<SendPassw
         var email = _email.Builders.Admin.BuildRecoveryEmail(new AdminRecoveryEmailDto
         {
             AdminAddress = admin.EmailAddress,
-            AdminFirstName = admin.FirstName,
             RecoveryLink = $"{request.FrontendBaseAddress}/password-recovery/recover?token={_jwt.Writer.Write(jwt)}"
         });
         await _email.Sender.SendEmailAsync(email);
