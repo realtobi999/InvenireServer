@@ -2,6 +2,9 @@ namespace InvenireServer.Application.Interfaces.Common;
 
 public interface IQuickResponseCodeGenerator
 {
-    byte[] GenerateCode(string content, int width = 150, int height = 150);
-    byte[] GenerateCodeWithLabels(string content, IEnumerable<string> labels, int width = 150, int height = 150);
+    public const int MinimumSize = 150;
+    public const int MaximumSize = 550;
+
+    byte[] GenerateCode(string content, int size = MinimumSize);
+    byte[] GenerateCodeWithLabels(string content, IReadOnlyList<string> labels, int size = MinimumSize);
 }

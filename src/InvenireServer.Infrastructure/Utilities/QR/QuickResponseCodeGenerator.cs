@@ -10,85 +10,87 @@ namespace InvenireServer.Infrastructure.Utilities.QR;
 
 public class QuickResponseCodeGenerator : IQuickResponseCodeGenerator
 {
-    private const int MinimumFontSize = 8;
-    private const float TextSizeFraction = 0.5f;
-    private const float TextSpaceFraction = 1f / 6f;
-    private const int QrGraphicPixelsPerModule = 20;
+    private const int MinSize = IQuickResponseCodeGenerator.MinimumSize;
+    private const int MaxSize = IQuickResponseCodeGenerator.MaximumSize;
+
+    private const int MinFont = 8;
+    private const float TextFraction = 1f / 6f;
+    private const float FontFraction = 0.5f;
 
     private static readonly string FontPath = Path.Combine(AppContext.BaseDirectory, "assets", "fonts", "G_ari_bd.ttf");
 
-    public byte[] GenerateCode(string content, int width = 150, int height = 150)
+    public byte[] GenerateCode(string content, int size = MinSize)
     {
-        return GenerateCodeWithLabels(content, Array.Empty<string>(), width, height);
+        return GenerateCodeWithLabels(content, [], size);
     }
 
-    public byte[] GenerateCodeWithLabels(string content, IEnumerable<string> labels, int width = 150, int height = 150)
+    public byte[] GenerateCodeWithLabels(string content, IReadOnlyList<string> labels, int size = MinSize)
     {
-        using var qr = Image.Load<Rgba32>(GenerateQrImageBytes(content));
+        if (size < MinSize || size > MaxSize)
+        {
+            throw new ArgumentException($"Size must be between {MinSize} and {MaxSize}. Received: {size}.");
+        }
 
-        var textSpace = labels.Any() ? (int)(height * TextSpaceFraction) : 0;
-        var qrSpaceHeight = height - textSpace;
+        var labelSpace = labels.Count != 0 ? (int)(size * TextFraction) : 0;
+        var qrSpace = size - labelSpace;
 
-        var scale = CalculateScale(qr.Width, qr.Height, width, qrSpaceHeight);
-        var scaledQrWidth = (int)(qr.Width * scale);
-        var scaledQrHeight = (int)(qr.Height * scale);
+        var qrImage = LoadQr(content);
+        var scale = Math.Min((float)qrSpace / qrImage.Width, (float)qrSpace / qrImage.Height);
 
-        using var image = new Image<Rgba32>(width, height);
-        image.Mutate(ctx =>
+        using var canvas = new Image<Rgba32>(size, size);
+        canvas.Mutate(ctx =>
         {
             ctx.Fill(Color.White);
-            DrawCenteredQrCode(ctx, qr, width, qrSpaceHeight, scaledQrWidth, scaledQrHeight);
-
-            if (labels.Any())
-                DrawCenteredLabels(ctx, [.. labels], width, qrSpaceHeight, textSpace);
+            DrawQr(ctx, qrImage, size, qrSpace, scale);
+            if (labels.Count != 0) DrawLabels(ctx, [.. labels], size, qrSpace, labelSpace);
         });
 
-        return ConvertToPngBytes(image);
+        return ToPng(canvas);
     }
 
-    private static byte[] GenerateQrImageBytes(string content)
+    private static Image<Rgba32> LoadQr(string content)
     {
-        using var generator = new QRCodeGenerator();
-        using var data = generator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
+        using var gen = new QRCodeGenerator();
+        using var data = gen.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
         using var png = new PngByteQRCode(data);
-        return png.GetGraphic(QrGraphicPixelsPerModule);
+        return Image.Load<Rgba32>(png.GetGraphic(20));
     }
 
-    private static float CalculateScale(int qrWidth, int qrHeight, int targetWidth, int targetHeight)
+    private static void DrawQr(IImageProcessingContext ctx, Image<Rgba32> qr, int size, int qrSpace, float scale)
     {
-        return Math.Min((float)targetWidth / qrWidth, (float)targetHeight / qrHeight);
+        var w = (int)(qr.Width * scale);
+        var h = (int)(qr.Height * scale);
+
+        var x = (size - w) / 2;
+        var y = (qrSpace - h) / 2;
+
+        ctx.DrawImage(qr.Clone(c => c.Resize(w, h)), new Point(x, y), 1f);
     }
 
-    private static void DrawCenteredQrCode(IImageProcessingContext ctx, Image<Rgba32> qrImage, int canvasWidth, int canvasHeight, int scaledWidth, int scaledHeight)
+    private static void DrawLabels(IImageProcessingContext ctx, List<string> labels, int size, int top, int height)
     {
-        var x = (canvasWidth - scaledWidth) / 2;
-        var y = (canvasHeight - scaledHeight) / 2;
+        var font = new FontCollection().Add(FontPath).CreateFont(Math.Max(height * FontFraction, MinFont), FontStyle.Bold);
 
-        ctx.DrawImage(qrImage.Clone(c => c.Resize(scaledWidth, scaledHeight)), new Point(x, y), 1f);
-    }
+        var measurements = labels.Select(l => TextMeasurer.MeasureSize(l, new TextOptions(font))).ToList();
+        var totalHeight = measurements.Sum(m => m.Height) + (labels.Count - 1) * 4;
 
-    private static void DrawCenteredLabels(IImageProcessingContext ctx, List<string> labels, int canvasWidth, int qrSpaceHeight, int textSpace)
-    {
-        var font = new FontCollection().Add(FontPath).CreateFont(Math.Max(textSpace * TextSizeFraction, MinimumFontSize), FontStyle.Bold);
-        var lineHeights = labels.Select(l => TextMeasurer.MeasureSize(l, new TextOptions(font)).Height).ToList();
-        float totalHeight = lineHeights.Sum() + (labels.Count - 1) * 4;
-        float startY = qrSpaceHeight + (textSpace - totalHeight) / 2f;
+        var y = top + (height - totalHeight) / 2f;
 
-        float y = startY;
-        foreach (var label in labels)
+        for (int i = 0; i < labels.Count; i++)
         {
-            var size = TextMeasurer.MeasureSize(label, new TextOptions(font));
-            var x = (canvasWidth - size.Width) / 2f;
+            var label = labels[i];
+            var labelSize = measurements[i];
+            var x = (size - labelSize.Width) / 2f;
 
             ctx.DrawText(label, font, Color.Black, new PointF(x, y));
-            y += size.Height + 4;
+            y += labelSize.Height + 4;
         }
     }
 
-    private static byte[] ConvertToPngBytes(Image<Rgba32> image)
+    private static byte[] ToPng(Image<Rgba32> img)
     {
         using var ms = new MemoryStream();
-        image.SaveAsPng(ms);
+        img.SaveAsPng(ms);
         return ms.ToArray();
     }
 }

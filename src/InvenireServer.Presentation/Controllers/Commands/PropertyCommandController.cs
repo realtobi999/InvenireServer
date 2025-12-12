@@ -131,14 +131,15 @@ public class PropertyCommandController : ControllerBase
 
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/generate-codes")]
-    public async Task<IActionResult> GenerateCodes([FromBody] GenerateCodesPropertyItemsCommand command)
+    public async Task<IActionResult> GenerateCodes([FromBody] GenerateCodesPropertyItemsCommand command, int size = 150)
     {
         if (command is null)
             throw new ValidationException([new ValidationFailure("", "Request body is missing or invalid.")]);
 
         command = command with
         {
-            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken())
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            Size = size
         };
 
         var zip = await _mediator.Send(command);

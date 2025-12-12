@@ -9,5 +9,8 @@ public record GenerateCodesPropertyItemsCommand : IRequest<Stream>
     public required List<Guid> Ids { get; init; }
 
     [JsonIgnore]
+    public int Size { get; init; }
+
+    [JsonIgnore]
     public Jwt? Jwt { get; init; }
 }

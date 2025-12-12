@@ -45,7 +45,7 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
             foreach (var item in items.OrderBy(i => i.Location.Building).ThenBy(i => i.Location.Room))
             {
                 var labels = new List<string> { item.InventoryNumber, item.Name[..Math.Min(item.Name.Length, MAX_LABEL_NAME_LENGTH)] };
-                var code = _generator.GenerateCodeWithLabels(content: $"api/properties/items/{item.Id}/scan", labels: labels);
+                var code = _generator.GenerateCodeWithLabels(content: $"api/properties/items/{item.Id}/scan", labels: labels, size: request.Size);
 
                 using var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}____{item.Location.Building}_{item.Location.Room}.png", CompressionLevel.Fastest).Open();
                 await entry.WriteAsync(code, ct);
