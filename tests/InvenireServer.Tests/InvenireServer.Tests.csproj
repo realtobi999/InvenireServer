@@ -24,6 +24,8 @@
 
     <ItemGroup>
       <Folder Include="Unit/Core/Employees/" />
+      <Folder Include="Unit/Core/Organizations/Invitations/" />
+      <Folder Include="Unit/Core/Organizations/Invitations/Commands/" />
     </ItemGroup>
 
 </Project>

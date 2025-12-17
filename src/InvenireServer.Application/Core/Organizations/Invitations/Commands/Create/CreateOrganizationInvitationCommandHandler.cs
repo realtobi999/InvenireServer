@@ -16,18 +16,26 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
 
     public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken ct)
     {
+        var employee = request switch
+        {
+            { EmployeeId: not null } =>
+                await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId)
+                ?? throw new NotFound404Exception("The employee was not found in the system."),
+
+            { EmployeeEmailAddress: not null } =>
+                await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmployeeEmailAddress)
+                ?? throw new NotFound404Exception("The employee was not found in the system."),
+
+            _ => throw new BadRequest400Exception("Either 'employee_email_address' or 'employee_id' must be provided.") // This is already validated in the command validator.
+        };
+
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");
-
-        var employee = null as Employee;
-        if (request.EmployeeId is not null)
-            employee = await _repositories.Employees.GetAsync(e => e.Id == request.EmployeeId) ?? throw new NotFound404Exception("The employee was not found in the system.");
-        else if (request.EmployeeEmailAddress is not null)
-            employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmployeeEmailAddress) ?? throw new NotFound404Exception("The employee was not found in the system.");
-
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
 
-        if (await _repositories.Organizations.Invitations.GetAsync(i => i.Employee!.Id == employee!.Id && i.OrganizationId == organization.Id) is not null)
+        if (await _repositories.Organizations.Invitations.CountAsync(i => i.Employee!.Id == employee.Id && i.OrganizationId == organization.Id) != 0)
             throw new Conflict409Exception("The organization already has a invitation for the employee.");
+        if (await _repositories.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id) > Organization.MAX_INVITATIONS)
+            throw new Conflict409Exception($"The organization's number of invitations exceeded the limit (max {Organization.MAX_INVITATIONS}).");
 
         var invitation = new OrganizationInvitation
         {
@@ -37,9 +45,6 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
             LastUpdatedAt = null,
             Employee = employee,
         };
-
-        if (await _repositories.Organizations.Invitations.CountAsync(i => i.OrganizationId == organization.Id) > Organization.MAX_INVITATIONS)
-            throw new Conflict409Exception($"The organization's number of invitations exceeded the limit (max {Organization.MAX_INVITATIONS}).");
         organization.AddInvitation(invitation);
 
         _repositories.Organizations.Update(organization);
