@@ -111,9 +111,9 @@ public class AcceptOrganizationInvitationCommandHandlerTests : CommandHandlerTes
     public async Task Handle_ThrowsException_WhenInvitationIsNotAssignedToEmployee()
     {
         // Prepare.
-        var employee = EmployeeFaker.Fake();
-        var otherEmployee = EmployeeFaker.Fake();
-        var invitation = OrganizationInvitationFaker.Fake(otherEmployee);
+        var employee1 = EmployeeFaker.Fake();
+        var employee2 = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee2);
         var organization = OrganizationFaker.Fake(invitations: [invitation]);
         var command = new AcceptOrganizationInvitationCommand
         {
@@ -122,7 +122,7 @@ public class AcceptOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         };
 
         // Prepare - repositories.
-        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee1);
         _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Id == command.InvitationId)).ReturnsAsync(invitation);
         _repositories.Setup(r => r.Organizations.GetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync(organization);
 

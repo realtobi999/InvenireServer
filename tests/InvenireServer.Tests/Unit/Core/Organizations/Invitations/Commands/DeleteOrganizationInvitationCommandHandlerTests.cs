@@ -113,9 +113,11 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
     {
         // Prepare.
         var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake(admin: admin);
+
         var invitation = OrganizationInvitationFaker.Fake();
         invitation.AssignOrganization(OrganizationFaker.Fake());
-        var organization = OrganizationFaker.Fake(admin: admin);
+
         var command = new DeleteOrganizationInvitationCommand
         {
             Jwt = _jwt.Builder.Build([new Claim("role", Jwt.Roles.ADMIN)]),
@@ -224,9 +226,9 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
     public async Task Handle_ThrowsException_WhenInvitationIsNotAssignedToEmployee_ForEmployee()
     {
         // Prepare.
-        var employee = EmployeeFaker.Fake();
-        var otherEmployee = EmployeeFaker.Fake();
-        var invitation = OrganizationInvitationFaker.Fake(otherEmployee);
+        var employee1 = EmployeeFaker.Fake();
+        var employee2 = EmployeeFaker.Fake();
+        var invitation = OrganizationInvitationFaker.Fake(employee2);
         var organization = OrganizationFaker.Fake(invitations: [invitation]);
         var command = new DeleteOrganizationInvitationCommand
         {
@@ -235,7 +237,7 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         };
 
         // Prepare - repositories.
-        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee1);
         _repositories.Setup(r => r.Organizations.Invitations.GetAsync(i => i.Id == command.Id)).ReturnsAsync(invitation);
         _repositories.Setup(r => r.Organizations.GetAsync(o => o.Id == invitation.OrganizationId)).ReturnsAsync(organization);
 
@@ -249,9 +251,11 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
     {
         // Prepare.
         var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+
         var invitation = OrganizationInvitationFaker.Fake(employee);
         invitation.AssignOrganization(OrganizationFaker.Fake());
-        var organization = OrganizationFaker.Fake();
+
         var command = new DeleteOrganizationInvitationCommand
         {
             Jwt = _jwt.Builder.Build([new Claim("role", Jwt.Roles.EMPLOYEE)]),
