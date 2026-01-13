@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InvenireServer.Application.Services.Properties.Suggestions.Backgrounds;
 
+/// <summary>
+/// Background service that performs periodic cleanup of closed and expired property suggestions.
+/// </summary>
 public class PropertySuggestionCleanupBackgroundService : BackgroundService, IPropertySuggestionCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(1);
@@ -19,6 +22,10 @@ public class PropertySuggestionCleanupBackgroundService : BackgroundService, IPr
         _logger = logger;
     }
 
+    /// <summary>
+    /// Performs cleanup of closed and expired property suggestions.
+    /// </summary>
+    /// <returns>Awaitable task representing the cleanup operation.</returns>
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
@@ -38,6 +45,11 @@ public class PropertySuggestionCleanupBackgroundService : BackgroundService, IPr
         _logger.LogInformation("Closed expired property suggestions cleanup completed at {Time}. Deleted suggestions: {@DeletedSuggestionIds}", DateTime.UtcNow, suggestions.Select(i => i.Id));
     }
 
+    /// <summary>
+    /// Runs the background execution loop.
+    /// </summary>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Awaitable task representing the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         while (!token.IsCancellationRequested)

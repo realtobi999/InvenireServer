@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Employees;
 
 namespace InvenireServer.Application.Dtos.Organizations;
 
+/// <summary>
+/// Represents organization invitation data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public class OrganizationInvitationDto
 {

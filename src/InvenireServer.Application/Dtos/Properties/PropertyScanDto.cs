@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+/// <summary>
+/// Represents property scan data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public class PropertyScanDto
 {
@@ -35,6 +38,9 @@ public class PropertyScanDto
     public PropertyScanDtoScannedItemsSummary? ScannedItemsSummary { get; set; }
 }
 
+/// <summary>
+/// Represents property scan items summary data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public class PropertyScanDtoScannedItemsSummary
 {

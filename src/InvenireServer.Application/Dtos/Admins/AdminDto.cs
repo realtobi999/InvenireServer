@@ -3,6 +3,9 @@ using InvenireServer.Application.Attributes;
 
 namespace InvenireServer.Application.Dtos.Admins;
 
+/// <summary>
+/// Represents administrator data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record AdminDto
 {

@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InvenireServer.Application.Services.Organizations.Invitations.Backgrounds;
 
+/// <summary>
+/// Background service that performs periodic cleanup of expired organization invitations.
+/// </summary>
 public class OrganizationInvitationCleanupBackgroundService : BackgroundService, IOrganizationInvitationCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(1);
@@ -19,6 +22,10 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
         _logger = logger;
     }
 
+    /// <summary>
+    /// Performs cleanup of expired organization invitations.
+    /// </summary>
+    /// <returns>Awaitable task representing the cleanup operation.</returns>
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
@@ -38,6 +45,11 @@ public class OrganizationInvitationCleanupBackgroundService : BackgroundService,
         _logger.LogInformation("Expired organizations invitations cleanup completed at {Time}. Deleted invitations: {@DeletedInvitationIds}", DateTime.UtcNow, invitations.Select(i => i.Id));
     }
 
+    /// <summary>
+    /// Runs the background execution loop.
+    /// </summary>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Awaitable task representing the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         while (!token.IsCancellationRequested)

@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InvenireServer.Application.Services.Employees.Backgrounds;
 
+/// <summary>
+/// Background service that performs periodic cleanup of inactive employees.
+/// </summary>
 public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(1);
@@ -19,6 +22,10 @@ public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeClea
         _logger = logger;
     }
 
+    /// <summary>
+    /// Performs cleanup of inactive employees.
+    /// </summary>
+    /// <returns>Awaitable task representing the cleanup operation.</returns>
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
@@ -38,6 +45,11 @@ public class EmployeeCleanupBackgroundService : BackgroundService, IEmployeeClea
         _logger.LogInformation("Unverified employees cleanup successfully completed at {Time}. Deleted employees: {@DeletedEmployeeIds}", DateTime.UtcNow, employees.Select(a => a.Id));
     }
 
+    /// <summary>
+    /// Runs the background execution loop.
+    /// </summary>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Awaitable task representing the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         while (!token.IsCancellationRequested)

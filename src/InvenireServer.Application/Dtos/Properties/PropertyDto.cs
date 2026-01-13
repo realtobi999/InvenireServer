@@ -3,6 +3,9 @@ using InvenireServer.Application.Attributes;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+/// <summary>
+/// Represents property data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public class PropertyDto
 {
@@ -28,6 +31,9 @@ public class PropertyDto
     public PropertyDtoSuggestionsSummary? SuggestionsSummary { get; set; }
 }
 
+/// <summary>
+/// Represents property items summary data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertyDtoItemsSummary
 {
@@ -44,6 +50,9 @@ public record PropertyDtoItemsSummary
     public double? AverageAge { get; set; }
 }
 
+/// <summary>
+/// Represents property scans summary data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertyDtoScansSummary
 {
@@ -57,6 +66,9 @@ public record PropertyDtoScansSummary
     public DateTimeOffset? LastActiveScan { get; set; }
 }
 
+/// <summary>
+/// Represents property suggestions summary data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertyDtoSuggestionsSummary
 {

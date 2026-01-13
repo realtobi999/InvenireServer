@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Dtos.Employees;
 
+/// <summary>
+/// Represents employee data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record EmployeeDto
 {

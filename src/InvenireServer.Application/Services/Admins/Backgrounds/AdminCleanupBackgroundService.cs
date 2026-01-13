@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace InvenireServer.Application.Services.Admins.Backgrounds;
 
+/// <summary>
+/// Background service that performs periodic cleanup of inactive admins.
+/// </summary>
 public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupService
 {
     private readonly TimeSpan _interval = TimeSpan.FromDays(1);
@@ -19,6 +22,10 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
         _logger = logger;
     }
 
+    /// <summary>
+    /// Performs cleanup of inactive admins.
+    /// </summary>
+    /// <returns>Awaitable task representing the cleanup operation.</returns>
     public async Task CleanupAsync()
     {
         var services = _scope.CreateScope().ServiceProvider;
@@ -39,6 +46,11 @@ public class AdminCleanupBackgroundService : BackgroundService, IAdminCleanupSer
 
     }
 
+    /// <summary>
+    /// Runs the background execution loop.
+    /// </summary>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Awaitable task representing the background execution.</returns>
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         while (!token.IsCancellationRequested)

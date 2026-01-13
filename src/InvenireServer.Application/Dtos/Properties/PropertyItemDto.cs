@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Employees;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+/// <summary>
+/// Represents property item data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertyItemDto
 {
@@ -64,6 +67,9 @@ public record PropertyItemDto
     public EmployeeDto? Employee { get; set; }
 }
 
+/// <summary>
+/// Represents property item location data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertyItemLocationDto
 {

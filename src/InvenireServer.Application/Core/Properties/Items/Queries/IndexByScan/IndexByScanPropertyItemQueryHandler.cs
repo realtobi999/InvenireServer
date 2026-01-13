@@ -1,7 +1,6 @@
 using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Properties;
-using InvenireServer.Application.Extensions;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Common.Queries;

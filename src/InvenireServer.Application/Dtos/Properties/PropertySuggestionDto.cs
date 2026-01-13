@@ -6,6 +6,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Dtos.Properties;
 
+/// <summary>
+/// Represents property suggestion data that is exposed to the client.
+/// </summary>
 [JsonResponse]
 public record PropertySuggestionDto
 {
