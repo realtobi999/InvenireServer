@@ -3,6 +3,9 @@ using InvenireServer.Tests.Extensions;
 
 namespace InvenireServer.Tests.Fakers.Users;
 
+/// <summary>
+/// Provides fake <see cref="Admin"/> instances for tests.
+/// </summary>
 public sealed class AdminFaker : Faker<Admin>
 {
     private AdminFaker()
@@ -18,6 +21,10 @@ public sealed class AdminFaker : Faker<Admin>
         RuleFor(a => a.LastLoginAt, f => f.Date.RecentOffset(10));
     }
 
+    /// <summary>
+    /// Creates a fake <see cref="Admin"/> instance.
+    /// </summary>
+    /// <returns>Fake <see cref="Admin"/> instance.</returns>
     public static Admin Fake()
     {
         return new AdminFaker().Generate();

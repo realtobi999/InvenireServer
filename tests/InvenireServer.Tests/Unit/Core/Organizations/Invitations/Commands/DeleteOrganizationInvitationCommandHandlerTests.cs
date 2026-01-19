@@ -10,6 +10,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
+/// <summary>
+/// Tests for <see cref="DeleteOrganizationInvitationCommandHandler"/>.
+/// </summary>
 public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTester
 {
     private readonly DeleteOrganizationInvitationCommandHandler _handler;
@@ -19,6 +22,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         _handler = new DeleteOrganizationInvitationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes an invitation as an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_AsAdmin()
     {
@@ -47,6 +54,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         invitation.OrganizationId.Should().BeNull();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -66,6 +77,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -86,6 +101,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not found for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotFound_ForAdmin()
     {
@@ -108,6 +127,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The invitation was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not part of the organization for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotPartOfOrganization_ForAdmin()
     {
@@ -134,6 +157,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The invitation isn't part of the organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes an invitation as the assigned employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_AsEmployee()
     {
@@ -162,6 +189,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         invitation.OrganizationId.Should().BeNull();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -180,6 +211,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not found for an employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotFound_ForEmployee()
     {
@@ -200,6 +235,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The invitation was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization for the invitation is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotFound_ForEmployee()
     {
@@ -222,6 +261,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The organization assigned to the invitation was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation does not belong to the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotAssignedToEmployee_ForEmployee()
     {
@@ -246,6 +289,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The invitation doesn't belong to the employee.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not part of the organization for an employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotPartOfOrganization_ForEmployee()
     {
@@ -272,6 +319,10 @@ public class DeleteOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The invitation isn't part of the organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the role is not authorized.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenRoleIsUnauthorized()
     {

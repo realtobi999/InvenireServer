@@ -13,6 +13,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Suggestions.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdatePropertySuggestionCommandHandler"/>.
+/// </summary>
 public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdatePropertySuggestionCommandHandler _handler;
@@ -22,6 +25,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         _handler = new UpdatePropertySuggestionCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates a pending suggestion.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -64,6 +71,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         suggestion.Status.Should().Be(PropertySuggestionStatus.PENDING);
     }
 
+    /// <summary>
+    /// Verifies that the handler reopens a declined suggestion and updates its details.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_WhenSuggestionWasDeclined()
     {
@@ -110,6 +121,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         suggestion.ResolvedAt.Should().BeNull();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotFound()
     {
@@ -135,6 +150,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The suggestion was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -162,6 +181,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not part of any organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -194,6 +217,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The employee isn't part of any organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound()
     {
@@ -228,6 +255,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion does not belong to the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionDoesntBelongToEmployee()
     {
@@ -261,6 +292,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The suggestion doesn't belong to the employee.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not part of the property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotPartOfProperty()
     {
@@ -297,6 +332,10 @@ public class UpdatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The suggestion isn't a part of the property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is already approved.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsApproved()
     {

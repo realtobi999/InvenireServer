@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
+/// <summary>
+/// Tests for <see cref="RegisterAdminCommandHandler"/>.
+/// </summary>
 public class RegisterAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly PasswordHasher<Admin> _hasher;
@@ -18,6 +21,10 @@ public class RegisterAdminCommandHandlerTests : CommandHandlerTester
         _handler = new RegisterAdminCommandHandler(_jwt, _hasher, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler registers an admin and issues a token.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {

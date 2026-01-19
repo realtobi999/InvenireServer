@@ -6,6 +6,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdateAdminCommandHandler"/>.
+/// </summary>
 public class UpdateAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdateAdminCommandHandler _handler;
@@ -15,6 +18,10 @@ public class UpdateAdminCommandHandlerTests : CommandHandlerTester
         _handler = new UpdateAdminCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the admin's name.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -39,6 +46,10 @@ public class UpdateAdminCommandHandlerTests : CommandHandlerTester
         admin.LastName.Should().Be(command.LastName);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminNotFound()
     {

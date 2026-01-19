@@ -14,6 +14,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 
+/// <summary>
+/// Tests for <see cref="RemoveEmployeeOrganizationCommandHandler"/>.
+/// </summary>
 public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTester
 {
     private readonly RemoveEmployeeOrganizationCommandHandler _handler;
@@ -23,6 +26,10 @@ public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTeste
         _handler = new RemoveEmployeeOrganizationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler removes an employee from the organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -67,6 +74,10 @@ public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTeste
     }
 
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -88,6 +99,10 @@ public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTeste
     }
 
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -111,6 +126,10 @@ public class RemoveEmployeeOrganizationCommandHandlerTests : CommandHandlerTeste
     }
 
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {

@@ -3,8 +3,16 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Extensions.Properties;
 
+/// <summary>
+/// Provides test extensions for <see cref="PropertyItem"/>.
+/// </summary>
 public static class PropertyItemTestExtensions
 {
+    /// <summary>
+    /// Creates a <see cref="CreatePropertyItemCommand"/> from a property item.
+    /// </summary>
+    /// <param name="property">Source property item.</param>
+    /// <returns>Create property item command.</returns>
     public static CreatePropertyItemCommand ToCreatePropertyItemCommand(this PropertyItem property)
     {
         var dto = new CreatePropertyItemCommand

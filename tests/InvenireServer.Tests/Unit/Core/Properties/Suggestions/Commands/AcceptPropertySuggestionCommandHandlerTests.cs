@@ -18,6 +18,9 @@ using MediatR;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Suggestions.Commands;
 
+/// <summary>
+/// Tests for <see cref="AcceptPropertySuggestionCommandHandler"/>.
+/// </summary>
 public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
 {
     private readonly Mock<IMediator> _mediator;
@@ -29,6 +32,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         _handler = new AcceptPropertySuggestionCommandHandler(_mediator.Object, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler approves a pending suggestion and records resolution data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -91,6 +98,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         suggestion.ResolvedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -109,6 +120,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotFound()
     {
@@ -129,6 +144,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The suggestion was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -151,6 +170,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound()
     {
@@ -178,6 +201,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not part of the property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotPartOfProperty()
     {
@@ -207,6 +234,10 @@ public class AcceptPropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The suggestion isn't part of the property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is already closed.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsClosed()
     {

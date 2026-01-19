@@ -16,6 +16,9 @@ using Serilog;
 
 namespace InvenireServer.Presentation;
 
+/// <summary>
+/// Application entry point.
+/// </summary>
 public class Program
 {
 

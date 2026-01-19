@@ -12,6 +12,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
+/// <summary>
+/// Integration tests for admin command endpoints.
+/// </summary>
 public class AdminCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -25,6 +28,10 @@ public class AdminCommandEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the admin registration endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Register_ReturnsCreated()
     {
@@ -36,6 +43,10 @@ public class AdminCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the verification email endpoint returns NoContent for an unverified admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task SendVerification_ReturnsNoContent()
     {
@@ -55,6 +66,10 @@ public class AdminCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the verification confirmation endpoint returns NoContent with a verification token.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task ConfirmVerification_ReturnsNoContent()
     {
@@ -83,6 +98,10 @@ public class AdminCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the admin login endpoint returns NoContent for valid credentials.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Login_ReturnsNoContent()
     {
@@ -101,6 +120,10 @@ public class AdminCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the admin update endpoint returns NoContent for an authorized admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Update_ReturnsNoContent()
     {
@@ -125,6 +148,10 @@ public class AdminCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the admin delete endpoint returns NoContent for an authorized admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Delete_ReturnsNoContent()
     {

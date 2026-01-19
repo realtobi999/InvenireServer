@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
+/// <summary>
+/// Controller for organization commands.
+/// </summary>
 [ApiController]
 public class OrganizationCommandController : ControllerBase
 {
@@ -29,6 +32,11 @@ public class OrganizationCommandController : ControllerBase
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Handles the request to create an organization.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/organizations")]
     public async Task<IActionResult> Create([FromBody] CreateOrganizationCommand command)
@@ -46,6 +54,11 @@ public class OrganizationCommandController : ControllerBase
         return Created($"/api/organizations/{result.Organization.Id}", null);
     }
 
+    /// <summary>
+    /// Handles the request to update an organization.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/organizations")]
     public async Task<IActionResult> Update([FromBody] UpdateOrganizationCommand command)
@@ -62,6 +75,10 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete an organization.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/organizations")]
     public async Task<IActionResult> Delete()
@@ -74,6 +91,11 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to create an organization invitation.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/organizations/invitations")]
     public async Task<IActionResult> CreateInvitation([FromBody] CreateOrganizationInvitationCommand command)
@@ -90,6 +112,12 @@ public class OrganizationCommandController : ControllerBase
         return Created($"/api/organizations/invitations/{result.Invitation.Id}", null);
     }
 
+    /// <summary>
+    /// Handles the request to update an organization invitation.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <param name="invitationId">Invitation identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/organizations/invitations/{invitationId:guid}")]
     public async Task<IActionResult> UpdateInvitation([FromBody] UpdateOrganizationInvitationCommand command, Guid invitationId)
@@ -107,6 +135,11 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete an organization invitation.
+    /// </summary>
+    /// <param name="invitationId">Invitation identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpDelete("/api/organizations/invitations/{invitationId:guid}")]
     public async Task<IActionResult> DeleteInvitation(Guid invitationId)
@@ -120,6 +153,11 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to accept an organization invitation.
+    /// </summary>
+    /// <param name="invitationId">Invitation identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
     [HttpPut("/api/organizations/invitations/{invitationId:guid}/accept")]
     public async Task<IActionResult> AcceptInvitation(Guid invitationId)
@@ -133,6 +171,11 @@ public class OrganizationCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to remove an employee from the organization.
+    /// </summary>
+    /// <param name="employeeId">Employee identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> RemoveEmployee(Guid employeeId)

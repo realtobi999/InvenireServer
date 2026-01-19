@@ -2,6 +2,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Fakers.Properties.Items;
 
+/// <summary>
+/// Provides fake <see cref="PropertyItem"/> instances for tests.
+/// </summary>
 public sealed class PropertyItemFaker : Faker<PropertyItem>
 {
     private PropertyItemFaker()
@@ -22,6 +25,10 @@ public sealed class PropertyItemFaker : Faker<PropertyItem>
         RuleFor(i => i.LastCodeGeneratedAt, f => f.Date.RecentOffset(30).ToUniversalTime());
     }
 
+    /// <summary>
+    /// Creates a fake <see cref="PropertyItem"/> instance.
+    /// </summary>
+    /// <returns>Fake <see cref="PropertyItem"/> instance.</returns>
     public static PropertyItem Fake()
     {
         return new PropertyItemFaker().Generate();

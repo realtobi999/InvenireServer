@@ -7,6 +7,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 
+/// <summary>
+/// Tests for <see cref="CreateOrganizationCommandHandler"/>.
+/// </summary>
 public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
 {
     private readonly CreateOrganizationCommandHandler _handler;
@@ -16,6 +19,10 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
         _handler = new CreateOrganizationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler creates an organization and assigns it to the admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -50,6 +57,10 @@ public class CreateOrganizationCommandHandlerTests : CommandHandlerTester
         admin.OrganizationId.Should().Be(result.Organization.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {

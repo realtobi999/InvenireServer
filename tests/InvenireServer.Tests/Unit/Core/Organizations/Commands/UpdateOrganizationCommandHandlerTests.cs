@@ -9,6 +9,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdateOrganizationCommandHandler"/>.
+/// </summary>
 public class UpdateOrganizationCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdateOrganizationCommandHandler _handler;
@@ -18,6 +21,10 @@ public class UpdateOrganizationCommandHandlerTests : CommandHandlerTester
         _handler = new UpdateOrganizationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the organization's name.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -42,6 +49,10 @@ public class UpdateOrganizationCommandHandlerTests : CommandHandlerTester
         organization.Name.Should().Be(command.Name);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -62,6 +73,10 @@ public class UpdateOrganizationCommandHandlerTests : CommandHandlerTester
     }
 
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {

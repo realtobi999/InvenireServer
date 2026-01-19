@@ -8,6 +8,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
+/// <summary>
+/// Tests for <see cref="DeleteAdminCommandHandler"/>.
+/// </summary>
 public class DeleteAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly DeleteAdminCommandHandler _handler;
@@ -17,6 +20,10 @@ public class DeleteAdminCommandHandlerTests : CommandHandlerTester
         _handler = new DeleteAdminCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes an admin without an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -37,6 +44,10 @@ public class DeleteAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().NotThrowAsync();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -55,6 +66,10 @@ public class DeleteAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin's organization still exists.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotDeleted()
     {

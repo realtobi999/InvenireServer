@@ -11,6 +11,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Scans.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdatePropertyScanCommandHandler"/>.
+/// </summary>
 public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdatePropertyScanCommandHandler _handler;
@@ -20,6 +23,10 @@ public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
         _handler = new UpdatePropertyScanCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the active scan without errors.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -53,6 +60,10 @@ public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
         scan.Description.Should().Be(command.Description);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -72,6 +83,10 @@ public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin has no organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -93,6 +108,10 @@ public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound()
     {
@@ -116,6 +135,10 @@ public class UpdatePropertyScanCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when no active scan is found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenActiveScanIsNotFound()
     {

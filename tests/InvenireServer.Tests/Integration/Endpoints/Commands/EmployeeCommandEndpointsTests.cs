@@ -12,6 +12,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
+/// <summary>
+/// Integration tests for employee command endpoints.
+/// </summary>
 public class EmployeeCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -25,6 +28,10 @@ public class EmployeeCommandEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the employee registration endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Register_ReturnsCreated()
     {
@@ -37,6 +44,10 @@ public class EmployeeCommandEndpointsTests
     }
 
 
+    /// <summary>
+    /// Verifies that the verification email endpoint returns NoContent for an unverified employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task SendVerification_ReturnsNoContent()
     {
@@ -56,6 +67,10 @@ public class EmployeeCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the verification confirmation endpoint returns NoContent with a verification token.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task ConfirmVerification_ReturnsNoContent()
     {
@@ -84,6 +99,10 @@ public class EmployeeCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the employee login endpoint returns NoContent for valid credentials.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Login_ReturnsNoContent()
     {
@@ -102,6 +121,10 @@ public class EmployeeCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the employee update endpoint returns NoContent for an authorized employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Update_ReturnsNoContent()
     {
@@ -126,6 +149,10 @@ public class EmployeeCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the employee delete endpoint returns NoContent for an authorized employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Delete_ReturnsNoContent()
     {

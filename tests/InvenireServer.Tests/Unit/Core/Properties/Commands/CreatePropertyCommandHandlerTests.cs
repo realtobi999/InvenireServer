@@ -10,6 +10,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Commands;
 
+/// <summary>
+/// Tests for <see cref="CreatePropertyCommandHandler"/>.
+/// </summary>
 public class CreatePropertyCommandHandlerTests : CommandHandlerTester
 {
     private readonly CreatePropertyCommandHandler _handler;
@@ -19,6 +22,10 @@ public class CreatePropertyCommandHandlerTests : CommandHandlerTester
         _handler = new CreatePropertyCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler creates a property when the organization has none.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -53,6 +60,10 @@ public class CreatePropertyCommandHandlerTests : CommandHandlerTester
         result.Property.OrganizationId.Should().Be(organization.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler uses the provided property id.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_WhenIdIsProvided()
     {
@@ -84,6 +95,10 @@ public class CreatePropertyCommandHandlerTests : CommandHandlerTester
         result.Property.OrganizationId.Should().Be(organization.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -101,6 +116,10 @@ public class CreatePropertyCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin has no organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -120,6 +139,10 @@ public class CreatePropertyCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization already has a property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyAlreadyExists()
     {

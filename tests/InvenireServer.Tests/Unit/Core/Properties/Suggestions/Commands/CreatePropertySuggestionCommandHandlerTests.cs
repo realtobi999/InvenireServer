@@ -15,6 +15,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Suggestions.Commands;
 
+/// <summary>
+/// Tests for <see cref="CreatePropertySuggestionCommandHandler"/>.
+/// </summary>
 public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
 {
     private readonly CreatePropertySuggestionCommandHandler _handler;
@@ -24,6 +27,10 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         _handler = new CreatePropertySuggestionCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler creates a pending suggestion for the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -70,6 +77,10 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         result.Suggestion.EmployeeId.Should().Be(employee.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler uses the provided suggestion id.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_WhenIdIsProvided()
     {
@@ -107,6 +118,10 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         result.Suggestion.EmployeeId.Should().Be(employee.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -132,6 +147,10 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not part of any organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -159,6 +178,10 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The employee isn't part of any organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound()
     {

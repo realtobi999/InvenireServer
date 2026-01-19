@@ -3,8 +3,16 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 
+/// <summary>
+/// Defines HTTP request extension methods.
+/// </summary>
 public static class HttpContextExtensions
 {
+    /// <summary>
+    /// Parses the JWT token from the request.
+    /// </summary>
+    /// <param name="request">HTTP request.</param>
+    /// <returns>JWT token string.</returns>
     public static string ParseJwtToken(this HttpRequest request)
     {
         if (request.Headers.TryParseBearerToken(out var token))

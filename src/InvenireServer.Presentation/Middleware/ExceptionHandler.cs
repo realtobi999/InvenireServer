@@ -10,8 +10,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Presentation.Middleware;
 
+/// <summary>
+/// Handles exceptions and maps them to error responses.
+/// </summary>
 public class ExceptionHandler : IExceptionHandler
 {
+    /// <summary>
+    /// Handles an exception and writes an error response.
+    /// </summary>
+    /// <param name="context">HTTP context.</param>
+    /// <param name="exception">Exception to handle.</param>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Awaitable task indicating whether the exception was handled.</returns>
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken token)
     {
         switch (exception)

@@ -29,6 +29,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
+/// <summary>
+/// Controller for property commands.
+/// </summary>
 [ApiController]
 public class PropertyCommandController : ControllerBase
 {
@@ -39,6 +42,11 @@ public class PropertyCommandController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Handles the request to create a property.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties")]
     public async Task<IActionResult> Create([FromBody] CreatePropertyCommand command)
@@ -55,6 +63,11 @@ public class PropertyCommandController : ControllerBase
         return Created($"/api/properties/{result.Property.Id}", null);
     }
 
+    /// <summary>
+    /// Handles the request to update a property.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties")]
     public async Task<IActionResult> Update([FromBody] UpdatePropertyCommand command)
@@ -71,6 +84,10 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete a property.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/properties")]
     public async Task<IActionResult> Delete()
@@ -83,6 +100,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to create property items.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items")]
     public async Task<IActionResult> CreateItems([FromBody] CreatePropertyItemsCommand command)
@@ -99,6 +121,11 @@ public class PropertyCommandController : ControllerBase
         return Created();
     }
 
+    /// <summary>
+    /// Handles the request to import property items from a JSON file.
+    /// </summary>
+    /// <param name="file">Uploaded file.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/json-file")]
     public async Task<IActionResult> ImportItemsFromJson(IFormFile file)
@@ -112,6 +139,12 @@ public class PropertyCommandController : ControllerBase
         return Created();
     }
 
+    /// <summary>
+    /// Handles the request to import property items from an Excel file.
+    /// </summary>
+    /// <param name="file">Uploaded file.</param>
+    /// <param name="columns">Column mapping string.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/excel-file")]
     public async Task<IActionResult> ImportItemsFromExcel(IFormFile file, [FromQuery] string columns)
@@ -129,6 +162,12 @@ public class PropertyCommandController : ControllerBase
         return Created();
     }
 
+    /// <summary>
+    /// Handles the request to generate property item codes.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <param name="size">Code size in pixels.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/items/generate-codes")]
     public async Task<IActionResult> GenerateCodes([FromBody] GenerateCodesPropertyItemsCommand command, int size = 150)
@@ -147,6 +186,11 @@ public class PropertyCommandController : ControllerBase
         return File(zip, "application/zip", "images.zip");
     }
 
+    /// <summary>
+    /// Handles the request to update property items.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/items")]
     public async Task<IActionResult> UpdateItems([FromBody] UpdatePropertyItemsCommand command)
@@ -163,6 +207,12 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete property items.
+    /// </summary>
+    /// <param name="command">Request to handle, if provided.</param>
+    /// <param name="wipe">Whether to delete all items when no request body is provided.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/properties/items")]
     public async Task<IActionResult> DeleteItems([FromBody] DeletePropertyItemsCommand? command, [FromQuery] bool wipe)
@@ -189,6 +239,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to scan a property item.
+    /// </summary>
+    /// <param name="itemId">Item identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpPut("/api/properties/items/{itemId:guid}/scan")]
     public async Task<IActionResult> ScanItem(Guid itemId)
@@ -202,6 +257,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to create a property suggestion.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
     [HttpPost("/api/properties/suggestions")]
     public async Task<IActionResult> CreateSuggestion([FromBody] CreatePropertySuggestionCommand command)
@@ -218,6 +278,12 @@ public class PropertyCommandController : ControllerBase
         return Created($"/api/properties/suggestions/{result.Suggestion.Id}", null);
     }
 
+    /// <summary>
+    /// Handles the request to update a property suggestion.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <param name="suggestionId">Suggestion identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
     [HttpPut("/api/properties/suggestions/{suggestionId:guid}")]
     public async Task<IActionResult> UpdateSuggestion([FromBody] UpdatePropertySuggestionCommand command, Guid suggestionId)
@@ -235,6 +301,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to accept a property suggestion.
+    /// </summary>
+    /// <param name="suggestionId">Suggestion identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/suggestions/{suggestionId:guid}/accept")]
     public async Task<IActionResult> AcceptSuggestion(Guid suggestionId)
@@ -248,6 +319,12 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to decline a property suggestion.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <param name="suggestionId">Suggestion identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/suggestions/{suggestionId:guid}/decline")]
     public async Task<IActionResult> DeclineSuggestion([FromBody] DeclinePropertySuggestionCommand command, Guid suggestionId)
@@ -265,6 +342,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete a property suggestion.
+    /// </summary>
+    /// <param name="suggestionId">Suggestion identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpDelete("/api/properties/suggestions/{suggestionId:guid}")]
     public async Task<IActionResult> DeleteSuggestion(Guid suggestionId)
@@ -278,6 +360,11 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to create a property scan.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPost("/api/properties/scans")]
     public async Task<IActionResult> CreateScan([FromBody] CreatePropertyScanCommand command)
@@ -294,6 +381,11 @@ public class PropertyCommandController : ControllerBase
         return Created($"/api/properties/scans/{result.Scan.Id}", null);
     }
 
+    /// <summary>
+    /// Handles the request to update a property scan.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/scans")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdatePropertyScanCommand command)
@@ -310,6 +402,10 @@ public class PropertyCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to complete a property scan.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/properties/scans/complete")]
     public async Task<IActionResult> CompleteScan()

@@ -3,8 +3,15 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Extensions;
 
+/// <summary>
+/// Defines application pipeline extension methods.
+/// </summary>
 public static class ApplicationExtensions
 {
+    /// <summary>
+    /// Configures status code pages to throw HTTP exceptions.
+    /// </summary>
+    /// <param name="app">Application to configure.</param>
     public static void ConfigureStatusCodePages(this WebApplication app)
     {
         app.UseStatusCodePages(context =>

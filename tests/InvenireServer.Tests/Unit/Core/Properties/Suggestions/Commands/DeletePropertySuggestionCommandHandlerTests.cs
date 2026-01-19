@@ -12,6 +12,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Suggestions.Commands;
 
+/// <summary>
+/// Tests for <see cref="DeletePropertySuggestionCommandHandler"/>.
+/// </summary>
 public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
 {
     private readonly DeletePropertySuggestionCommandHandler _handler;
@@ -21,6 +24,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         _handler = new DeletePropertySuggestionCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes a suggestion as an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_AsAdmin()
     {
@@ -50,6 +57,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().NotThrowAsync();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -70,6 +81,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated_ForAdmin()
     {
@@ -92,6 +107,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound_ForAdmin()
     {
@@ -119,6 +138,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not part of the property for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotPartOfProperty_ForAdmin()
     {
@@ -147,6 +170,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The suggestion isn't a part the property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes a suggestion as the owning employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_AsEmployee()
     {
@@ -178,6 +205,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().NotThrowAsync();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -198,6 +229,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not part of any organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated_ForEmployee()
     {
@@ -223,6 +258,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The employee isn't part of any organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property for an employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound_ForEmployee()
     {
@@ -250,6 +289,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion was already approved.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsApproved()
     {
@@ -280,6 +323,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The suggestion was already approved by the admin.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion does not belong to the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotAssignedToEmployee()
     {
@@ -311,6 +358,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The suggestion doesn't belong to the employee.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not part of the property for an employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotPartOfProperty_ForEmployee()
     {
@@ -341,6 +392,10 @@ public class DeletePropertySuggestionCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The suggestion isn't a part of the property.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the suggestion is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenSuggestionIsNotFound()
     {

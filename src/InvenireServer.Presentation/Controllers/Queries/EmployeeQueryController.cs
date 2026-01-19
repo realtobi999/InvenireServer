@@ -10,6 +10,9 @@ using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByE
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
+/// <summary>
+/// Controller for employee queries.
+/// </summary>
 [ApiController]
 public class EmployeeQueryController : ControllerBase
 {
@@ -20,6 +23,10 @@ public class EmployeeQueryController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Handles the request to get the current employee profile.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
     [HttpGet("/api/employees/profile")]
     public async Task<IActionResult> GetByJwt()
@@ -32,6 +39,12 @@ public class EmployeeQueryController : ControllerBase
         return Ok(command);
     }
 
+    /// <summary>
+    /// Handles the request to list invitations for the current employee.
+    /// </summary>
+    /// <param name="limit">Pagination limit.</param>
+    /// <param name="offset">Pagination offset.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
     [HttpGet("/api/employees/invitations")]
     public async Task<IActionResult> GetInvitationsByEmployee([FromQuery] int? limit, [FromQuery] int? offset)

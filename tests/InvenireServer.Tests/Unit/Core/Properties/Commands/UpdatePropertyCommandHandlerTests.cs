@@ -11,6 +11,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Properties.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdatePropertyCommandHandler"/>.
+/// </summary>
 public class UpdatePropertyCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdatePropertyCommandHandler _handler;
@@ -20,6 +23,10 @@ public class UpdatePropertyCommandHandlerTests : CommandHandlerTester
         _handler = new UpdatePropertyCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the property without errors.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -43,6 +50,10 @@ public class UpdatePropertyCommandHandlerTests : CommandHandlerTester
         await action.Should().NotThrowAsync();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -60,6 +71,10 @@ public class UpdatePropertyCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin has no organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -79,6 +94,10 @@ public class UpdatePropertyCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization has no property.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPropertyIsNotFound()
     {

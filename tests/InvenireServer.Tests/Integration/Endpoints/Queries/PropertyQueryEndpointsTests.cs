@@ -21,6 +21,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
+/// <summary>
+/// Integration tests for property query endpoints.
+/// </summary>
 public class PropertyQueryEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -34,6 +37,10 @@ public class PropertyQueryEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the properties endpoint returns OK and the expected property data for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetByAdmin_ReturnsOkAndCorrectData()
     {
@@ -88,6 +95,10 @@ public class PropertyQueryEndpointsTests
         content.SuggestionsSummary!.TotalSuggestions.Should().Be(suggestions.Count);
     }
 
+    /// <summary>
+    /// Verifies that the property items endpoint returns OK and the expected pagination data for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task IndexItemsByAdmin_ReturnsOkAndCorrectData()
     {
@@ -127,6 +138,10 @@ public class PropertyQueryEndpointsTests
         content.TotalCount.Should().Be(items.Count);
     }
 
+    /// <summary>
+    /// Verifies that the Excel export endpoint returns OK and a valid workbook.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task ExportItemsToExcel_ReturnsOkAndCorrectData()
     {
@@ -187,6 +202,10 @@ public class PropertyQueryEndpointsTests
         }
     }
 
+    /// <summary>
+    /// Verifies that the JSON export endpoint returns OK and the expected item count.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task ExportItemsToJson_ReturnsOkAndCorrectData()
     {
@@ -223,6 +242,10 @@ public class PropertyQueryEndpointsTests
         JsonSerializer.Deserialize<List<PropertyItemDto>>(content)!.Count.Should().Be(items.Count);
     }
 
+    /// <summary>
+    /// Verifies that the property item by id endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetItemById_ReturnsOkAndCorrectData()
     {
@@ -272,7 +295,10 @@ public class PropertyQueryEndpointsTests
         content.LastUpdatedAt.Should().Be(item.LastUpdatedAt);
     }
 
-
+    /// <summary>
+    /// Verifies that the property scans endpoint returns OK and the expected pagination data for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task IndexScansByAdmin_ReturnsOkAndCorrectData()
     {
@@ -320,6 +346,10 @@ public class PropertyQueryEndpointsTests
         content.TotalCount.Should().Be(scans.Count);
     }
 
+    /// <summary>
+    /// Verifies that the scan items endpoint returns OK and the expected pagination data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task IndexItemsByScan_ReturnsOkAndCorrectData()
     {
@@ -362,6 +392,10 @@ public class PropertyQueryEndpointsTests
         content.TotalCount.Should().Be(items.Count);
     }
 
+    /// <summary>
+    /// Verifies that the suggestions endpoint returns OK and the expected pagination data for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task IndexSuggestionsByAdmin_ReturnsOkAndCorrectData()
     {

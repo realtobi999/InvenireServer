@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
+/// <summary>
+/// Controller for employee commands.
+/// </summary>
 [ApiController]
 public class EmployeeCommandController : ControllerBase
 {
@@ -31,6 +34,11 @@ public class EmployeeCommandController : ControllerBase
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Handles the request to register an employee.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpPost("/api/employees/register")]
     public async Task<IActionResult> Register([FromBody] RegisterEmployeeCommand command)
     {
@@ -51,6 +59,10 @@ public class EmployeeCommandController : ControllerBase
     }
 
     // [EnableRateLimiting("SendVerificationPolicy")]
+    /// <summary>
+    /// Handles the request to send an employee verification email.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/employees/email-verification/send")]
     public async Task<IActionResult> SendVerification()
@@ -64,6 +76,10 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to confirm employee email verification.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_EMPLOYEE)]
     [HttpPost("/api/employees/email-verification/confirm")]
     public async Task<IActionResult> ConfirmVerification()
@@ -76,6 +92,11 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to log in an employee.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [EnableRateLimiting("LoginPolicy")]
     [HttpPost("/api/employees/login")]
     public async Task<IActionResult> Login([FromBody] LoginEmployeeCommand command)
@@ -96,6 +117,11 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to send an employee password recovery email.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpPost("/api/employees/password-recovery/send")]
     public async Task<IActionResult> SendPasswordRecovery([FromBody] SendPasswordRecoveryEmployeeCommand command)
     {
@@ -111,6 +137,11 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to recover an employee password.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Roles = Jwt.Roles.EMPLOYEE)]
     [HttpPost("/api/employees/password-recovery/recover")]
     public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordEmployeeCommand command)
@@ -127,6 +158,11 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to update the current employee.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
     [HttpPut("/api/employees")]
     public async Task<IActionResult> Update([FromBody] UpdateEmployeeCommand command)
@@ -143,6 +179,10 @@ public class EmployeeCommandController : ControllerBase
         return NoContent();
 
     }
+    /// <summary>
+    /// Handles the request to delete the current employee.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.EMPLOYEE)]
     [HttpDelete("/api/employees")]
     public async Task<IActionResult> Delete()

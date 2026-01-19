@@ -9,6 +9,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdateOrganizationInvitationCommandHandler"/>.
+/// </summary>
 public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdateOrganizationInvitationCommandHandler _handler;
@@ -18,6 +21,10 @@ public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         _handler = new UpdateOrganizationInvitationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the invitation description.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -45,6 +52,10 @@ public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         invitation.Description.Should().Be(command.Description);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -65,6 +76,10 @@ public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -86,6 +101,10 @@ public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotFound()
     {
@@ -109,6 +128,10 @@ public class UpdateOrganizationInvitationCommandHandlerTests : CommandHandlerTes
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The invitation was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the invitation is not part of the organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationIsNotPartOfOrganization()
     {

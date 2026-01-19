@@ -14,6 +14,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
+/// <summary>
+/// Integration tests for organization command endpoints.
+/// </summary>
 public class OrganizationCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -27,6 +30,10 @@ public class OrganizationCommandEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the organization creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Create_ReturnsCreated()
     {
@@ -48,6 +55,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the organization update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Update_ReturnsNoContent()
     {
@@ -74,6 +85,10 @@ public class OrganizationCommandEndpointsTests
     }
 
 
+    /// <summary>
+    /// Verifies that the organization delete endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Delete_ReturnsNoContent()
     {
@@ -96,6 +111,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the organization invitation creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task CreateInvitation_ReturnsCreated()
     {
@@ -122,6 +141,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the organization invitation update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task UpdateInvitation_ReturnsNoContent()
     {
@@ -152,6 +175,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the organization invitation delete endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task DeleteInvitation_ReturnsNoContent()
     {
@@ -179,6 +206,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the invitation accept endpoint returns NoContent for an employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task AcceptInvitation_ReturnsNoContent()
     {
@@ -213,6 +244,10 @@ public class OrganizationCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the remove employee endpoint returns NoContent for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task RemoveEmployee_ReturnsNoContent()
     {

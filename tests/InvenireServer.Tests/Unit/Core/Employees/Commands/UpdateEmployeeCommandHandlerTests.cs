@@ -6,6 +6,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
+/// <summary>
+/// Tests for <see cref="UpdateEmployeeCommandHandler"/>.
+/// </summary>
 public class UpdateEmployeeCommandHandlerTests : CommandHandlerTester
 {
     private readonly UpdateEmployeeCommandHandler _handler;
@@ -15,6 +18,10 @@ public class UpdateEmployeeCommandHandlerTests : CommandHandlerTester
         _handler = new UpdateEmployeeCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler updates the employee's name.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -39,6 +46,10 @@ public class UpdateEmployeeCommandHandlerTests : CommandHandlerTester
         employee.LastName.Should().Be(command.LastName);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {

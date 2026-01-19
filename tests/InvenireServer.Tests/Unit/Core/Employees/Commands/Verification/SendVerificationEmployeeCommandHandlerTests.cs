@@ -10,6 +10,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands.Verification;
 
+/// <summary>
+/// Tests for <see cref="SendVerificationEmployeeCommandHandler"/>.
+/// </summary>
 public class SendVerificationEmployeeCommandHandlerTests : CommandHandlerTester
 {
     private readonly SendVerificationEmployeeCommandHandler _handler;
@@ -19,6 +22,10 @@ public class SendVerificationEmployeeCommandHandlerTests : CommandHandlerTester
         _handler = new SendVerificationEmployeeCommandHandler(_jwt, _email.Object, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler sends a verification email with a valid purpose claim.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -55,6 +62,10 @@ public class SendVerificationEmployeeCommandHandlerTests : CommandHandlerTester
         jwt.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {
@@ -74,6 +85,10 @@ public class SendVerificationEmployeeCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is already verified.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsAlreadyVerified()
     {
@@ -95,4 +110,3 @@ public class SendVerificationEmployeeCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The employee's verification status is already confirmed.");
     }
 }
-

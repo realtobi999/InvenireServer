@@ -3,6 +3,9 @@ using InvenireServer.Tests.Fakers.Common;
 
 namespace InvenireServer.Tests.Unit.Helpers;
 
+/// <summary>
+/// Base fixture for command handler tests.
+/// </summary>
 public abstract class CommandHandlerTester
 {
     protected readonly Faker _faker;

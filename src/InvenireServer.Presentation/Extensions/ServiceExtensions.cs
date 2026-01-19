@@ -26,8 +26,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Presentation.Extensions;
 
+/// <summary>
+/// Defines service registration extension methods.
+/// </summary>
 public static class ServiceExtensions
 {
+    /// <summary>
+    /// Configures CORS policies.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
+    /// <param name="configuration">Configuration to read settings from.</param>
     public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCors(options =>
@@ -42,6 +50,11 @@ public static class ServiceExtensions
         });
     }
 
+    /// <summary>
+    /// Configures the database context.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
+    /// <param name="connectionString">Database connection string.</param>
     public static void ConfigureDatabaseContext(this IServiceCollection services, string connectionString)
     {
         services.AddDbContext<InvenireServerContext>(opt =>
@@ -54,6 +67,11 @@ public static class ServiceExtensions
         services.AddScoped<ITransactionScope, InvenireTransactionScope>();
     }
 
+    /// <summary>
+    /// Configures JWT authentication and authorization.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
+    /// <param name="configuration">Configuration to read settings from.</param>
     public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
     {
         var options = configuration.GetSection("Jwt").Get<JwtOptions>() ?? throw new NullReferenceException("JWT Configuration is missing or incomplete.");
@@ -118,18 +136,30 @@ public static class ServiceExtensions
             });
     }
 
+    /// <summary>
+    /// Configures password hashing services.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
     public static void ConfigureHashing(this IServiceCollection services)
     {
         services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
         services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
     }
 
+    /// <summary>
+    /// Configures exception handling services.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
     public static void ConfigureErrorHandling(this IServiceCollection services)
     {
         services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
         services.AddExceptionHandler<ExceptionHandler>();
     }
 
+    /// <summary>
+    /// Configures rate limiting policies for infrequent actions.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
     public static void ConfigureRareLimiters(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
@@ -167,12 +197,21 @@ public static class ServiceExtensions
         });
     }
 
+    /// <summary>
+    /// Configures email services.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
+    /// <param name="configuration">Configuration to read settings from.</param>
     public static void ConfigureEmailService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IEmailSender, EmailSender>(_ => EmailSenderFactory.Initiate(configuration));
         services.AddScoped<IEmailManager, EmailManager>();
     }
 
+    /// <summary>
+    /// Configures MediatR and validation behaviors.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
     public static void ConfigureMediatR(this IServiceCollection services)
     {
         services.AddMediatR(options => { options.RegisterServicesFromAssembly(typeof(ApplicationAssembly).Assembly); });
@@ -181,6 +220,10 @@ public static class ServiceExtensions
         services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>)));
     }
 
+    /// <summary>
+    /// Configures MVC controllers.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
     public static void ConfigureControllers(this IServiceCollection services)
     {
         services.AddControllers().AddJsonOptions(options =>

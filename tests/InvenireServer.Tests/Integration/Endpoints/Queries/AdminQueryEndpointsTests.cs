@@ -10,6 +10,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
+/// <summary>
+/// Integration tests for admin query endpoints.
+/// </summary>
 public class AdminQueryEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -23,6 +26,10 @@ public class AdminQueryEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the admin profile endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetByJwt_ReturnsOkAndCorrectData()
     {

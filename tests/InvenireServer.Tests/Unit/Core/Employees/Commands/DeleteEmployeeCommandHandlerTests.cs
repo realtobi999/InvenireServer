@@ -6,6 +6,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
+/// <summary>
+/// Tests for <see cref="DeleteEmployeeCommandHandler"/>.
+/// </summary>
 public class DeleteEmployeeCommandHandlerTests : CommandHandlerTester
 {
     private readonly DeleteEmployeeCommandHandler _handler;
@@ -15,6 +18,10 @@ public class DeleteEmployeeCommandHandlerTests : CommandHandlerTester
         _handler = new DeleteEmployeeCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler deletes the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -34,6 +41,10 @@ public class DeleteEmployeeCommandHandlerTests : CommandHandlerTester
         await action.Should().NotThrowAsync();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound()
     {

@@ -2,8 +2,17 @@ using Bogus.DataSets;
 
 namespace InvenireServer.Tests.Extensions;
 
+/// <summary>
+/// Provides test extensions for Bogus generators.
+/// </summary>
 public static class FakerTestExtensions
 {
+    /// <summary>
+    /// Generates a secure password with an uppercase letter and a digit.
+    /// </summary>
+    /// <param name="_">Internet dataset instance.</param>
+    /// <param name="length">Password length.</param>
+    /// <returns>Generated password string.</returns>
     public static string SecurePassword(this Internet _, int length = 8)
     {
         var faker = new Faker();

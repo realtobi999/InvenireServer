@@ -14,6 +14,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
+/// <summary>
+/// Controller for organization queries.
+/// </summary>
 [ApiController]
 public class OrganizationQueryController : ControllerBase
 {
@@ -24,6 +27,10 @@ public class OrganizationQueryController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Handles the request to get the current organization.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/organizations")]
     public async Task<IActionResult> GetByJwt()
@@ -47,6 +54,11 @@ public class OrganizationQueryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Handles the request to get an organization by id.
+    /// </summary>
+    /// <param name="organizationId">Organization identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpGet("/api/organizations/{organizationId:guid}")]
     public async Task<IActionResult> GetById(Guid organizationId)
     {
@@ -56,6 +68,11 @@ public class OrganizationQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to get an organization invitation by id.
+    /// </summary>
+    /// <param name="invitationId">Invitation identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/organizations/invitations/{invitationId:guid}")]
     public async Task<IActionResult> GetInvitationById(Guid invitationId)
@@ -67,6 +84,11 @@ public class OrganizationQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to get an employee by id.
+    /// </summary>
+    /// <param name="employeeId">Employee identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/organizations/employees/{employeeId:guid}")]
     public async Task<IActionResult> GetEmployeeById(Guid employeeId)
@@ -78,6 +100,11 @@ public class OrganizationQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to get an employee by email address.
+    /// </summary>
+    /// <param name="employeeAddress">Employee email address.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/organizations/employees/{employeeAddress}")]
     public async Task<IActionResult> GetEmployeeByEmailAddress(string employeeAddress)

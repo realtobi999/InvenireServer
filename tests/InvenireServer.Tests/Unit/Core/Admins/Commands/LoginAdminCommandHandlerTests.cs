@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands;
 
+/// <summary>
+/// Tests for <see cref="LoginAdminCommandHandler"/>.
+/// </summary>
 public class LoginAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly PasswordHasher<Admin> _hasher;
@@ -19,6 +22,10 @@ public class LoginAdminCommandHandlerTests : CommandHandlerTester
         _handler = new LoginAdminCommandHandler(_jwt, _hasher, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler logs in a verified admin and returns a token.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -55,6 +62,10 @@ public class LoginAdminCommandHandlerTests : CommandHandlerTester
         result.TokenString.Should().NotBeNullOrEmpty();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -74,6 +85,10 @@ public class LoginAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Invalid credentials.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not verified.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotVerified()
     {
@@ -96,6 +111,10 @@ public class LoginAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("Verification is required to proceed with login.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the password is invalid.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenPasswordsDontMatch()
     {

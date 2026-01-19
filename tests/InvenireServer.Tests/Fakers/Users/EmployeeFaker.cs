@@ -4,6 +4,9 @@ using InvenireServer.Tests.Extensions;
 
 namespace InvenireServer.Tests.Fakers.Users;
 
+/// <summary>
+/// Provides fake <see cref="Employee"/> instances for tests.
+/// </summary>
 public sealed class EmployeeFaker : Faker<Employee>
 {
     private EmployeeFaker()
@@ -19,6 +22,12 @@ public sealed class EmployeeFaker : Faker<Employee>
         RuleFor(e => e.LastLoginAt, f => f.Date.RecentOffset(10));
     }
 
+    /// <summary>
+    /// Creates a fake <see cref="Employee"/> instance and assigns related entities.
+    /// </summary>
+    /// <param name="items">Items to assign to the employee.</param>
+    /// <param name="suggestions">Suggestions to assign to the employee.</param>
+    /// <returns>Fake <see cref="Employee"/> instance.</returns>
     public static Employee Fake(IEnumerable<PropertyItem>? items = null, IEnumerable<PropertySuggestion>? suggestions = null)
     {
         var employee = new EmployeeFaker().Generate();

@@ -10,6 +10,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands.Verification;
 
+/// <summary>
+/// Tests for <see cref="SendVerificationAdminCommandHandler"/>.
+/// </summary>
 public class SendVerificationAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly SendVerificationAdminCommandHandler _handler;
@@ -19,6 +22,10 @@ public class SendVerificationAdminCommandHandlerTests : CommandHandlerTester
         _handler = new SendVerificationAdminCommandHandler(_jwt, _email.Object, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler sends a verification email with a valid purpose claim.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -55,6 +62,10 @@ public class SendVerificationAdminCommandHandlerTests : CommandHandlerTester
         jwt.Payload.Should().Contain(c => c.Type == "purpose" && c.Value == "email_verification");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -74,6 +85,10 @@ public class SendVerificationAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is already verified.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsAlreadyVerified()
     {

@@ -6,6 +6,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Admins.Commands.Verification;
 
+/// <summary>
+/// Tests for <see cref="ConfirmVerificationAdminCommandHandler"/>.
+/// </summary>
 public class ConfirmVerificationAdminCommandHandlerTests : CommandHandlerTester
 {
     private readonly ConfirmVerificationAdminCommandHandler _handler;
@@ -15,6 +18,10 @@ public class ConfirmVerificationAdminCommandHandlerTests : CommandHandlerTester
         _handler = new ConfirmVerificationAdminCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler confirms verification when the token purpose is valid.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -38,6 +45,10 @@ public class ConfirmVerificationAdminCommandHandlerTests : CommandHandlerTester
         admin.IsVerified.Should().BeTrue();
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the token purpose is missing.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenTokenIsMissingPurpose()
     {
@@ -53,6 +64,10 @@ public class ConfirmVerificationAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The token's purpose is missing.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the token purpose is invalid.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenTokenHasInvalidPurpose()
     {
@@ -68,6 +83,10 @@ public class ConfirmVerificationAdminCommandHandlerTests : CommandHandlerTester
         await action.Should().ThrowAsync<Unauthorized401Exception>().WithMessage("The token's purpose is not for email verification.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {

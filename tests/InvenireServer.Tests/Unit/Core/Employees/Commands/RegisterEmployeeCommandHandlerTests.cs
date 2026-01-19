@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Tests.Unit.Core.Employees.Commands;
 
+/// <summary>
+/// Tests for <see cref="RegisterEmployeeCommandHandler"/>.
+/// </summary>
 public class RegisterEmployeeCommandHandlerTests : CommandHandlerTester
 {
     private readonly PasswordHasher<Employee> _hasher;
@@ -18,6 +21,10 @@ public class RegisterEmployeeCommandHandlerTests : CommandHandlerTester
         _handler = new RegisterEmployeeCommandHandler(_jwt, _hasher, _repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler registers an employee and issues a token.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {

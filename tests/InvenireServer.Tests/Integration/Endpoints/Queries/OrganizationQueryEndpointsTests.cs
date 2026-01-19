@@ -17,6 +17,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
+/// <summary>
+/// Integration tests for organization query endpoints.
+/// </summary>
 public class OrganizationQueryEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -30,6 +33,10 @@ public class OrganizationQueryEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the organizations endpoint returns OK and the expected organization data for an admin.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetByAdmin_ReturnsOkAndCorrectData()
     {
@@ -82,6 +89,10 @@ public class OrganizationQueryEndpointsTests
         content.Invitations!.Count.Should().Be(invitations.Count);
     }
 
+    /// <summary>
+    /// Verifies that the organizations endpoint returns OK and the expected organization data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetById_ReturnsOkAndCorrectData()
     {
@@ -115,6 +126,10 @@ public class OrganizationQueryEndpointsTests
         content.Admin!.Id.Should().Be(admin.Id);
     }
 
+    /// <summary>
+    /// Verifies that the employee by id endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetEmployeeById_ReturnsOkAndCorrectData()
     {
@@ -151,6 +166,10 @@ public class OrganizationQueryEndpointsTests
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
     }
 
+    /// <summary>
+    /// Verifies that the employee by email address endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetEmployeeByEmailAddress_ReturnsOkAndCorrectData()
     {
@@ -187,6 +206,10 @@ public class OrganizationQueryEndpointsTests
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
     }
 
+    /// <summary>
+    /// Verifies that the invitation by id endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetInvitationById_ReturnsOkAndCorrectData()
     {

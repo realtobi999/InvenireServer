@@ -19,6 +19,9 @@ using System.Runtime.InteropServices;
 
 namespace InvenireServer.Presentation.Controllers.Commands;
 
+/// <summary>
+/// Controller for admin commands.
+/// </summary>
 [ApiController]
 public class AdminCommandController : ControllerBase
 {
@@ -31,6 +34,11 @@ public class AdminCommandController : ControllerBase
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Handles the request to register an admin.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpPost("/api/admins/register")]
     public async Task<IActionResult> Register([FromBody] RegisterAdminCommand command)
     {
@@ -51,6 +59,10 @@ public class AdminCommandController : ControllerBase
     }
 
     // [EnableRateLimiting("SendVerificationPolicy")]
+    /// <summary>
+    /// Handles the request to send an admin verification email.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_ADMIN)]
     [HttpPost("/api/admins/email-verification/send")]
     public async Task<IActionResult> SendVerification()
@@ -64,6 +76,10 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to confirm admin email verification.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.UNVERIFIED_ADMIN)]
     [HttpPost("/api/admins/email-verification/confirm")]
     public async Task<IActionResult> ConfirmVerification()
@@ -77,6 +93,11 @@ public class AdminCommandController : ControllerBase
     }
 
     //[EnableRateLimiting("LoginPolicy")]
+    /// <summary>
+    /// Handles the request to log in an admin.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpPost("/api/admins/login")]
     public async Task<IActionResult> Login([FromBody] LoginAdminCommand command)
     {
@@ -96,6 +117,11 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to send an admin password recovery email.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [HttpPost("/api/admins/password-recovery/send")]
     public async Task<IActionResult> SendPasswordRecovery([FromBody] SendPasswordRecoveryAdminCommand command)
     {
@@ -111,6 +137,11 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to recover an admin password.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Roles = Jwt.Roles.ADMIN)]
     [HttpPost("/api/admins/password-recovery/recover")]
     public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordAdminCommand command)
@@ -127,6 +158,11 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to update the current admin.
+    /// </summary>
+    /// <param name="command">Request to handle.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpPut("/api/admins")]
     public async Task<IActionResult> Update([FromBody] UpdateAdminCommand command)
@@ -143,6 +179,10 @@ public class AdminCommandController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Handles the request to delete the current admin.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpDelete("/api/admins")]
     public async Task<IActionResult> Delete()

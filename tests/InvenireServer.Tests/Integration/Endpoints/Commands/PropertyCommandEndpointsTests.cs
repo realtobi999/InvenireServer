@@ -22,6 +22,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Commands;
 
+/// <summary>
+/// Integration tests for property command endpoints.
+/// </summary>
 public class PropertyCommandEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -35,6 +38,10 @@ public class PropertyCommandEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the property creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Create_ReturnsCreated()
     {
@@ -58,6 +65,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the property update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Update_ReturnsNoContent()
     {
@@ -85,6 +96,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property delete endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Delete_ReturnsNoContent()
     {
@@ -109,6 +124,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property items creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task CreateItems_ReturnsCreated()
     {
@@ -145,6 +164,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the property items update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task UpdateItems_ReturnsNoContent()
     {
@@ -213,6 +236,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property items delete endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task DeleteItems_ReturnsNoContent()
     {
@@ -257,6 +284,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the scan item endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task ScanItem_ReturnsNoContent()
     {
@@ -302,6 +333,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property suggestion creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task CreateSuggestion_ReturnsCreated()
     {
@@ -371,6 +406,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the property suggestion update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task UpdateSuggestion_ReturnsCreated()
     {
@@ -447,6 +486,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property suggestion accept endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task AcceptSuggestion_ReturnsNoContent()
     {
@@ -525,6 +568,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property suggestion decline endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task DeclineSuggestion_ReturnsNoContent()
     {
@@ -585,6 +632,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property suggestion delete endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task DeleteSuggestion_ReturnsNoContent()
     {
@@ -638,6 +689,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property scan creation endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task CreateScan_ReturnsCreated()
     {
@@ -663,6 +718,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
+    /// <summary>
+    /// Verifies that the property scan update endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task UpdateScan_ReturnsNoContent()
     {
@@ -693,6 +752,10 @@ public class PropertyCommandEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
+    /// <summary>
+    /// Verifies that the property scan completion endpoint returns NoContent.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task CompleteScan_ReturnsNoContent()
     {

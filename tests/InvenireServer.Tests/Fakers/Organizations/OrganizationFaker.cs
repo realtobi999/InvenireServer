@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Tests.Fakers.Organizations;
 
+/// <summary>
+/// Provides fake <see cref="Organization"/> instances for tests.
+/// </summary>
 public sealed class OrganizationFaker : Faker<Organization>
 {
     private OrganizationFaker()
@@ -14,6 +17,14 @@ public sealed class OrganizationFaker : Faker<Organization>
         RuleFor(o => o.LastUpdatedAt, f => f.Date.RecentOffset(30));
     }
 
+    /// <summary>
+    /// Creates a fake <see cref="Organization"/> instance and assigns related entities.
+    /// </summary>
+    /// <param name="admin">Admin to assign to the organization.</param>
+    /// <param name="property">Property to assign to the organization.</param>
+    /// <param name="employees">Employees to assign to the organization.</param>
+    /// <param name="invitations">Invitations to assign to the organization.</param>
+    /// <returns>Fake <see cref="Organization"/> instance.</returns>
     public static Organization Fake(Admin? admin = null, Property? property = null, List<Employee>? employees = null, List<OrganizationInvitation>? invitations = null)
     {
         var organization = new OrganizationFaker().Generate();

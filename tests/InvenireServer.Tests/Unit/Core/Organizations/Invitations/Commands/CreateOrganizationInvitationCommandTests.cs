@@ -8,6 +8,9 @@ using InvenireServer.Tests.Unit.Helpers;
 
 namespace InvenireServer.Tests.Unit.Core.Organizations.Invitations.Commands;
 
+/// <summary>
+/// Tests for <see cref="CreateOrganizationInvitationCommandHandler"/>.
+/// </summary>
 public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
 {
     private readonly CreateOrganizationInvitationCommandHandler _handler;
@@ -17,6 +20,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         _handler = new CreateOrganizationInvitationCommandHandler(_repositories.Object);
     }
 
+    /// <summary>
+    /// Verifies that the handler creates an invitation for an existing employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException()
     {
@@ -61,6 +68,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         result.Invitation.Employee!.Id.Should().Be(employee.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler creates an invitation when the employee is resolved by email address.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_ByEmployeeEmailAddress()
     {
@@ -97,6 +108,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         result.Invitation.Employee!.Id.Should().Be(employee.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler uses the provided invitation id.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsNoException_WhenInvitationIdIsProvided()
     {
@@ -134,6 +149,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         result.Invitation.Employee!.Id.Should().Be(employee.Id);
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found by id.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound_ById()
     {
@@ -154,6 +173,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the employee is not found by email.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIsNotFound_ByEmail()
     {
@@ -174,6 +197,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The employee was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when no employee identifier is provided.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenEmployeeIdentifierIsMissing()
     {
@@ -189,6 +216,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("Either 'employee_email_address' or 'employee_id' must be provided.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin is not found.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenAdminIsNotFound()
     {
@@ -212,6 +243,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<NotFound404Exception>().WithMessage("The admin was not found in the system.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the admin does not own an organization.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationIsNotCreated()
     {
@@ -237,6 +272,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The admin doesn't own a organization.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when an invitation already exists for the employee.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenInvitationAlreadyExistsForEmployee()
     {
@@ -264,6 +303,10 @@ public class CreateOrganizationInvitationCommandTests : CommandHandlerTester
         await action.Should().ThrowAsync<Conflict409Exception>().WithMessage("The organization already has a invitation for the employee.");
     }
 
+    /// <summary>
+    /// Verifies that the handler throws when the organization invitation limit is exceeded.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task Handle_ThrowsException_WhenOrganizationInvitationLimitIsExceeded()
     {

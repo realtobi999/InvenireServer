@@ -16,6 +16,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints.Queries;
 
+/// <summary>
+/// Integration tests for employee query endpoints.
+/// </summary>
 public class EmployeeQueryEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -29,6 +32,10 @@ public class EmployeeQueryEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the employee profile endpoint returns OK and the expected data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetByJwt_ReturnsOkAndCorrectData()
     {
@@ -65,6 +72,10 @@ public class EmployeeQueryEndpointsTests
         content.LastUpdatedAt.Should().Be(employee.LastUpdatedAt);
     }
 
+    /// <summary>
+    /// Verifies that the employee invitations endpoint returns OK and the expected pagination data.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetInvitationsByEmployee_ReturnsOkAndCorrectData()
     {

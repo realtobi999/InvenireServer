@@ -24,6 +24,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
+/// <summary>
+/// Controller for property queries.
+/// </summary>
 [ApiController]
 public class PropertyQueryController : ControllerBase
 {
@@ -34,6 +37,10 @@ public class PropertyQueryController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Handles the request to get the current property.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/properties")]
     public async Task<IActionResult> GetByJwt()
@@ -57,6 +64,10 @@ public class PropertyQueryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Handles the request to list property items for the current user.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/properties/items")]
     public async Task<IActionResult> IndexItemsByJwt()
@@ -96,6 +107,10 @@ public class PropertyQueryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Handles the request to export property items to Excel.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items/export/excel")]
     public async Task<IActionResult> ExportItemsToExcel()
@@ -108,6 +123,10 @@ public class PropertyQueryController : ControllerBase
         return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 
+    /// <summary>
+    /// Handles the request to export property items to JSON.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items/export/json")]
     public async Task<IActionResult> ExportItemsToJson()
@@ -120,6 +139,11 @@ public class PropertyQueryController : ControllerBase
         return File(json, "application/json");
     }
 
+    /// <summary>
+    /// Handles the request to get a property item by id.
+    /// </summary>
+    /// <param name="itemId">Item identifier.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/items/{itemId:guid}")]
     public async Task<IActionResult> GetItemById(Guid itemId)
@@ -131,6 +155,11 @@ public class PropertyQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to list property scans for an admin.
+    /// </summary>
+    /// <param name="parameters">Query parameters.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Policy = Jwt.Policies.ADMIN)]
     [HttpGet("/api/properties/scans")]
     public async Task<IActionResult> IndexScansByAdmin([FromQuery] IndexByAdminPropertyScanQueryParameters parameters)
@@ -142,6 +171,10 @@ public class PropertyQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to get the active property scan.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/properties/scans/active")]
     public async Task<IActionResult> GetActiveScan()
@@ -167,6 +200,12 @@ public class PropertyQueryController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Handles the request to list property items for a scan.
+    /// </summary>
+    /// <param name="scanId">Scan identifier.</param>
+    /// <param name="parameters">Query parameters.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/properties/scans/{scanId:guid}/items")]
     public async Task<IActionResult> IndexItemsByScan(Guid scanId, [FromQuery] IndexByScanPropertyItemQueryParameters parameters)
@@ -179,6 +218,10 @@ public class PropertyQueryController : ControllerBase
         }));
     }
 
+    /// <summary>
+    /// Handles the request to list property suggestions for the current user.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpGet("/api/properties/suggestions")]
     public async Task<IActionResult> IndexSuggestionsByJwt()

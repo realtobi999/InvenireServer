@@ -2,6 +2,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Fakers.Properties;
 
+/// <summary>
+/// Provides fake <see cref="PropertySuggestion"/> instances for tests.
+/// </summary>
 public class PropertySuggestionFaker : Faker<PropertySuggestion>
 {
     private PropertySuggestionFaker()
@@ -17,6 +20,10 @@ public class PropertySuggestionFaker : Faker<PropertySuggestion>
         RuleFor(s => s.LastUpdatedAt, f => f.Date.RecentOffset(30));
     }
 
+    /// <summary>
+    /// Creates a fake <see cref="PropertySuggestion"/> instance.
+    /// </summary>
+    /// <returns>Fake <see cref="PropertySuggestion"/> instance.</returns>
     public static PropertySuggestion Fake()
     {
         return new PropertySuggestionFaker().Generate();

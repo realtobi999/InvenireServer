@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InvenireServer.Presentation.Controllers.Queries;
 
+/// <summary>
+/// Controller for admin queries.
+/// </summary>
 [ApiController]
 public class AdminQueryController : ControllerBase
 {
@@ -18,6 +21,10 @@ public class AdminQueryController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Handles the request to get the current admin profile.
+    /// </summary>
+    /// <returns>Awaitable task returning the response.</returns>
     [Authorize(Roles = Jwt.Roles.ADMIN)]
     [HttpGet("/api/admins/profile")]
     public async Task<IActionResult> GetByJwt()

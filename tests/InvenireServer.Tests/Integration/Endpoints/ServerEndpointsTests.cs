@@ -8,6 +8,9 @@ using InvenireServer.Tests.Integration.Server;
 
 namespace InvenireServer.Tests.Integration.Endpoints;
 
+/// <summary>
+/// Integration tests for server utility endpoints.
+/// </summary>
 public class ServerEndpointsTests
 {
     private readonly ServerFactory<Program> _app;
@@ -21,6 +24,10 @@ public class ServerEndpointsTests
         _client = _app.CreateDefaultClient();
     }
 
+    /// <summary>
+    /// Verifies that the health check endpoint returns OK.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task HealthCheck_ReturnsOk()
     {
@@ -29,6 +36,10 @@ public class ServerEndpointsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+    /// <summary>
+    /// Verifies that the auth check endpoint returns OK with a token and Unauthorized without one.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task AuthCheck_ReturnsOkAndUnauthorized()
     {
@@ -46,6 +57,10 @@ public class ServerEndpointsTests
         response2.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    /// <summary>
+    /// Verifies that the auth role endpoint returns OK and the expected role.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
     [Fact]
     public async Task GetRole_ReturnsOkAndCorrectData()
     {

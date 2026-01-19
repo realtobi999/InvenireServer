@@ -5,8 +5,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Tests.Fakers.Common;
 
+/// <summary>
+/// Creates configured <see cref="JwtManager"/> instances for tests.
+/// </summary>
 public class JwtManagerFaker
 {
+    /// <summary>
+    /// Creates a configured <see cref="JwtManager"/> from application settings.
+    /// </summary>
+    /// <returns>Configured <see cref="JwtManager"/> instance.</returns>
     public static JwtManager Initiate()
     {
         var configuration = new ConfigurationBuilder()
