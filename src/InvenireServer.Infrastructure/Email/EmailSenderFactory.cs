@@ -4,8 +4,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace InvenireServer.Infrastructure.Email;
 
+/// <summary>
+/// Creates email sender instances from configuration.
+/// </summary>
 public static class EmailSenderFactory
 {
+    /// <summary>
+    /// Creates and configures an <see cref="EmailSender"/> using SMTP settings.
+    /// </summary>
+    /// <param name="configuration">Configuration containing SMTP settings.</param>
+    /// <returns>Configured email sender.</returns>
     public static EmailSender Initiate(IConfiguration configuration)
     {
         var host = configuration.GetSection("SMTP:Host").Value ?? throw new NullReferenceException();

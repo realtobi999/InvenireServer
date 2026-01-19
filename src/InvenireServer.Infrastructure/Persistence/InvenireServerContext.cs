@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence;
 
+/// <summary>
+/// Represents the EF Core database context for InvenireServer.
+/// </summary>
 public class InvenireServerContext : DbContext
 {
     public InvenireServerContext(DbContextOptions options) : base(options)
@@ -32,6 +35,10 @@ public class InvenireServerContext : DbContext
 
     public DbSet<PropertyScanPropertyItem> ScansItems { get; set; }
 
+    /// <summary>
+    /// Configures entity mappings for the context.
+    /// </summary>
+    /// <param name="builder">Model builder used to configure entities.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         // Apply entity configurations from dedicated configuration classes.

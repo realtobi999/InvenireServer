@@ -4,6 +4,9 @@ using InvenireServer.Infrastructure.Email.Builders;
 
 namespace InvenireServer.Infrastructure.Email;
 
+/// <summary>
+/// Default implementation of <see cref="IEmailManager"/>.
+/// </summary>
 public class EmailManager : IEmailManager
 {
     private readonly Lazy<IEmailBuilderGroup> _builders;

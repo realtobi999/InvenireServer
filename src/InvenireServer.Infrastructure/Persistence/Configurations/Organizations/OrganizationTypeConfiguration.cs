@@ -6,8 +6,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Organizations;
 
+/// <summary>
+/// Configures the <see cref="Organization"/> entity.
+/// </summary>
 public class OrganizationTypeConfiguration : IEntityTypeConfiguration<Organization>
 {
+    /// <summary>
+    /// Configures the <see cref="Organization"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
         // Properties.

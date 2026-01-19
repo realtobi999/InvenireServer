@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Properties;
 
+/// <summary>
+/// Configures the <see cref="PropertyScan"/> entity.
+/// </summary>
 public class PropertyScanTypeConfiguration : IEntityTypeConfiguration<PropertyScan>
 {
+    /// <summary>
+    /// Configures the <see cref="PropertyScan"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<PropertyScan> builder)
     {
         // Properties.
@@ -43,8 +50,15 @@ public class PropertyScanTypeConfiguration : IEntityTypeConfiguration<PropertySc
     }
 }
 
+/// <summary>
+/// Configures the <see cref="PropertyScanPropertyItem"/> entity.
+/// </summary>
 public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguration<PropertyScanPropertyItem>
 {
+    /// <summary>
+    /// Configures the <see cref="PropertyScanPropertyItem"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<PropertyScanPropertyItem> builder)
     {
         // Properties.

@@ -9,6 +9,9 @@ using InvenireServer.Infrastructure.Persistence.Repositories.Users;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// Default implementation of <see cref="IRepositoryManager"/>.
+/// </summary>
 public class RepositoryManager : IRepositoryManager
 {
     private readonly Lazy<IAdminRepository> _admins;
@@ -31,11 +34,19 @@ public class RepositoryManager : IRepositoryManager
     public IPropertyRepository Properties => _properties.Value;
     public IOrganizationRepository Organizations => _organizations.Value;
 
+    /// <summary>
+    /// Persists pending changes to the data store.
+    /// </summary>
+    /// <returns>Number of affected rows.</returns>
     public async Task<int> SaveAsync()
     {
         return await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Persists pending changes to the data store and throws an exception if none were saved.
+    /// </summary>
+    /// <returns>Awaitable task representing the save operation.</returns>
     public async Task SaveOrThrowAsync()
     {
         var affected = await SaveAsync();

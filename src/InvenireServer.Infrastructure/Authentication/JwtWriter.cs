@@ -6,6 +6,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Infrastructure.Authentication;
 
+/// <summary>
+/// Default implementation of <see cref="IJwtWriter"/>.
+/// </summary>
 public class JwtWriter : IJwtWriter
 {
     public JwtWriter(string key)
@@ -15,6 +18,11 @@ public class JwtWriter : IJwtWriter
 
     public string SigningKey { get; }
 
+    /// <summary>
+    /// Serializes and signs the provided JWT.
+    /// </summary>
+    /// <param name="jwt">JWT instance to serialize and sign.</param>
+    /// <returns>Signed token string.</returns>
     public string Write(Jwt jwt)
     {
         var headerJson = JsonSerializer.Serialize(jwt.Header.ToDictionary(c => c.Type, object (c) => c.Value));

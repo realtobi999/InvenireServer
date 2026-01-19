@@ -6,6 +6,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Infrastructure.Authentication;
 
+/// <summary>
+/// Default implementation of <see cref="IJwtBuilder"/>.
+/// </summary>
 public class JwtBuilder : IJwtBuilder
 {
     private const int DEFAULT_EXPIRATION_TIME = 30;
@@ -20,6 +23,11 @@ public class JwtBuilder : IJwtBuilder
 
     public TimeSpan ExpirationTime { get; }
 
+    /// <summary>
+    /// Builds a JWT using the provided claims.
+    /// </summary>
+    /// <param name="claims">Claims to include in the token payload.</param>
+    /// <returns>The constructed <see cref="Jwt"/>.</returns>
     public Jwt Build(List<Claim>? claims = null)
     {
         var header = new List<Claim>
@@ -39,6 +47,11 @@ public class JwtBuilder : IJwtBuilder
         return new Jwt(header, payload);
     }
 
+    /// <summary>
+    /// Parses a JWT string into a <see cref="Jwt"/>.
+    /// </summary>
+    /// <param name="token">Token string to parse.</param>
+    /// <returns>Parsed JWT.</returns>
     public static Jwt Parse(string token)
     {
         var parts = token.Split('.');

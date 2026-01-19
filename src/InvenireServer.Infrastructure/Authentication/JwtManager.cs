@@ -4,6 +4,9 @@ using InvenireServer.Infrastructure.Authentication.Options;
 
 namespace InvenireServer.Infrastructure.Authentication;
 
+/// <summary>
+/// Default implementation of <see cref="IJwtManager"/>.
+/// </summary>
 public class JwtManager : IJwtManager
 {
     public JwtManager(JwtOptions options)

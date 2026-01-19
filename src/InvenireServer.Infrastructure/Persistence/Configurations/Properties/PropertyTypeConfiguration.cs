@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Properties;
 
+/// <summary>
+/// Configures the <see cref="Property"/> entity.
+/// </summary>
 public class PropertyTypeConfiguration : IEntityTypeConfiguration<Property>
 {
+    /// <summary>
+    /// Configures the <see cref="Property"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<Property> builder)
     {
         // Properties.

@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Properties;
 
+/// <summary>
+/// Configures the <see cref="PropertySuggestion"/> entity.
+/// </summary>
 public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<PropertySuggestion>
 {
+    /// <summary>
+    /// Configures the <see cref="PropertySuggestion"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<PropertySuggestion> builder)
     {
         // Properties.
@@ -54,4 +61,3 @@ public class PropertySuggestionTypeConfiguration : IEntityTypeConfiguration<Prop
             .HasColumnName("employee_id");
     }
 }
-

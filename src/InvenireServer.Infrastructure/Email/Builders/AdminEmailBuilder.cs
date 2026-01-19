@@ -4,12 +4,20 @@ using InvenireServer.Application.Interfaces.Email.Builders;
 
 namespace InvenireServer.Infrastructure.Email.Builders;
 
+/// <summary>
+/// Default implementation of <see cref="IAdminEmailBuilder"/>.
+/// </summary>
 public class AdminEmailBuilder : BaseEmailBuilder, IAdminEmailBuilder
 {
     public AdminEmailBuilder(string source) : base(source)
     {
     }
 
+    /// <summary>
+    /// Builds a recovery email for an admin.
+    /// </summary>
+    /// <param name="dto">Data used to populate the recovery email template.</param>
+    /// <returns>Composed email message.</returns>
     public MailMessage BuildRecoveryEmail(AdminRecoveryEmailDto dto)
     {
         var message = new MailMessage(SourceAddress, dto.AdminAddress)
@@ -22,6 +30,11 @@ public class AdminEmailBuilder : BaseEmailBuilder, IAdminEmailBuilder
         return message;
     }
 
+    /// <summary>
+    /// Builds a verification email for an admin.
+    /// </summary>
+    /// <param name="dto">Data used to populate the verification email template.</param>
+    /// <returns>Composed email message.</returns>
     public MailMessage BuildVerificationEmail(AdminVerificationEmailDto dto)
     {
         var message = new MailMessage(SourceAddress, dto.AdminAddress)

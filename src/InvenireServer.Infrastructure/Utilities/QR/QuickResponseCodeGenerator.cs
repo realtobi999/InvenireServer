@@ -8,6 +8,9 @@ using SixLabors.ImageSharp.Processing;
 
 namespace InvenireServer.Infrastructure.Utilities.QR;
 
+/// <summary>
+/// Default implementation of <see cref="IQuickResponseCodeGenerator"/>.
+/// </summary>
 public class QuickResponseCodeGenerator : IQuickResponseCodeGenerator
 {
     private const int MinSize = IQuickResponseCodeGenerator.MinimumSize;
@@ -19,11 +22,24 @@ public class QuickResponseCodeGenerator : IQuickResponseCodeGenerator
 
     private static readonly string FontPath = Path.Combine(AppContext.BaseDirectory, "assets", "fonts", "G_ari_bd.ttf");
 
+    /// <summary>
+    /// Generates a PNG-encoded QR code image.
+    /// </summary>
+    /// <param name="content">Content encoded in the QR code.</param>
+    /// <param name="size">Image size in pixels.</param>
+    /// <returns>PNG-encoded QR code image.</returns>
     public byte[] GenerateCode(string content, int size = MinSize)
     {
         return GenerateCodeWithLabels(content, [], size);
     }
 
+    /// <summary>
+    /// Generates a PNG-encoded QR code image with labels.
+    /// </summary>
+    /// <param name="content">Content encoded in the QR code.</param>
+    /// <param name="labels">Labels rendered beneath the code.</param>
+    /// <param name="size">Image size in pixels.</param>
+    /// <returns>PNG-encoded QR code image.</returns>
     public byte[] GenerateCodeWithLabels(string content, IReadOnlyList<string> labels, int size = MinSize)
     {
         if (size < MinSize || size > MaxSize)

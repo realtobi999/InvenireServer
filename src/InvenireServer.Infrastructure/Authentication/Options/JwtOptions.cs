@@ -1,5 +1,8 @@
 namespace InvenireServer.Infrastructure.Authentication.Options;
 
+/// <summary>
+/// Represents JWT configuration options.
+/// </summary>
 public class JwtOptions
 {
     public required string Issuer { get; init; }

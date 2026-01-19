@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Users;
 
+/// <summary>
+/// Configures the <see cref="Employee"/> entity.
+/// </summary>
 public class EmployeeTypeConfiguration : IEntityTypeConfiguration<Employee>
 {
+    /// <summary>
+    /// Configures the <see cref="Employee"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         // Properties.

@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Organizations;
 
+/// <summary>
+/// Configures the <see cref="OrganizationInvitation"/> entity.
+/// </summary>
 public class OrganizationInvitationTypeConfiguration : IEntityTypeConfiguration<OrganizationInvitation>
 {
+    /// <summary>
+    /// Configures the <see cref="OrganizationInvitation"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<OrganizationInvitation> builder)
     {
         // Properties.

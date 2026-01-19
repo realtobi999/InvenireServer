@@ -4,8 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InvenireServer.Infrastructure.Persistence.Configurations.Users;
 
+/// <summary>
+/// Configures the <see cref="Admin"/> entity.
+/// </summary>
 public class AdminTypeConfiguration : IEntityTypeConfiguration<Admin>
 {
+    /// <summary>
+    /// Configures the <see cref="Admin"/> entity.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity.</param>
     public void Configure(EntityTypeBuilder<Admin> builder)
     {
         // Properties.
