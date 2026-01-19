@@ -1,5 +1,8 @@
 namespace InvenireServer.Domain.Entities.Properties;
 
+/// <summary>
+/// Represents a property scan in the domain.
+/// </summary>
 public class PropertyScan
 {
     // Constants.
@@ -31,6 +34,9 @@ public class PropertyScan
     public ICollection<PropertyScanPropertyItem> ScannedItems { get; set; } = [];
 }
 
+/// <summary>
+/// Represents a property item entry within a property scan.
+/// </summary>
 public class PropertyScanPropertyItem
 {
     // Core properties.
@@ -52,6 +58,9 @@ public class PropertyScanPropertyItem
     public required Guid? PropertyItemEmployeeId { get; set; }
 }
 
+/// <summary>
+/// Represents status values for property scans.
+/// </summary>
 public enum PropertyScanStatus
 {
     COMPLETED,

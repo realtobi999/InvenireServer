@@ -3,6 +3,9 @@ using InvenireServer.Domain.Interfaces.Exceptions;
 
 namespace InvenireServer.Domain.Exceptions.Http;
 
+/// <summary>
+/// Represents an HTTP 404 Not Found error.
+/// </summary>
 public class NotFound404Exception : Exception, IHttpException
 {
     public NotFound404Exception() : base("The requested resource was not found in the system.")

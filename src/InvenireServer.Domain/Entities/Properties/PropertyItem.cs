@@ -3,6 +3,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Properties;
 
+/// <summary>
+/// Represents a property item in the domain.
+/// </summary>
 public class PropertyItem
 {
     // Constants.
@@ -51,6 +54,10 @@ public class PropertyItem
 
     // Methods.
 
+    /// <summary>
+    /// Assigns the item to a property.
+    /// </summary>
+    /// <param name="property">Property to assign.</param>
     public void AssignProperty(Property property)
     {
         if (PropertyId is not null) throw new BadRequest400Exception("This item is already part of a another property.");
@@ -58,6 +65,9 @@ public class PropertyItem
         PropertyId = property.Id;
     }
 
+    /// <summary>
+    /// Unassigns the item from its property.
+    /// </summary>
     public void UnassignProperty()
     {
         if (PropertyId is null) throw new BadRequest400Exception("This item is isn't a part of any property.");
@@ -65,6 +75,10 @@ public class PropertyItem
         PropertyId = null;
     }
 
+    /// <summary>
+    /// Assigns the item to an employee.
+    /// </summary>
+    /// <param name="employee">Employee to assign.</param>
     public void AssignEmployee(Employee employee)
     {
         if (EmployeeId is not null) throw new BadRequest400Exception("The item is already assigned to another employee.");
@@ -72,6 +86,9 @@ public class PropertyItem
         EmployeeId = employee.Id;
     }
 
+    /// <summary>
+    /// Unassigns the item from its employee.
+    /// </summary>
     public void UnassignEmployee()
     {
         if (EmployeeId is null) throw new BadRequest400Exception("This item is isn't assigned to this employee.");
@@ -80,6 +97,9 @@ public class PropertyItem
     }
 }
 
+/// <summary>
+/// Represents property item location data in the domain.
+/// </summary>
 public record PropertyItemLocation
 {
     // Constants.

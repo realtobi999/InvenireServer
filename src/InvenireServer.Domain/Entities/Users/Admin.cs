@@ -3,6 +3,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Users;
 
+/// <summary>
+/// Represents an administrator in the domain.
+/// </summary>
 public class Admin
 {
     // Constants
@@ -45,6 +48,9 @@ public class Admin
 
     // Methods.
 
+    /// <summary>
+    /// Marks the admin as verified.
+    /// </summary>
     public void Verify()
     {
         if (IsVerified) throw new Conflict409Exception("The admin's verification status is already confirmed.");
@@ -52,6 +58,10 @@ public class Admin
         IsVerified = true;
     }
 
+    /// <summary>
+    /// Assigns an organization to the admin.
+    /// </summary>
+    /// <param name="organization">Organization to assign.</param>
     public void AssignOrganization(Organization organization)
     {
         if (OrganizationId is not null) throw new Conflict409Exception("The admin is already a owner of another organization.");

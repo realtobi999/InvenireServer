@@ -1,5 +1,8 @@
 namespace InvenireServer.Domain.Entities.Properties;
 
+/// <summary>
+/// Represents a property suggestion in the domain.
+/// </summary>
 public class PropertySuggestion
 {
     // Constants.
@@ -39,6 +42,9 @@ public class PropertySuggestion
     public Guid? PropertyId { get; set; }
 }
 
+/// <summary>
+/// Represents status values for property suggestions.
+/// </summary>
 public enum PropertySuggestionStatus
 {
     APPROVED = 0,

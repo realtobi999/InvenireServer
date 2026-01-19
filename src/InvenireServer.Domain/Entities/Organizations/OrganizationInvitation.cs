@@ -3,6 +3,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Organizations;
 
+/// <summary>
+/// Represents an organization invitation in the domain.
+/// </summary>
 public class OrganizationInvitation
 {
     // Constants.
@@ -29,11 +32,18 @@ public class OrganizationInvitation
 
     // Methods.
 
+    /// <summary>
+    /// Assigns an organization to the invitation.
+    /// </summary>
+    /// <param name="organization">Organization to assign.</param>
     public void AssignOrganization(Organization organization)
     {
         OrganizationId = organization.Id;
     }
 
+    /// <summary>
+    /// Unassigns the organization from the invitation.
+    /// </summary>
     public void UnassignOrganization()
     {
         OrganizationId = null;

@@ -4,6 +4,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Organizations;
 
+/// <summary>
+/// Represents an organization in the domain.
+/// </summary>
 public class Organization
 {
     // Constants.
@@ -34,6 +37,10 @@ public class Organization
 
     // Methods.
 
+    /// <summary>
+    /// Assigns an admin to the organization.
+    /// </summary>
+    /// <param name="admin">Admin to assign.</param>
     public void AssignAdmin(Admin admin)
     {
         Admin = admin;
@@ -41,6 +48,10 @@ public class Organization
         admin.AssignOrganization(this);
     }
 
+    /// <summary>
+    /// Assigns a property to the organization.
+    /// </summary>
+    /// <param name="property">Property to assign.</param>
     public void AssignProperty(Property property)
     {
         Property = property;
@@ -48,33 +59,57 @@ public class Organization
         property.AssignOrganization(this);
     }
 
+    /// <summary>
+    /// Adds an employee to the organization.
+    /// </summary>
+    /// <param name="employee">Employee to add.</param>
     public void AddEmployee(Employee employee)
     {
         Employees.Add(employee);
         employee.AssignOrganization(this);
     }
 
+    /// <summary>
+    /// Adds employees to the organization.
+    /// </summary>
+    /// <param name="employees">Employees to add.</param>
     public void AddEmployees(IEnumerable<Employee> employees)
     {
         foreach (var employee in employees) AddEmployee(employee);
     }
 
+    /// <summary>
+    /// Removes an employee from the organization.
+    /// </summary>
+    /// <param name="employee">Employee to remove.</param>
     public void RemoveEmployee(Employee employee)
     {
         employee.UnassignOrganization();
     }
 
+    /// <summary>
+    /// Adds an invitation to the organization.
+    /// </summary>
+    /// <param name="invitation">Invitation to add.</param>
     public void AddInvitation(OrganizationInvitation invitation)
     {
         Invitations.Add(invitation);
         invitation.AssignOrganization(this);
     }
 
+    /// <summary>
+    /// Adds invitations to the organization.
+    /// </summary>
+    /// <param name="invitations">Invitations to add.</param>
     public void AddInvitations(IEnumerable<OrganizationInvitation> invitations)
     {
         foreach (var invitation in invitations) AddInvitation(invitation);
     }
 
+    /// <summary>
+    /// Removes an invitation from the organization.
+    /// </summary>
+    /// <param name="invitation">Invitation to remove.</param>
     public void RemoveInvitation(OrganizationInvitation invitation)
     {
         invitation.UnassignOrganization();

@@ -3,6 +3,9 @@ using InvenireServer.Domain.Interfaces.Exceptions;
 
 namespace InvenireServer.Domain.Exceptions.Http;
 
+/// <summary>
+/// Represents an HTTP 400 Bad Request error.
+/// </summary>
 public class BadRequest400Exception : Exception, IHttpException
 {
     public BadRequest400Exception() : base("The request could not be understood or was missing required parameters.")

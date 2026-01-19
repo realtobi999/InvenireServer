@@ -2,6 +2,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Common.Queries;
 
+/// <summary>
+/// Represents pagination options for queries.
+/// </summary>
 public class QueryPaginationOptions
 {
     public const int MAX_LIMIT = 200;

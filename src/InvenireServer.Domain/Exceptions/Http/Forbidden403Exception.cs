@@ -3,6 +3,9 @@ using InvenireServer.Domain.Interfaces.Exceptions;
 
 namespace InvenireServer.Domain.Exceptions.Http;
 
+/// <summary>
+/// Represents an HTTP 403 Forbidden error.
+/// </summary>
 public class Forbidden403Exception : Exception, IHttpException
 {
     public Forbidden403Exception() : base("You do not have permission to access this resource.")

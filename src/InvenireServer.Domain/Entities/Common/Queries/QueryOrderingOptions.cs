@@ -4,6 +4,10 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Common.Queries;
 
+/// <summary>
+/// Represents ordering options for queries.
+/// </summary>
+/// <typeparam name="TEntity">Entity type.</typeparam>
 public class QueryOrderingOptions<TEntity> where TEntity : class
 {
     public QueryOrderingOptions(string? order, bool? descending)
