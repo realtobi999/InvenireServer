@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 
+/// <summary>
+/// Represents a request to decline a property suggestion.
+/// </summary>
 [JsonRequest]
 public record DeclinePropertySuggestionCommand : IRequest
 {

@@ -2,6 +2,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByEmployee;
 
+/// <summary>
+/// Represents parameters for indexing property suggestions for an employee.
+/// </summary>
 public class IndexByEmployeePropertySuggestionQueryParameters
 {
     public int Limit { get; set; }

@@ -4,6 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
+/// <summary>
+/// Defines validation rules for creating property items.
+/// </summary>
 public class CreatePropertyItemsCommandValidator : AbstractValidator<CreatePropertyItemsCommand>
 {
     public CreatePropertyItemsCommandValidator()
@@ -28,6 +31,9 @@ public class CreatePropertyItemsCommandValidator : AbstractValidator<CreatePrope
     }
 }
 
+/// <summary>
+/// Defines validation rules for creating a property item.
+/// </summary>
 public class CreatePropertyItemCommandValidator : AbstractValidator<CreatePropertyItemCommand>
 {
     public CreatePropertyItemCommandValidator()

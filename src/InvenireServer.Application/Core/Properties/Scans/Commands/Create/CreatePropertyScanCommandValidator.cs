@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 
+/// <summary>
+/// Defines validation rules for creating a property scan.
+/// </summary>
 public class CreatePropertyScanCommandValidator : AbstractValidator<CreatePropertyScanCommand>
 {
     public CreatePropertyScanCommandValidator()

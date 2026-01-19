@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
+/// <summary>
+/// Represents the result of registering an admin.
+/// </summary>
 public record RegisterAdminCommandResult
 {
     public required Jwt Token { get; init; }

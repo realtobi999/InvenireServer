@@ -8,6 +8,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByEmployee;
 
+/// <summary>
+/// Handler for the query to get an active property scan for an employee.
+/// </summary>
 public class GetByEmployeeActivePropertyScanQueryHandler : IRequestHandler<GetByEmployeeActivePropertyScanQuery, PropertyScanDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -17,6 +20,12 @@ public class GetByEmployeeActivePropertyScanQueryHandler : IRequestHandler<GetBy
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an active property scan for an employee.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<PropertyScanDto> Handle(GetByEmployeeActivePropertyScanQuery request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");

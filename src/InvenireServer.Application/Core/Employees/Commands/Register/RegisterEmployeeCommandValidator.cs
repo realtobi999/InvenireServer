@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
+/// <summary>
+/// Defines validation rules for registering an employee.
+/// </summary>
 public class RegisterEmployeeCommandValidator : AbstractValidator<RegisterEmployeeCommand>
 {
     private readonly IRepositoryManager _repositories;

@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 
+/// <summary>
+/// Represents a request to create an organization invitation.
+/// </summary>
 [JsonRequest]
 public record CreateOrganizationInvitationCommand : IRequest<CreateOrganizationInvitationCommandResult>
 {

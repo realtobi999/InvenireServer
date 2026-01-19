@@ -4,6 +4,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Commands.Create;
 
+/// <summary>
+/// Handler for the request to create a property.
+/// </summary>
 public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyCommand, CreatePropertyCommandResult>
 {
     private readonly IRepositoryManager _repositories;
@@ -13,6 +16,12 @@ public class CreatePropertyCommandHandler : IRequestHandler<CreatePropertyComman
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to create a property.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<CreatePropertyCommandResult> Handle(CreatePropertyCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

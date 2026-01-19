@@ -6,6 +6,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.ImportFromExcel;
 
+/// <summary>
+/// Handler for the request to import property items from Excel.
+/// </summary>
 public class ImportFromExcelPropertyItemsCommandHandler : IRequestHandler<ImportFromExcelPropertyItemsCommand>
 {
     private readonly IMediator _mediator;
@@ -45,6 +48,12 @@ public class ImportFromExcelPropertyItemsCommandHandler : IRequestHandler<Import
         "LocationBuilding",
     ];
 
+    /// <summary>
+    /// Handles the request to import property items from Excel.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(ImportFromExcelPropertyItemsCommand request, CancellationToken ct)
     {
         // Extract headers from the column string and validate:

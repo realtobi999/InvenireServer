@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
 
+/// <summary>
+/// Handler for the request to delete an organization invitation.
+/// </summary>
 public class DeleteOrganizationInvitationCommandHandler : IRequestHandler<DeleteOrganizationInvitationCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -14,6 +17,12 @@ public class DeleteOrganizationInvitationCommandHandler : IRequestHandler<Delete
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to delete an organization invitation.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(DeleteOrganizationInvitationCommand request, CancellationToken ct)
     {
         switch (request.Jwt.GetRole())

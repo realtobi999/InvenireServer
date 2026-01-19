@@ -10,6 +10,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.ExportToJson;
 
+/// <summary>
+/// Handler for the query to export property items to JSON.
+/// </summary>
 public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJsonPropertyItemQuery, Stream>
 {
     private readonly IRepositoryManager _repositories;
@@ -19,6 +22,12 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to export property items to JSON.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<Stream> Handle(ExportToJsonPropertyItemQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
+/// <summary>
+/// Defines validation rules for updating a property scan.
+/// </summary>
 public class UpdatePropertyScanCommandValidator : AbstractValidator<UpdatePropertyScanCommand>
 {
     public UpdatePropertyScanCommandValidator()

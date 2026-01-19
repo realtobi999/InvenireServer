@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 
+/// <summary>
+/// Handler for the request to create a property suggestion.
+/// </summary>
 public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreatePropertySuggestionCommand, CreatePropertySuggestionCommandResult>
 {
     private readonly IRepositoryManager _repositories;
@@ -14,6 +17,12 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to create a property suggestion.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<CreatePropertySuggestionCommandResult> Handle(CreatePropertySuggestionCommand request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The employee was not found in the system.");

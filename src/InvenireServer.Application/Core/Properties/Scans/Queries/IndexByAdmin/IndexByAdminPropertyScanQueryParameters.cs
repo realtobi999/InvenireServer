@@ -1,5 +1,8 @@
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;
 
+/// <summary>
+/// Represents parameters for indexing property scans for an admin.
+/// </summary>
 public record IndexByAdminPropertyScanQueryParameters
 {
     public int Limit { get; set; }

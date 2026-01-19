@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Decline;
 
+/// <summary>
+/// Defines validation rules for declining a property suggestion.
+/// </summary>
 public class DeclinePropertySuggestionCommandValidator : AbstractValidator<DeclinePropertySuggestionCommand>
 {
     public DeclinePropertySuggestionCommandValidator()

@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Recover.Recover;
 
+/// <summary>
+/// Defines validation rules for recovering a password for an employee.
+/// </summary>
 public class RecoverPasswordEmployeeCommandValidator : AbstractValidator<RecoverPasswordEmployeeCommand>
 {
     public RecoverPasswordEmployeeCommandValidator()

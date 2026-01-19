@@ -8,6 +8,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Queries.GetByEmployee;
 
+/// <summary>
+/// Handler for the query to get an organization for an employee.
+/// </summary>
 public class GetByEmployeeOrganizationQueryHandler : IRequestHandler<GetByEmployeeOrganizationQuery, OrganizationDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -17,6 +20,12 @@ public class GetByEmployeeOrganizationQueryHandler : IRequestHandler<GetByEmploy
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an organization for an employee.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<OrganizationDto> Handle(GetByEmployeeOrganizationQuery request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system");

@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
+/// <summary>
+/// Represents a request to create an organization.
+/// </summary>
 [JsonRequest]
 public record CreateOrganizationCommand : IRequest<CreateOrganizationCommandResult>
 {

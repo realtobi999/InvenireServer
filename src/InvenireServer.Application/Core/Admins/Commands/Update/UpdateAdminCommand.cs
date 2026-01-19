@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Update;
 
+/// <summary>
+/// Represents a request to update an admin.
+/// </summary>
 [JsonRequest]
 public record UpdateAdminCommand : IRequest
 {

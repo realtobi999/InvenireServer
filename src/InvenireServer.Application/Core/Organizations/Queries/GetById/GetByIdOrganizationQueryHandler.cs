@@ -8,6 +8,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Queries.GetById;
 
+/// <summary>
+/// Handler for the query to get an organization by ID.
+/// </summary>
 public class GetByIdOrganizationQueryHandler : IRequestHandler<GetByIdOrganizationQuery, OrganizationDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -17,6 +20,12 @@ public class GetByIdOrganizationQueryHandler : IRequestHandler<GetByIdOrganizati
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an organization by ID.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<OrganizationDto> Handle(GetByIdOrganizationQuery request, CancellationToken ct)
     {
         return await _repositories.Organizations.GetAsync(new QueryOptions<Organization, OrganizationDto>

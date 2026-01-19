@@ -3,6 +3,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
 
+/// <summary>
+/// Represents the response for indexing property suggestions for an admin.
+/// </summary>
 public record IndexByAdminPropertySuggestionQueryResponse
 {
     [JsonPropertyName("data")]

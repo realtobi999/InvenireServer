@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 
+/// <summary>
+/// Represents the response for indexing property items for an employee.
+/// </summary>
 [JsonResponse]
 public record IndexByEmployeePropertyItemQueryResponse
 {

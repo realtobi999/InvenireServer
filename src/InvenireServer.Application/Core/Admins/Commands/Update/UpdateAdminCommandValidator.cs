@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Update;
 
+/// <summary>
+/// Defines validation rules for updating an admin.
+/// </summary>
 public class UpdateAdminCommandValidator : AbstractValidator<UpdateAdminCommand>
 {
     public UpdateAdminCommandValidator()

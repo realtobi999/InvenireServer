@@ -7,6 +7,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Employees.Queries.GetByEmailAddress;
 
+/// <summary>
+/// Handler for the query to get an employee by email address.
+/// </summary>
 public class GetByEmailAddressEmployeeQueryHandler : IRequestHandler<GetByEmailAddressEmployeeQuery, EmployeeDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -16,6 +19,12 @@ public class GetByEmailAddressEmployeeQueryHandler : IRequestHandler<GetByEmailA
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an employee by email address.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<EmployeeDto> Handle(GetByEmailAddressEmployeeQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");

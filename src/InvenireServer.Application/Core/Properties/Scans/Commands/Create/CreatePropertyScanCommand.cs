@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Create;
 
+/// <summary>
+/// Represents a request to create a property scan.
+/// </summary>
 [JsonRequest]
 public record CreatePropertyScanCommand : IRequest<CreatePropertyScanCommandResult>
 {

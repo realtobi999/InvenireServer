@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Update;
 
+/// <summary>
+/// Defines validation rules for updating property items.
+/// </summary>
 public class UpdatePropertyItemsCommandValidator : AbstractValidator<UpdatePropertyItemsCommand>
 {
     public UpdatePropertyItemsCommandValidator()
@@ -27,6 +30,9 @@ public class UpdatePropertyItemsCommandValidator : AbstractValidator<UpdatePrope
     }
 }
 
+/// <summary>
+/// Defines validation rules for updating a property item.
+/// </summary>
 public class UpdatePropertyItemCommandValidator : AbstractValidator<UpdatePropertyItemCommand>
 {
     public UpdatePropertyItemCommandValidator()

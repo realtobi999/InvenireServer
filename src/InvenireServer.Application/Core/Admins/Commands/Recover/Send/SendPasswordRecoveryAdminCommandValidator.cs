@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Recover.Send;
 
+/// <summary>
+/// Defines validation rules for sending a password recovery for an admin.
+/// </summary>
 public class SendPasswordRecoveryAdminCommandValidator : AbstractValidator<SendPasswordRecoveryAdminCommand>
 {
     public SendPasswordRecoveryAdminCommandValidator()

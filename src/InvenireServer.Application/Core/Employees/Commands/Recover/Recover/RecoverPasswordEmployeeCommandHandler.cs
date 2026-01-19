@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Recover.Recover;
 
+/// <summary>
+/// Handler for the request to recover a password for an employee.
+/// </summary>
 public class RecoverPasswordEmployeeCommandHandler : IRequestHandler<RecoverPasswordEmployeeCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -16,6 +19,12 @@ public class RecoverPasswordEmployeeCommandHandler : IRequestHandler<RecoverPass
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to recover a password for an employee.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(RecoverPasswordEmployeeCommand request, CancellationToken ct)
     {
         // Make sure that the token is intended for password recovery.

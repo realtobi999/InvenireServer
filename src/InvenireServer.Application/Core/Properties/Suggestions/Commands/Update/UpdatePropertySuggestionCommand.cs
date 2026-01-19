@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 
+/// <summary>
+/// Represents a request to update a property suggestion.
+/// </summary>
 [JsonRequest]
 public record UpdatePropertySuggestionCommand : IRequest
 {

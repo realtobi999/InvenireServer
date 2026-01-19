@@ -3,6 +3,9 @@ using InvenireServer.Application.Attributes;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
+/// <summary>
+/// Represents a request to authenticate an employee.
+/// </summary>
 [JsonRequest]
 public record LoginEmployeeCommand : IRequest<LoginEmployeeCommandResult>
 {

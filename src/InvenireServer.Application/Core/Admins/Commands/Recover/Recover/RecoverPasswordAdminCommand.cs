@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Recover.Recover;
 
+/// <summary>
+/// Represents a request to recover a password for an admin.
+/// </summary>
 public record RecoverPasswordAdminCommand : IRequest
 {
     [JsonPropertyName("new_password")]

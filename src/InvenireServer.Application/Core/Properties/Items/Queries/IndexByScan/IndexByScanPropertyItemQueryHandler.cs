@@ -11,6 +11,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 
+/// <summary>
+/// Handler for the query to index property items for a scan.
+/// </summary>
 public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPropertyItemQuery, IndexByScanPropertyItemQueryResponse>
 {
     private readonly IRepositoryManager _repositories;
@@ -20,6 +23,12 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to index property items for a scan.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<IndexByScanPropertyItemQueryResponse> Handle(IndexByScanPropertyItemQuery request, CancellationToken ct)
     {
         var role = request.Jwt.GetRole();

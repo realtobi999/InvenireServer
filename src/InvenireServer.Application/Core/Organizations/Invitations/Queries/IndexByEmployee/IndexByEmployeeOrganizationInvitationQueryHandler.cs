@@ -8,6 +8,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
+/// <summary>
+/// Handler for the query to index organization invitations for an employee.
+/// </summary>
 public class IndexByEmployeeOrganizationInvitationQueryHandler : IRequestHandler<IndexByEmployeeOrganizationInvitationQuery, IndexByEmployeeOrganizationInvitationQueryResponse>
 {
     private readonly IRepositoryManager _repositories;
@@ -17,6 +20,12 @@ public class IndexByEmployeeOrganizationInvitationQueryHandler : IRequestHandler
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to index organization invitations for an employee.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<IndexByEmployeeOrganizationInvitationQueryResponse> Handle(IndexByEmployeeOrganizationInvitationQuery request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");

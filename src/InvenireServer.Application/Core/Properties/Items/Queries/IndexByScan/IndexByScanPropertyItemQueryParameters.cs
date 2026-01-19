@@ -1,5 +1,8 @@
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 
+/// <summary>
+/// Represents parameters for indexing property items for a scan.
+/// </summary>
 public record IndexByScanPropertyItemQueryParameters
 {
     public int Limit { get; set; }

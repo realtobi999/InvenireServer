@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Update;
 
+/// <summary>
+/// Represents a request to update an employee.
+/// </summary>
 [JsonRequest]
 public record UpdateEmployeeCommand : IRequest
 {

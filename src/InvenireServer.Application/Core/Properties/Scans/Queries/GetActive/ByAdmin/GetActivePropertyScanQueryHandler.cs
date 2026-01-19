@@ -7,6 +7,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByAdmin;
 
+/// <summary>
+/// Handler for the query to get an active property scan.
+/// </summary>
 public class GetActivePropertyScanQueryHandler : IRequestHandler<GetByAdminActivePropertyScanQuery, PropertyScanDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -16,6 +19,12 @@ public class GetActivePropertyScanQueryHandler : IRequestHandler<GetByAdminActiv
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an active property scan.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<PropertyScanDto> Handle(GetByAdminActivePropertyScanQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system.");

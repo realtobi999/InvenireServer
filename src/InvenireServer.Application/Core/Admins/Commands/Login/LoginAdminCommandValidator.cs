@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Login;
 
+/// <summary>
+/// Defines validation rules for authenticating an admin.
+/// </summary>
 public class LoginAdminCommandValidator : AbstractValidator<LoginAdminCommand>
 {
     public LoginAdminCommandValidator()

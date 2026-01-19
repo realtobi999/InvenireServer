@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
+/// <summary>
+/// Defines validation rules for registering an admin.
+/// </summary>
 public class RegisterAdminCommandValidator : AbstractValidator<RegisterAdminCommand>
 {
     private readonly IRepositoryManager _repositories;

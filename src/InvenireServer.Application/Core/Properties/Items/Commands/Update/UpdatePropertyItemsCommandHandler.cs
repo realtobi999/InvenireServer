@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Update;
 
+/// <summary>
+/// Handler for the request to update property items.
+/// </summary>
 public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyItemsCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -14,6 +17,12 @@ public class UpdatePropertyItemsCommandHandler : IRequestHandler<UpdatePropertyI
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to update property items.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(UpdatePropertyItemsCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

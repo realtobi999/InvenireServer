@@ -1,5 +1,8 @@
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 
+/// <summary>
+/// Represents parameters for indexing property items for an employee.
+/// </summary>
 public class IndexByEmployeePropertyItemQueryParameters
 {
     public int Limit { get; set; }

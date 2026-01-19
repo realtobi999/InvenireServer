@@ -9,6 +9,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 
+/// <summary>
+/// Handler for the query to index property items for an employee.
+/// </summary>
 public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEmployeePropertyItemQuery, IndexByEmployeePropertyItemQueryResponse>
 {
     private readonly IRepositoryManager _repositories;
@@ -18,6 +21,12 @@ public class IndexByEmployeePropertyItemQueryHandler : IRequestHandler<IndexByEm
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to index property items for an employee.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<IndexByEmployeePropertyItemQueryResponse> Handle(IndexByEmployeePropertyItemQuery request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The employee was not found in the system.");

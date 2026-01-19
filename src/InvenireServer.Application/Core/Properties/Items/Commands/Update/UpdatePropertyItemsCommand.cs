@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Update;
 
+/// <summary>
+/// Represents a request to update property items.
+/// </summary>
 [JsonRequest]
 public record UpdatePropertyItemsCommand : IRequest
 {
@@ -14,6 +17,9 @@ public record UpdatePropertyItemsCommand : IRequest
     public Jwt? Jwt { get; init; }
 }
 
+/// <summary>
+/// Represents a request to update a property item.
+/// </summary>
 [JsonRequest]
 public record UpdatePropertyItemCommand
 {
@@ -54,6 +60,9 @@ public record UpdatePropertyItemCommand
     public Guid? EmployeeId { get; init; }
 }
 
+/// <summary>
+/// Represents property item location data for update requests.
+/// </summary>
 [JsonRequest]
 public record UpdatePropertyItemCommandLocation
 {

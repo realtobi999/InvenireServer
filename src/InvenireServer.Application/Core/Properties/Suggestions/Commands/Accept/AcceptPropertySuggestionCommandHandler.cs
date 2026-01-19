@@ -8,6 +8,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;
 
+/// <summary>
+/// Handler for the request to accept a property suggestion.
+/// </summary>
 public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptPropertySuggestionCommand>
 {
     private readonly IMediator _mediator;
@@ -19,6 +22,12 @@ public class AcceptPropertySuggestionCommandHandler : IRequestHandler<AcceptProp
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to accept a property suggestion.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(AcceptPropertySuggestionCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

@@ -3,6 +3,9 @@ using InvenireServer.Application.Attributes;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
+/// <summary>
+/// Represents a request to register an admin.
+/// </summary>
 [JsonRequest]
 public record RegisterAdminCommand : IRequest<RegisterAdminCommandResult>
 {

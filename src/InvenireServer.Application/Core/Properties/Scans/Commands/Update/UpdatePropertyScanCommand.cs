@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Scans.Commands.Update;
 
+/// <summary>
+/// Represents a request to update a property scan.
+/// </summary>
 [JsonRequest]
 public record UpdatePropertyScanCommand : IRequest
 {

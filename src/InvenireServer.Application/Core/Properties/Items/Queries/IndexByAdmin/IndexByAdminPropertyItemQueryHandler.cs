@@ -9,6 +9,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 
+/// <summary>
+/// Handler for the query to index property items for an admin.
+/// </summary>
 public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdminPropertyItemQuery, IndexByAdminPropertyItemQueryResponse>
 {
     private readonly IRepositoryManager _repositories;
@@ -18,6 +21,12 @@ public class IndexByAdminPropertyItemQueryHandler : IRequestHandler<IndexByAdmin
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to index property items for an admin.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<IndexByAdminPropertyItemQueryResponse> Handle(IndexByAdminPropertyItemQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

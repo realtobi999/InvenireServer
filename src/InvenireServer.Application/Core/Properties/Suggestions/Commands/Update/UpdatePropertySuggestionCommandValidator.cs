@@ -5,6 +5,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 
+/// <summary>
+/// Defines validation rules for updating a property suggestion.
+/// </summary>
 public class UpdatePropertySuggestionCommandValidator : AbstractValidator<UpdatePropertySuggestionCommand>
 {
     public UpdatePropertySuggestionCommandValidator()

@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Update;
 
+/// <summary>
+/// Handler for the request to update a property suggestion.
+/// </summary>
 public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdatePropertySuggestionCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -14,6 +17,12 @@ public class UpdatePropertySuggestionCommandHandler : IRequestHandler<UpdateProp
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to update a property suggestion.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(UpdatePropertySuggestionCommand request, CancellationToken ct)
     {
         var suggestion = await _repositories.Properties.Suggestions.GetAsync(s => s.Id == request.SuggestionId) ?? throw new NotFound404Exception("The suggestion was not found in the system.");

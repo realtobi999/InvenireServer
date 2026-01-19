@@ -7,6 +7,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Employees.Queries.GetByJwt;
 
+/// <summary>
+/// Handler for the query to get an employee using a JWT.
+/// </summary>
 public class GetByJwtEmployeeQueryHandler : IRequestHandler<GetByJwtEmployeeQuery, EmployeeDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -16,6 +19,12 @@ public class GetByJwtEmployeeQueryHandler : IRequestHandler<GetByJwtEmployeeQuer
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an employee using a JWT.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<EmployeeDto> Handle(GetByJwtEmployeeQuery request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(request.Jwt, new QueryOptions<Employee, EmployeeDto>

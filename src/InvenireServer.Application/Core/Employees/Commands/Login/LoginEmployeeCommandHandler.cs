@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Login;
 
+/// <summary>
+/// Handler for the request to authenticate an employee.
+/// </summary>
 public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand, LoginEmployeeCommandResult>
 {
     private readonly IJwtManager _jwt;
@@ -20,6 +23,12 @@ public class LoginEmployeeCommandHandler : IRequestHandler<LoginEmployeeCommand,
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to authenticate an employee.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<LoginEmployeeCommandResult> Handle(LoginEmployeeCommand request, CancellationToken ct)
     {
         var employee = await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmailAddress) ?? throw new Unauthorized401Exception("Invalid credentials.");

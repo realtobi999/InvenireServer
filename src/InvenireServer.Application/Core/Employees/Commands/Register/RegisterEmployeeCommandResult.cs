@@ -5,6 +5,9 @@ using InvenireServer.Domain.Entities.Users;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
+/// <summary>
+/// Represents the result of registering an employee.
+/// </summary>
 public record RegisterEmployeeCommandResult
 {
     public required Jwt Token { get; init; }

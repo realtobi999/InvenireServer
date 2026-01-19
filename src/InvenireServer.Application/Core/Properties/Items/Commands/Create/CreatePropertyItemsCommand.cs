@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
 
+/// <summary>
+/// Represents a request to create property items.
+/// </summary>
 [JsonRequest]
 public record CreatePropertyItemsCommand : IRequest
 {
@@ -14,6 +17,9 @@ public record CreatePropertyItemsCommand : IRequest
     public Jwt? Jwt { get; init; }
 }
 
+/// <summary>
+/// Represents a request to create a property item.
+/// </summary>
 [JsonRequest]
 public record CreatePropertyItemCommand
 {
@@ -54,6 +60,9 @@ public record CreatePropertyItemCommand
     public Guid? EmployeeId { get; init; }
 }
 
+/// <summary>
+/// Represents property item location data for create requests.
+/// </summary>
 [JsonRequest]
 public record CreatePropertyItemCommandLocation
 {

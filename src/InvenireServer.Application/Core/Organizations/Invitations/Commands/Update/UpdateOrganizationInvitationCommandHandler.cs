@@ -3,6 +3,9 @@ using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 
+/// <summary>
+/// Handler for the request to update an organization invitation.
+/// </summary>
 public class UpdateOrganizationInvitationCommandHandler : IRequestHandler<UpdateOrganizationInvitationCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -12,6 +15,12 @@ public class UpdateOrganizationInvitationCommandHandler : IRequestHandler<Update
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to update an organization invitation.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(UpdateOrganizationInvitationCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system");

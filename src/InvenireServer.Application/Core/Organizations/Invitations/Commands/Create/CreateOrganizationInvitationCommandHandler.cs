@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 
+/// <summary>
+/// Handler for the request to create an organization invitation.
+/// </summary>
 public class CreateOrganizationInvitationCommandHandler : IRequestHandler<CreateOrganizationInvitationCommand, CreateOrganizationInvitationCommandResult>
 {
     private readonly IRepositoryManager _repositories;
@@ -14,6 +17,12 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to create an organization invitation.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<CreateOrganizationInvitationCommandResult> Handle(CreateOrganizationInvitationCommand request, CancellationToken ct)
     {
         var employee = request switch

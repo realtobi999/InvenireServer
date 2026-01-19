@@ -9,6 +9,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
 
+/// <summary>
+/// Handler for the request to generate codes for property items.
+/// </summary>
 public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<GenerateCodesPropertyItemsCommand, Stream>
 {
     private readonly IRepositoryManager _repositories;
@@ -22,6 +25,12 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
 
     public const int MAX_LABEL_NAME_LENGTH = 15;
 
+    /// <summary>
+    /// Handles the request to generate codes for property items.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<Stream> Handle(GenerateCodesPropertyItemsCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

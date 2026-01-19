@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Register;
 
+/// <summary>
+/// Handler for the request to register an admin.
+/// </summary>
 public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand, RegisterAdminCommandResult>
 {
     private readonly IJwtManager _jwt;
@@ -19,6 +22,12 @@ public class RegisterAdminCommandHandler : IRequestHandler<RegisterAdminCommand,
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to register an admin.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<RegisterAdminCommandResult> Handle(RegisterAdminCommand request, CancellationToken ct)
     {
         var admin = new Admin

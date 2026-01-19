@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 
+/// <summary>
+/// Defines validation rules for creating an organization invitation.
+/// </summary>
 public class CreateOrganizationInvitationCommandValidator : AbstractValidator<CreateOrganizationInvitationCommand>
 {
     public CreateOrganizationInvitationCommandValidator()

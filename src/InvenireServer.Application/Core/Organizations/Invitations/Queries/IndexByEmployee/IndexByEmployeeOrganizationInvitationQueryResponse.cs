@@ -5,6 +5,9 @@ using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 
+/// <summary>
+/// Represents the response for indexing organization invitations for an employee.
+/// </summary>
 [JsonResponse]
 public class IndexByEmployeeOrganizationInvitationQueryResponse
 {

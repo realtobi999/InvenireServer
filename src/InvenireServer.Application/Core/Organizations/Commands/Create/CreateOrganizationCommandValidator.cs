@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Create;
 
+/// <summary>
+/// Defines validation rules for creating an organization.
+/// </summary>
 public class CreateOrganizationCommandValidator : AbstractValidator<CreateOrganizationCommand>
 {
     private readonly IRepositoryManager _repositories;

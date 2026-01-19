@@ -5,6 +5,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Update;
 
+/// <summary>
+/// Defines validation rules for updating an organization.
+/// </summary>
 public class UpdateOrganizationCommandValidator : AbstractValidator<UpdateOrganizationCommand>
 {
     private readonly IRepositoryManager _repositories;

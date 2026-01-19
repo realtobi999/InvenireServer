@@ -9,6 +9,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.GetById;
 
+/// <summary>
+/// Handler for the query to get a property item by ID.
+/// </summary>
 public class GetByIdPropertyItemQueryHandler : IRequestHandler<GetByIdPropertyItemQuery, PropertyItemDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -18,6 +21,12 @@ public class GetByIdPropertyItemQueryHandler : IRequestHandler<GetByIdPropertyIt
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get a property item by ID.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<PropertyItemDto> Handle(GetByIdPropertyItemQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

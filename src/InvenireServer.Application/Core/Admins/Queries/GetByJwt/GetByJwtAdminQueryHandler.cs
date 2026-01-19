@@ -7,6 +7,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Admins.Queries.GetByJwt;
 
+/// <summary>
+/// Handler for the query to get an admin using a JWT.
+/// </summary>
 public class GetByJwtAdminQueryHandler : IRequestHandler<GetByJwtAdminQuery, AdminDto>
 {
     private readonly IRepositoryManager _services;
@@ -16,6 +19,12 @@ public class GetByJwtAdminQueryHandler : IRequestHandler<GetByJwtAdminQuery, Adm
         _services = services;
     }
 
+    /// <summary>
+    /// Handles the query to get an admin using a JWT.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<AdminDto> Handle(GetByJwtAdminQuery request, CancellationToken ct)
     {
         return await _services.Admins.GetAsync(request.Jwt, new QueryOptions<Admin, AdminDto>

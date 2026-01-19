@@ -5,6 +5,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 
+/// <summary>
+/// Defines validation rules for creating a property suggestion.
+/// </summary>
 public class CreatePropertySuggestionCommandValidator : AbstractValidator<CreatePropertySuggestionCommand>
 {
     public CreatePropertySuggestionCommandValidator()

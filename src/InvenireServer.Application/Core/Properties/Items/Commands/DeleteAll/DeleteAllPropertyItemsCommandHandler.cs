@@ -3,6 +3,9 @@ using InvenireServer.Application.Interfaces.Managers;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.DeleteAll;
 
+/// <summary>
+/// Handler for the request to delete all property items.
+/// </summary>
 public class DeleteAllPropertyItemsCommandHandler : IRequestHandler<DeleteAllPropertyItemsCommand>
 {
     private readonly IRepositoryManager _repositories;
@@ -12,6 +15,12 @@ public class DeleteAllPropertyItemsCommandHandler : IRequestHandler<DeleteAllPro
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to delete all property items.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(DeleteAllPropertyItemsCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByAdmin;
 
+/// <summary>
+/// Represents the response for indexing property items for an admin.
+/// </summary>
 [JsonResponse]
 public record IndexByAdminPropertyItemQueryResponse
 {

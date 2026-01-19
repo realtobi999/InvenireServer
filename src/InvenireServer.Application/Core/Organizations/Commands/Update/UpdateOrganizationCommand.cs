@@ -4,6 +4,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Organizations.Commands.Update;
 
+/// <summary>
+/// Represents a request to update an organization.
+/// </summary>
 [JsonRequest]
 public record UpdateOrganizationCommand : IRequest
 {

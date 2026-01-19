@@ -3,6 +3,9 @@ using InvenireServer.Application.Attributes;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
+/// <summary>
+/// Represents a request to register an employee.
+/// </summary>
 [JsonRequest]
 public record RegisterEmployeeCommand : IRequest<RegisterEmployeeCommandResult>
 {

@@ -4,6 +4,9 @@ using InvenireServer.Application.Dtos.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 
+/// <summary>
+/// Represents the response for indexing property items for a scan.
+/// </summary>
 [JsonResponse]
 public record IndexByScanPropertyItemQueryResponse
 {

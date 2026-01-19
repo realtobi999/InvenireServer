@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InvenireServer.Application.Core.Employees.Commands.Register;
 
+/// <summary>
+/// Handler for the request to register an employee.
+/// </summary>
 public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCommand, RegisterEmployeeCommandResult>
 {
     private readonly IJwtManager _jwt;
@@ -19,6 +22,12 @@ public class RegisterEmployeeCommandHandler : IRequestHandler<RegisterEmployeeCo
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to register an employee.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<RegisterEmployeeCommandResult> Handle(RegisterEmployeeCommand request, CancellationToken ct)
     {
         var employee = new Employee

@@ -6,6 +6,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Recover.Send;
 
+/// <summary>
+/// Handler for the request to send a password recovery for an admin.
+/// </summary>
 public class SendPasswordRecoveryAdminCommandHandler : IRequestHandler<SendPasswordRecoveryAdminCommand>
 {
     private readonly IJwtManager _jwt;
@@ -19,6 +22,12 @@ public class SendPasswordRecoveryAdminCommandHandler : IRequestHandler<SendPassw
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the request to send a password recovery for an admin.
+    /// </summary>
+    /// <param name="request">Request to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task representing the operation.</returns>
     public async Task Handle(SendPasswordRecoveryAdminCommand request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(a => a.EmailAddress == request.EmailAddress) ?? throw new NotFound404Exception("The admin was not found in the system.");

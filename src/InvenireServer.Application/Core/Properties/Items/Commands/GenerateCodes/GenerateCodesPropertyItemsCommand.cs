@@ -3,6 +3,9 @@ using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
 
+/// <summary>
+/// Represents a request to generate codes for property items.
+/// </summary>
 public record GenerateCodesPropertyItemsCommand : IRequest<Stream>
 {
     [JsonPropertyName("ids")]

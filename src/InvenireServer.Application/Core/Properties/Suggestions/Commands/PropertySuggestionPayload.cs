@@ -5,6 +5,9 @@ using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Commands;
 
+/// <summary>
+/// Represents payload data for property suggestions.
+/// </summary>
 [JsonRequest]
 public record PropertySuggestionPayload
 {

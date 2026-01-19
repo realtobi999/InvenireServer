@@ -2,6 +2,9 @@ using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Application.Core.Properties.Suggestions.Queries.IndexByAdmin;
 
+/// <summary>
+/// Represents parameters for indexing property suggestions for an admin.
+/// </summary>
 public record IndexByAdminPropertySuggestionQueryParameters
 {
     public int Limit { get; set; }

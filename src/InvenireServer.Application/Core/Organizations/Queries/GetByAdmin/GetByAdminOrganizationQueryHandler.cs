@@ -10,6 +10,9 @@ using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Organizations.Queries.GetByAdmin;
 
+/// <summary>
+/// Handler for the query to get an organization for an admin.
+/// </summary>
 public class GetByAdminOrganizationQueryHandler : IRequestHandler<GetByAdminOrganizationQuery, OrganizationDto>
 {
     private readonly IRepositoryManager _repositories;
@@ -19,6 +22,12 @@ public class GetByAdminOrganizationQueryHandler : IRequestHandler<GetByAdminOrga
         _repositories = repositories;
     }
 
+    /// <summary>
+    /// Handles the query to get an organization for an admin.
+    /// </summary>
+    /// <param name="request">Query to handle.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Awaitable task returning the response.</returns>
     public async Task<OrganizationDto> Handle(GetByAdminOrganizationQuery request, CancellationToken ct)
     {
         var admin = await _repositories.Admins.GetAsync(request.Jwt) ?? throw new NotFound404Exception("The admin was not found in the system");
