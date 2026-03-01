@@ -8,7 +8,6 @@ Tento repozitář obsahuje serverovou část aplikace zodpovědnou za autentizac
 ## Obsah
 
 - [Rozsah projektu](#rozsah-projektu)
-- [Oficiální technická práce](#oficiální-technická-práce)
 - [Technologický stack a runtime požadavky](#technologický-stack-a-runtime-požadavky)
 - [Rychlý start](#rychlý-start)
 - [Přehled promměných prostředí](#Přehled-promměných-prostředí)
@@ -28,14 +27,6 @@ InvenireServer poskytuje:
 - workflow majetku, položek, návrhů a inventur
 - background cleanup služby pro neaktuální data
 - persistenci do PostgreSQL přes EF Core
-
-## Oficiální technická práce
-
-Oficiální projektová práce je uložená ve frontend dokumentaci:
-
-- `frontend/seminarka.md`
-
-Použijte ji pro kontext architektury, návrhová rozhodnutí a doménové zdůvodnění.
 
 ## Technologický stack a runtime požadavky
 
