@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Office.CustomUI;
 using InvenireServer.Domain.Entities.Properties;
 
 namespace InvenireServer.Tests.Fakers.Properties;

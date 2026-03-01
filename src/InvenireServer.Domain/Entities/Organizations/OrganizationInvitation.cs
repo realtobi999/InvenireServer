@@ -1,5 +1,4 @@
 using InvenireServer.Domain.Entities.Users;
-using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Domain.Entities.Organizations;
 

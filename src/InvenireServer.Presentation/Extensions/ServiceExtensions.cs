@@ -18,6 +18,7 @@ using InvenireServer.Infrastructure.Persistence.Transactions;
 using InvenireServer.Presentation.Middleware;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,11 +39,15 @@ public static class ServiceExtensions
     /// <param name="configuration">Configuration to read settings from.</param>
     public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var origins = configuration.GetSection("CORS:AllowedOrigins").Get<string[]>();
+        if (origins is null || origins.Length == 0)
+            throw new NullReferenceException("The CORS configuration is missing or incomplete.");
+
         services.AddCors(options =>
         {
             options.AddPolicy(CorsConstants.Policies.FRONTEND_POLICY, policy =>
             {
-                policy.WithOrigins(configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException())
+                policy.WithOrigins(origins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -65,6 +70,20 @@ public static class ServiceExtensions
             );
         });
         services.AddScoped<ITransactionScope, InvenireTransactionScope>();
+    }
+
+    /// <summary>
+    /// Configures forwarded headers to honor reverse proxy information.
+    /// </summary>
+    /// <param name="services">Service collection to configure.</param>
+    public static void ConfigureForwardedHeaders(this IServiceCollection services)
+    {
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
     }
 
     /// <summary>

@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using InvenireServer.Application.Attributes;
 using InvenireServer.Application.Dtos.Organizations;
-using InvenireServer.Domain.Entities.Organizations;
 
 namespace InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByEmployee;
 

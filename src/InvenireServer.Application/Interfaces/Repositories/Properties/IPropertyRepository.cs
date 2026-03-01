@@ -1,6 +1,5 @@
 using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Organizations;
-using System.Linq.Expressions;
 
 namespace InvenireServer.Application.Interfaces.Repositories.Properties;
 

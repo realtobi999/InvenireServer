@@ -4,13 +4,10 @@ using InvenireServer.Application.Core.Organizations.Invitations.Queries.IndexByE
 using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
-using InvenireServer.Tests.Fakers.Properties;
-using InvenireServer.Tests.Fakers.Properties.Items;
 using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 

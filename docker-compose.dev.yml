@@ -1,30 +1,16 @@
+name: "invenire-backend"
+
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "5071:5071"
+      - "${API_PORT}:${API_PORT}"
+    env_file:
+      - .env
     environment:
-      # ASP.NET environment
-      - ASPNETCORE_ENVIRONMENT=Development
-
-      # Connection string
-      - ConnectionStrings__DevelopmentConnection=Host=postgres;Port=5432;Database=InvenireServerDatabase;Username=postgres;Password=postgres
-
-      # JWT
-      - Jwt__Issuer=Invenire
-      - Jwt__SigningKey=9qiRkZxY0AwS37DQNzCHt4tRXUy5mgj7x2tNnp5bA8GSL22v4A
-      - Jwt__ExpirationTime=3000000
-
-      # SMTP
-      - SMTP__Host=smtp.ethereal.email
-      - SMTP__Port=587
-      - SMTP__Username=alia.stehr@ethereal.email
-      - SMTP__Password=1YMqYWqBXxDdsEdWKC
-
-      # Frontend
-      - Frontend__BaseAddress=http://127.0.0.1:5170
+      ASPNETCORE_URLS: "0.0.0.0:${API_PORT}"
     volumes:
       - ./src:/app/src
       - ./tests:/app/tests
@@ -35,12 +21,10 @@ services:
   postgres:
     image: postgres:15
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: InvenireServerDatabase
+    env_file:
+      - .env
     ports:
-      - "5433:5432"
+      - "${POSTGRES_HOST_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

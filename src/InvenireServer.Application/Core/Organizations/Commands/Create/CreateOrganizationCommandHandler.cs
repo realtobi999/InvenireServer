@@ -1,4 +1,3 @@
-using InvenireServer.Application.Dtos.Admins.Email;
 using InvenireServer.Application.Interfaces.Managers;
 using InvenireServer.Domain.Entities.Organizations;
 using InvenireServer.Domain.Exceptions.Http;

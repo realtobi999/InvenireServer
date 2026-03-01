@@ -1,4 +1,3 @@
-using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Domain.Entities.Common;
 
 namespace InvenireServer.Application.Core.Admins.Commands.Login;

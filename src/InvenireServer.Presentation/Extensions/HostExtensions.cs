@@ -34,9 +34,7 @@ public static class HostExtensions
     /// <param name="configuration">Configuration containing logging settings.</param>
     public static void ConfigureSerilog(this IHostBuilder builder, IConfiguration configuration)
     {
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
+        Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 
         builder.UseSerilog();
     }

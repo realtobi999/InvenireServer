@@ -1,5 +1,4 @@
 using System.Text.Json;
-using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Create;
 using InvenireServer.Domain.Entities.Organizations;
@@ -56,6 +55,7 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _repositories.Setup(r => r.Organizations.GetForAsync(employee)).ReturnsAsync(organization);
         _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(1);
         _repositories.Setup(r => r.Properties.Suggestions.ExecuteCreateAsync(It.IsAny<PropertySuggestion>())).Returns(Task.CompletedTask);
 
         // Act & Assert.
@@ -106,6 +106,7 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
         _repositories.Setup(r => r.Organizations.GetForAsync(employee)).ReturnsAsync(organization);
         _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(1);
         _repositories.Setup(r => r.Properties.Suggestions.ExecuteCreateAsync(It.IsAny<PropertySuggestion>())).Returns(Task.CompletedTask);
 
         // Act & Assert.
@@ -209,5 +210,40 @@ public class CreatePropertySuggestionCommandHandlerTests : CommandHandlerTester
         // Act & Assert.
         var action = async () => await _handler.Handle(command, CancellationToken.None);
         await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The organization doesn't have a property.");
+    }
+
+    /// <summary>
+    /// Verifies that the handler throws when the property has no assigned items.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
+    [Fact]
+    public async Task Handle_ThrowsException_WhenPropertyHasNoItems()
+    {
+        // Prepare.
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var command = new CreatePropertySuggestionCommand
+        {
+            Name = _faker.Lorem.Sentence(),
+            Description = _faker.Lorem.Paragraph(),
+            Payload = new PropertySuggestionPayload
+            {
+                CreateCommands = [],
+                UpdateCommands = [],
+                DeleteCommands = []
+            },
+            Jwt = _jwt.Builder.Build([]),
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Employees.GetAsync(command.Jwt)).ReturnsAsync(employee);
+        _repositories.Setup(r => r.Organizations.GetForAsync(employee)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(0);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The property doesn't have any items assigned.");
     }
 }

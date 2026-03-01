@@ -44,6 +44,7 @@ public class CreatePropertyScanCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
         _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(1);
         _repositories.Setup(r => r.Properties.Scans.IndexInProgressForAsync(property)).ReturnsAsync(Array.Empty<PropertyScan>());
         _repositories.Setup(r => r.Properties.Scans.ExecuteCreateAsync(It.IsAny<PropertyScan>())).Returns(Task.CompletedTask);
         _repositories.Setup(r => r.Properties.Scans.RegisterItemsAsync(It.IsAny<PropertyScan>())).Returns(Task.CompletedTask);
@@ -87,6 +88,7 @@ public class CreatePropertyScanCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
         _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(1);
         _repositories.Setup(r => r.Properties.Scans.IndexInProgressForAsync(property)).ReturnsAsync(Array.Empty<PropertyScan>());
         _repositories.Setup(r => r.Properties.Scans.ExecuteCreateAsync(It.IsAny<PropertyScan>())).Returns(Task.CompletedTask);
         _repositories.Setup(r => r.Properties.Scans.RegisterItemsAsync(It.IsAny<PropertyScan>())).Returns(Task.CompletedTask);
@@ -176,6 +178,35 @@ public class CreatePropertyScanCommandHandlerTests : CommandHandlerTester
     }
 
     /// <summary>
+    /// Verifies that the handler throws when the property has no assigned items.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
+    [Fact]
+    public async Task Handle_ThrowsException_WhenPropertyHasNoItems()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+        var property = PropertyFaker.Fake();
+        var command = new CreatePropertyScanCommand
+        {
+            Name = _faker.Lorem.Sentence(),
+            Description = _faker.Lorem.Paragraph(),
+            Jwt = _jwt.Builder.Build([]),
+        };
+
+        // Prepare - repositories.
+        _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
+        _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
+        _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(0);
+
+        // Act & Assert.
+        var action = async () => await _handler.Handle(command, CancellationToken.None);
+        await action.Should().ThrowAsync<BadRequest400Exception>().WithMessage("The property doesn't have any items assigned.");
+    }
+
+    /// <summary>
     /// Verifies that the handler throws when an active scan already exists.
     /// </summary>
     /// <returns>Awaitable task representing the test.</returns>
@@ -201,6 +232,7 @@ public class CreatePropertyScanCommandHandlerTests : CommandHandlerTester
         _repositories.Setup(r => r.Admins.GetAsync(command.Jwt)).ReturnsAsync(admin);
         _repositories.Setup(r => r.Organizations.GetForAsync(admin)).ReturnsAsync(organization);
         _repositories.Setup(r => r.Properties.GetForAsync(organization)).ReturnsAsync(property);
+        _repositories.Setup(r => r.Properties.Items.CountAsync(i => i.PropertyId == property.Id)).ReturnsAsync(1);
         _repositories.Setup(r => r.Properties.Scans.IndexInProgressForAsync(property)).ReturnsAsync([scan]);
 
         // Act & Assert.

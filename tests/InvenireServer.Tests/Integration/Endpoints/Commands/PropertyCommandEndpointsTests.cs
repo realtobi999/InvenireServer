@@ -698,6 +698,7 @@ public class PropertyCommandEndpointsTests
     {
         // Prepare.
         var admin = AdminFaker.Fake();
+        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
         var property = PropertyFaker.Fake();
         var organization = OrganizationFaker.Fake();
@@ -712,6 +713,10 @@ public class PropertyCommandEndpointsTests
         admin.SetAsVerified(_app.GetDatabaseContext());
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
+        {
+            Items = [item.ToCreatePropertyItemCommand()]
+        })).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand());
@@ -727,6 +732,7 @@ public class PropertyCommandEndpointsTests
     {
         // Prepare.
         var admin = AdminFaker.Fake();
+        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
         var property = PropertyFaker.Fake();
         var organization = OrganizationFaker.Fake();
@@ -741,6 +747,10 @@ public class PropertyCommandEndpointsTests
         admin.SetAsVerified(_app.GetDatabaseContext());
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
+        {
+            Items = [item.ToCreatePropertyItemCommand()]
+        })).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.
@@ -761,6 +771,7 @@ public class PropertyCommandEndpointsTests
     {
         // Prepare.
         var admin = AdminFaker.Fake();
+        var item = PropertyItemFaker.Fake();
         var scan = PropertyScanFaker.Fake();
         var property = PropertyFaker.Fake();
         var organization = OrganizationFaker.Fake();
@@ -775,6 +786,10 @@ public class PropertyCommandEndpointsTests
         admin.SetAsVerified(_app.GetDatabaseContext());
         (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties", property.ToCreatePropertyCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/properties/items", new CreatePropertyItemsCommand
+        {
+            Items = [item.ToCreatePropertyItemCommand()]
+        })).StatusCode.Should().Be(HttpStatusCode.Created);
         (await _client.PostAsJsonAsync("/api/properties/scans", scan.ToCreatePropertyScanCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
 
         // Act & Assert.

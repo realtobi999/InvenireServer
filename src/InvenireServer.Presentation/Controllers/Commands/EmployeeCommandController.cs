@@ -25,8 +25,8 @@ namespace InvenireServer.Presentation.Controllers.Commands;
 [ApiController]
 public class EmployeeCommandController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
     public EmployeeCommandController(IMediator mediator, IConfiguration configuration)
     {
@@ -70,7 +70,7 @@ public class EmployeeCommandController : ControllerBase
         await _mediator.Send(new SendVerificationEmployeeCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
-            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException()
+            FrontendBaseAddress = _configuration.GetSection("Frontend:BaseAddress").Value ?? throw new NullReferenceException("Frontend:BaseAddress configuration is missing.")
         });
 
         return NoContent();

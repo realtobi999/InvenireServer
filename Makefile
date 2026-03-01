@@ -1,5 +1,5 @@
 run:
-	clear && cd ./src/InvenireServer.Presentation && dotnet run
+	clear && cd ./src/InvenireServer.Presentation && dotnet run --verbosity diagnostic
 
 watch:
 	clear && cd ./src/InvenireServer.Presentation && dotnet watch

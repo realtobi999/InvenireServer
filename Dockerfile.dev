@@ -9,12 +9,12 @@ COPY src/InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj ./sr
 COPY src/InvenireServer.Presentation/InvenireServer.Presentation.csproj ./src/InvenireServer.Presentation/
 COPY tests/InvenireServer.Tests/InvenireServer.Tests.csproj ./tests/InvenireServer.Tests/
 
+RUN dotnet clean
 RUN dotnet restore
 
 COPY . .
 
-EXPOSE 5071
-
 ENV DOTNET_RUNNING_URL=http://0.0.0.0:5071
+EXPOSE 5071
 
 CMD ["sh", "-c", "dotnet run --project src/InvenireServer.Presentation/InvenireServer.Presentation.csproj --urls $DOTNET_RUNNING_URL"]

@@ -1,6 +1,5 @@
 using FluentValidation;
 using InvenireServer.Domain.Entities.Properties;
-using Microsoft.IdentityModel.Tokens;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Create;
 

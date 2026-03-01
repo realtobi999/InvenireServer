@@ -28,6 +28,7 @@ public class CreatePropertyScanCommandHandler : IRequestHandler<CreatePropertySc
         var organization = await _repositories.Organizations.GetForAsync(admin) ?? throw new BadRequest400Exception("The admin doesn't own a organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
+        if (await _repositories.Properties.Items.CountAsync(i => i.PropertyId == property.Id) == 0) throw new BadRequest400Exception("The property doesn't have any items assigned.");
         if ((await _repositories.Properties.Scans.IndexInProgressForAsync(property)).Any()) throw new Conflict409Exception("The organization already has an active scan.");
 
         var scan = new PropertyScan

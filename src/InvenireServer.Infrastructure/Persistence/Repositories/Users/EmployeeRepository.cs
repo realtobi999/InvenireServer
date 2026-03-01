@@ -3,7 +3,6 @@ using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Application.Interfaces.Repositories.Users;
 using InvenireServer.Domain.Entities.Common.Queries;
-using SQLitePCL;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Users;
 

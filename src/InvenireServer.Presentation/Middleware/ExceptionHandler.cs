@@ -7,6 +7,7 @@ using InvenireServer.Domain.Exceptions.Http;
 using InvenireServer.Domain.Interfaces.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace InvenireServer.Presentation.Middleware;
 
@@ -77,6 +78,8 @@ public class ExceptionHandler : IExceptionHandler
 
     private static async Task HandleException(HttpContext context, Exception exception, CancellationToken token)
     {
+        Log.Fatal(exception, "Handled unexpected exception occurred");
+
         var error = new ErrorMessageDto
         {
             Status = (int)HttpStatusCode.InternalServerError,

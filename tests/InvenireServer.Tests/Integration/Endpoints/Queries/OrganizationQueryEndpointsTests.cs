@@ -4,14 +4,12 @@ using InvenireServer.Application.Dtos.Employees;
 using InvenireServer.Application.Dtos.Organizations;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Domain.Entities.Organizations;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Entities.Users;
 using InvenireServer.Infrastructure.Authentication;
 using InvenireServer.Presentation;
 using InvenireServer.Tests.Fakers.Common;
 using InvenireServer.Tests.Fakers.Organizations;
 using InvenireServer.Tests.Fakers.Properties;
-using InvenireServer.Tests.Fakers.Properties.Items;
 using InvenireServer.Tests.Fakers.Users;
 using InvenireServer.Tests.Integration.Server;
 

@@ -1,5 +1,4 @@
 using FluentValidation;
-using InvenireServer.Application.Core.Properties.Items.Commands.Create;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Domain.Entities.Properties;
 

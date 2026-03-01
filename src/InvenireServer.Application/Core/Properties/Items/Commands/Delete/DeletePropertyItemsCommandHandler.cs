@@ -1,5 +1,4 @@
 using InvenireServer.Application.Interfaces.Managers;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.Delete;

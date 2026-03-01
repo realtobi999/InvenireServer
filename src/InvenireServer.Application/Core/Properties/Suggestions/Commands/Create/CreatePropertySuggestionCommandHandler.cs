@@ -29,6 +29,8 @@ public class CreatePropertySuggestionCommandHandler : IRequestHandler<CreateProp
         var organization = await _repositories.Organizations.GetForAsync(employee) ?? throw new BadRequest400Exception("The employee isn't part of any organization.");
         var property = await _repositories.Properties.GetForAsync(organization) ?? throw new BadRequest400Exception("The organization doesn't have a property.");
 
+        if (await _repositories.Properties.Items.CountAsync(i => i.PropertyId == property.Id) == 0) throw new BadRequest400Exception("The property doesn't have any items assigned.");
+
         var suggestion = new PropertySuggestion
         {
             Id = request.Id ?? Guid.NewGuid(),

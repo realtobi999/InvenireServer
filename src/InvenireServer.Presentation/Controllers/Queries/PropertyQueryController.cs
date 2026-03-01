@@ -7,7 +7,6 @@ using InvenireServer.Application.Core.Properties.Items.Queries.IndexByEmployee;
 using InvenireServer.Application.Core.Properties.Items.Queries.IndexByScan;
 using InvenireServer.Application.Core.Properties.Queries.GetByAdmin;
 using InvenireServer.Application.Core.Properties.Queries.GetByEmployee;
-using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive;
 using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByAdmin;
 using InvenireServer.Application.Core.Properties.Scans.Queries.GetActive.ByEmployee;
 using InvenireServer.Application.Core.Properties.Scans.Queries.IndexByAdmin;

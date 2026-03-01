@@ -1,6 +1,4 @@
 using System.Text.Json;
-using InvenireServer.Application.Core.Properties.Items.Commands.Create;
-using InvenireServer.Application.Core.Properties.Items.Commands.Delete;
 using InvenireServer.Application.Core.Properties.Items.Commands.Update;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands;
 using InvenireServer.Application.Core.Properties.Suggestions.Commands.Accept;

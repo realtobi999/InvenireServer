@@ -24,69 +24,52 @@ public class Program
 
     private static void Main(string[] args)
     {
-        try
+        var builder = WebApplication.CreateBuilder(args);
         {
-            var builder = WebApplication.CreateBuilder(args);
+            builder.Host.ConfigureSerilog(builder.Configuration);
+            builder.Host.ConfigureConfiguration();
+
+            builder.Services.Configure<FormOptions>(options =>
             {
-                builder.Host.ConfigureSerilog(builder.Configuration);
-                builder.Host.ConfigureConfiguration();
-
-                builder.Services.Configure<FormOptions>(options =>
-                {
-                    options.MultipartBodyLengthLimit = 1024 * 1024 * 50; // 50 MB.
-                });
-                builder.WebHost.ConfigureKestrel(options =>
-                {
-                    options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
-                });
-
-                builder.Services.ConfigureJwt(builder.Configuration);
-                builder.Services.ConfigureCors(builder.Configuration);
-                builder.Services.ConfigureHashing();
-                builder.Services.ConfigureMediatR();
-                builder.Services.ConfigureRareLimiters();
-                builder.Services.ConfigureEmailService(builder.Configuration);
-                builder.Services.ConfigureErrorHandling();
-                builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("DevelopmentConnection")!);
-
-                builder.Services.AddScoped<IJwtManager, JwtManager>();
-                builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-                builder.Services.AddScoped<IQuickResponseCodeGenerator, QuickResponseCodeGenerator>();
-                builder.Services.AddSwaggerGen();
-                builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
-                builder.Services.AddHostedService<AdminCleanupBackgroundService>();
-                builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
-                builder.Services.AddHostedService<PropertySuggestionCleanupBackgroundService>();
-                builder.Services.AddHostedService<OrganizationInvitationCleanupBackgroundService>();
-            }
-            var app = builder.Build();
+                options.MultipartBodyLengthLimit = 1024 * 1024 * 50; // 50 MB.
+            });
+            builder.WebHost.ConfigureKestrel(options =>
             {
-                Log.Information($"Application running on: {builder.Configuration["ASPNETCORE_URLS"]}");
+                options.Limits.MaxRequestBodySize = 1024 * 1024 * 50; // 50 MB.
+            });
 
-                app.UseSerilogRequestLogging();
-                app.UseExceptionHandler(_ => { });
+            builder.Services.ConfigureJwt(builder.Configuration);
+            builder.Services.ConfigureCors(builder.Configuration);
+            builder.Services.ConfigureForwardedHeaders();
+            builder.Services.ConfigureHashing();
+            builder.Services.ConfigureMediatR();
+            builder.Services.ConfigureRareLimiters();
+            builder.Services.ConfigureEmailService(builder.Configuration);
+            builder.Services.ConfigureErrorHandling();
+            builder.Services.ConfigureDatabaseContext(builder.Configuration.GetConnectionString("Connection")!);
 
-                if (app.Environment.IsDevelopment())
-                {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
-                }
-
-                app.UseCors(CorsConstants.Policies.FRONTEND_POLICY);
-                app.ConfigureStatusCodePages();
-                app.UseAuthorization();
-                app.UseRateLimiter();
-                app.MapControllers();
-                app.Run();
-            }
+            builder.Services.AddScoped<IJwtManager, JwtManager>();
+            builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+            builder.Services.AddScoped<IQuickResponseCodeGenerator, QuickResponseCodeGenerator>();
+            builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
+            builder.Services.AddHostedService<AdminCleanupBackgroundService>();
+            builder.Services.AddHostedService<EmployeeCleanupBackgroundService>();
+            builder.Services.AddHostedService<PropertySuggestionCleanupBackgroundService>();
+            builder.Services.AddHostedService<OrganizationInvitationCleanupBackgroundService>();
         }
-        catch (Exception exception)
+        var app = builder.Build();
         {
-            Log.Fatal(exception, "Unhandled exception while starting the application.");
-        }
-        finally
-        {
-            Log.CloseAndFlush();
+            app.UseForwardedHeaders();
+            app.UseSerilogRequestLogging();
+            app.UseExceptionHandler(_ => { });
+            app.UseCors(CorsConstants.Policies.FRONTEND_POLICY);
+            app.ConfigureStatusCodePages();
+            app.UseAuthorization();
+            app.UseRateLimiter();
+            app.MapControllers();
+
+            if (!builder.Environment.IsProduction()) app.RunMigrations();
+            app.Run();
         }
     }
 }
