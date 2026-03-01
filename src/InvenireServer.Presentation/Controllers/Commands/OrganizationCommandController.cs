@@ -7,6 +7,8 @@ using InvenireServer.Application.Core.Organizations.Commands.Update;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Accept;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Create;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Delete;
+using InvenireServer.Application.Core.Organizations.Invitations.Commands.ImportFromCsv;
+using InvenireServer.Application.Core.Organizations.Invitations.Commands.ImportFromJson;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 using InvenireServer.Domain.Entities.Common;
 using InvenireServer.Infrastructure.Authentication;
@@ -110,6 +112,42 @@ public class OrganizationCommandController : ControllerBase
         var result = await _mediator.Send(command);
 
         return Created($"/api/organizations/invitations/{result.Invitation.Id}", null);
+    }
+
+    /// <summary>
+    /// Handles the request to import organization invitations from a JSON file.
+    /// </summary>
+    /// <param name="file">Uploaded file.</param>
+    /// <returns>Awaitable task returning the response.</returns>
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/organization/invitations/json-file")]
+    public async Task<IActionResult> ImportItemsFromJson(IFormFile file)
+    {
+        await _mediator.Send(new ImportFromJsonOrganizationInvitationCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            Stream = file.OpenReadStream()
+        });
+
+        return Created();
+    }
+
+    /// <summary>
+    /// Handles the request to import organization invitations from a CSV file.
+    /// </summary>
+    /// <param name="file">Uploaded file.</param>
+    /// <returns>Awaitable task returning the response.</returns>
+    [Authorize(Policy = Jwt.Policies.ADMIN)]
+    [HttpPost("/api/organization/invitations/csv-file")]
+    public async Task<IActionResult> ImportItemsFromCsv(IFormFile file)
+    {
+        await _mediator.Send(new ImportFromCsvOrganizationInvitationCommand
+        {
+            Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
+            Stream = file.OpenReadStream()
+        });
+
+        return Created();
     }
 
     /// <summary>

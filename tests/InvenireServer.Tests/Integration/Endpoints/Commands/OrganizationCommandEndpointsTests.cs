@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
 using InvenireServer.Application.Core.Organizations.Commands.Update;
 using InvenireServer.Application.Core.Organizations.Invitations.Commands.Update;
 using InvenireServer.Application.Interfaces.Managers;
@@ -138,6 +139,78 @@ public class OrganizationCommandEndpointsTests
 
         // Act & Assert.
         var response = await _client.PostAsJsonAsync("/api/organizations/invitations", invitation.ToCreateOrganizationInvitationCommand());
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    /// <summary>
+    /// Verifies that the organization invitation JSON import endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
+    [Fact]
+    public async Task ImportInvitationsFromJson_ReturnsCreated()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+        var payload = $"[{{\"description\":\"Imported invitation\",\"employee_email_address\":\"{employee.EmailAddress}\"}}]";
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        employee.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        using var body = new MultipartFormDataContent
+        {
+            { new StreamContent(stream), "file", "organization_invitations.json" }
+        };
+
+        // Act & Assert.
+        var response = await _client.PostAsync("/api/organization/invitations/json-file", body);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    /// <summary>
+    /// Verifies that the organization invitation CSV import endpoint returns Created.
+    /// </summary>
+    /// <returns>Awaitable task representing the test.</returns>
+    [Fact]
+    public async Task ImportInvitationsFromCsv_ReturnsCreated()
+    {
+        // Prepare.
+        var admin = AdminFaker.Fake();
+        var employee = EmployeeFaker.Fake();
+        var organization = OrganizationFaker.Fake();
+        var payload = $"description,employee_email_address\nImported invitation,{employee.EmailAddress}";
+
+        _client.DefaultRequestHeaders.Add("Authorization", $"BEARER {_jwt.Writer.Write(_jwt.Builder.Build([
+            new Claim("role", Jwt.Roles.ADMIN),
+            new Claim("admin_id", admin.Id.ToString()),
+            new Claim("is_verified", bool.TrueString)
+        ]))}");
+
+        (await _client.PostAsJsonAsync("/api/employees/register", employee.ToRegisterEmployeeCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        (await _client.PostAsJsonAsync("/api/admins/register", admin.ToRegisterAdminCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+        admin.SetAsVerified(_app.GetDatabaseContext());
+        employee.SetAsVerified(_app.GetDatabaseContext());
+        (await _client.PostAsJsonAsync("/api/organizations", organization.ToCreateOrganizationCommand())).StatusCode.Should().Be(HttpStatusCode.Created);
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+        using var body = new MultipartFormDataContent
+        {
+            { new StreamContent(stream), "file", "organization_invitations.csv" }
+        };
+
+        // Act & Assert.
+        var response = await _client.PostAsync("/api/organization/invitations/csv-file", body);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 

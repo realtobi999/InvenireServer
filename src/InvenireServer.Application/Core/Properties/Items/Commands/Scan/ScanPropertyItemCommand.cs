@@ -9,4 +9,5 @@ public record ScanPropertyItemCommand : IRequest
 {
     public required Jwt Jwt { get; init; }
     public required Guid ItemId { get; init; }
+    public required bool IsScannedWithCode { get; init; }
 }

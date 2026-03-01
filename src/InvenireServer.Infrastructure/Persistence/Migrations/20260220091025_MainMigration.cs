@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -226,6 +227,7 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     is_scanned = table.Column<bool>(type: "boolean", nullable: false),
+                    is_scanned_with_code = table.Column<bool>(type: "boolean", nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     scanned_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     property_scan_id = table.Column<Guid>(type: "uuid", nullable: false),

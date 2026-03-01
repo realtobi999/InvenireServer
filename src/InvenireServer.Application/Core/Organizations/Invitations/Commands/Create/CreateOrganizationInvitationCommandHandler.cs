@@ -34,7 +34,8 @@ public class CreateOrganizationInvitationCommandHandler : IRequestHandler<Create
                 await _repositories.Employees.GetAsync(e => e.EmailAddress == request.EmployeeEmailAddress)
                 ?? throw new NotFound404Exception("The employee was not found in the system."),
 
-            _ => throw new BadRequest400Exception("Either 'employee_email_address' or 'employee_id' must be provided.") // This is already validated in the command validator.
+            // this is already validated in the command validator, but we have it because switch needs a default case.
+            _ => throw new BadRequest400Exception("Either 'employee_email_address' or 'employee_id' must be provided.")
         };
 
         var admin = await _repositories.Admins.GetAsync(request.Jwt!) ?? throw new NotFound404Exception("The admin was not found in the system.");

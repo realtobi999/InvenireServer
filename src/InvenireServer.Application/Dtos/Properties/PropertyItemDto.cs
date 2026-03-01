@@ -49,6 +49,9 @@ public record PropertyItemDto
     [JsonPropertyName("document_number")]
     public string? DocumentNumber { get; set; }
 
+    [JsonPropertyName("is_scanned_with_code")]
+    public bool? IsScannedWithCode { get; set; }
+
     [JsonPropertyName("created_at")]
     public DateTimeOffset? CreatedAt { get; init; }
 

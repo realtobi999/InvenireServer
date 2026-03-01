@@ -13,8 +13,9 @@ public interface IPropertyItemRepository : IRepositoryBase<PropertyItem>
     /// </summary>
     /// <param name="item">Item to mark as scanned.</param>
     /// <param name="scan">Scan to update.</param>
+    /// <param name="scannedWithCode">Wherever the item was scanned manually or through a QR code</param>
     /// <returns>Awaitable task representing the operation.</returns>
-    Task ScanAsync(PropertyItem item, PropertyScan scan);
+    Task ScanAsync(PropertyItem item, PropertyScan scan, bool scannedWithCode);
 
     /// <summary>
     /// Builds a search predicate for property items.

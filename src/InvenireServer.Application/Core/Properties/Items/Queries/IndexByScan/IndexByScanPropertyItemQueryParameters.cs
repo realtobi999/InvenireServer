@@ -28,6 +28,7 @@ public record IndexByScanPropertyItemQueryParameters
     public bool? WithGeneratedCode { get; set; }
 
     public bool? Scanned { get; set; }
+    public bool? ScannedWithCode { get; set; }
 
     public string? SearchQuery { get; set; }
 }

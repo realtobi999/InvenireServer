@@ -106,6 +106,11 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
         return stream;
     }
 
+    private static void ConfigureHeaders(IXLWorksheet worksheet)
+    {
+        worksheet.Range(1, 1, 1, 14).Style.Font.Bold = true;
+    }
+
     private static void SetHeaders(IXLWorksheet worksheet)
     {
         worksheet.Cell(1, 1).Value = "Inventory-Number";
@@ -123,11 +128,9 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
         worksheet.Cell(1, 13).Value = "Employee:Email";
         worksheet.Cell(1, 14).Value = "Description";
         worksheet.Cell(1, 15).Value = "Document-Number";
-    }
-
-    private static void ConfigureHeaders(IXLWorksheet worksheet)
-    {
-        worksheet.Range(1, 1, 1, 14).Style.Font.Bold = true;
+        worksheet.Cell(1, 16).Value = "Created-At";
+        worksheet.Cell(1, 17).Value = "Last-Updated-At";
+        worksheet.Cell(1, 18).Value = "Last-Code-Generated-At";
     }
 
     private static void SetRow(IXLWorksheet worksheet, PropertyItemDto item, int row)
@@ -147,6 +150,9 @@ public class ExportToExcelPropertyItemQueryHandler : IRequestHandler<ExportToExc
         worksheet.Cell(row, 13).Value = item.Employee?.EmailAddress ?? "";
         worksheet.Cell(row, 14).Value = item.Description ?? "";
         worksheet.Cell(row, 15).Value = item.DocumentNumber ?? "";
+        worksheet.Cell(row, 16).Value = item.CreatedAt?.ToString("yyyy-MM-dd HH:MM");
+        worksheet.Cell(row, 17).Value = item.LastUpdatedAt?.ToString("yyyy-MM-dd HH:MM");
+        worksheet.Cell(row, 18).Value = item.LastCodeGeneratedAt?.ToString("yyyy-MM-dd HH:MM");
     }
 
     private static Expression<Func<PropertyItem, PropertyItemDto>> PropertyItemDtoSelector

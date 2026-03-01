@@ -246,12 +246,13 @@ public class PropertyCommandController : ControllerBase
     /// <returns>Awaitable task returning the response.</returns>
     [Authorize()]
     [HttpPut("/api/properties/items/{itemId:guid}/scan")]
-    public async Task<IActionResult> ScanItem(Guid itemId)
+    public async Task<IActionResult> ScanItem(Guid itemId, bool scannedWithCode)
     {
         await _mediator.Send(new ScanPropertyItemCommand
         {
             Jwt = JwtBuilder.Parse(HttpContext.Request.ParseJwtToken()),
             ItemId = itemId,
+            IsScannedWithCode = scannedWithCode,
         });
 
         return NoContent();

@@ -12,7 +12,15 @@ public class Conflict409Exception : Exception, IHttpException
     {
     }
 
+    public Conflict409Exception(Exception inner) : base("A conflict occurred while processing the request.", inner)
+    {
+    }
+
     public Conflict409Exception(string message) : base(message)
+    {
+    }
+
+    public Conflict409Exception(string message, Exception inner) : base(message, inner)
     {
     }
 

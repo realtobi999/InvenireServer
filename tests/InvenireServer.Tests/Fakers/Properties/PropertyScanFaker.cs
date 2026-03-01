@@ -35,6 +35,7 @@ public class PropertyScanFaker : Faker<PropertyScan>
                 {
                     Id = Guid.NewGuid(),
                     IsScanned = false,
+                    IsScannedWithCode = null,
                     ScannedAt = null,
                     CreatedAt = DateTimeOffset.UtcNow,
                     PropertyScanId = scan.Id,

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Interfaces.Repositories.Properties;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Exceptions.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Properties;
@@ -19,13 +20,17 @@ public class PropertyItemRepository : RepositoryBase<PropertyItem>, IPropertyIte
     /// </summary>
     /// <param name="item">Item to mark as scanned.</param>
     /// <param name="scan">Scan to update.</param>
+    /// <param name="scannedWithCode">Wherever the item was scanned manually or through a QR code</param>
     /// <returns>Awaitable task representing the operation.</returns>
-    public async Task ScanAsync(PropertyItem item, PropertyScan scan)
+    public async Task ScanAsync(PropertyItem item, PropertyScan scan, bool scannedWithCode)
     {
-        var field = await Context.ScansItems.FirstAsync(si => si.PropertyItemId == item.Id && si.PropertyScanId == scan.Id);
+        var scanItem = await Context.ScansItems.FirstAsync(si => si.PropertyItemId == item.Id && si.PropertyScanId == scan.Id);
 
-        field.ScannedAt = DateTimeOffset.UtcNow;
-        field.IsScanned = true;
+        if (scanItem.IsScanned) throw new Conflict409Exception("The item was already scanned.");
+
+        scanItem.IsScanned = true;
+        scanItem.IsScannedWithCode = scannedWithCode;
+        scanItem.ScannedAt = DateTimeOffset.UtcNow;
     }
 
     /// <summary>

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenireServer.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvenireServerContext))]
-    [Migration("20251127202024_MainMigration")]
+    [Migration("20260220091025_MainMigration")]
     partial class MainMigration
     {
         /// <inheritdoc />
@@ -255,6 +255,10 @@ namespace InvenireServer.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsScanned")
                         .HasColumnType("boolean")
                         .HasColumnName("is_scanned");
+
+                    b.Property<bool?>("IsScannedWithCode")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_scanned_with_code");
 
                     b.Property<Guid?>("PropertyItemEmployeeId")
                         .HasColumnType("uuid")

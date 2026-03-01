@@ -118,6 +118,9 @@ public class ExportToJsonPropertyItemQueryHandler : IRequestHandler<ExportToJson
                 },
                 Description = i.Description,
                 DocumentNumber = i.DocumentNumber,
+                CreatedAt = i.CreatedAt,
+                LastUpdatedAt = i.LastUpdatedAt,
+                LastCodeGeneratedAt = i.LastCodeGeneratedAt,
             };
         }
     }

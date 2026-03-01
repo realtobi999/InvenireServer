@@ -50,8 +50,7 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
 
         // Retrieve the scan and project all helper fields of the scanned  items
         // into it. This approach works efficiently  even  with  large  datasets
-        // (10K+ items). Optionally filter the projected items based on  whether
-        // they are marked as scanned or not.
+        // (10K+ items).
         var scan = await _repositories.Properties.Scans.GetAsync(new QueryOptions<PropertyScan, PropertyScan>
         {
             Selector = s => new PropertyScan
@@ -64,17 +63,23 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
                 CreatedAt = s.CreatedAt,
                 CompletedAt = s.CompletedAt,
                 LastUpdatedAt = s.LastUpdatedAt,
-                ScannedItems = request.Parameters.Scanned == null ? s.ScannedItems.ToList() : request.Parameters.Scanned.Value ? s.ScannedItems.Where(si => si.IsScanned).ToList() : s.ScannedItems.Where(si => !si.IsScanned).ToList(),
-
+                ScannedItems = s.ScannedItems.ToList()
             },
             Filtering = new QueryFilteringOptions<PropertyScan>
             {
                 Filters =
                 [
+                    // Core Filter.
                     s => s.Id == request.ScanId && s.PropertyId == property.Id,
                 ]
             },
         }) ?? throw new NotFound404Exception("The scan was not found in the system.");
+
+        // Filter the scanned items based on their helper fields.
+        scan.ScannedItems = [.. scan.ScannedItems.
+                Where(i => request.Parameters.Scanned is null || (i.IsScanned == request.Parameters.Scanned)).
+                Where(i => request.Parameters.ScannedWithCode is null || (i.IsScannedWithCode == request.Parameters.ScannedWithCode))
+            ];
 
         var query = new QueryOptions<PropertyItem, PropertyItemDto>
         {
@@ -110,7 +115,9 @@ public class IndexByScanPropertyItemQueryHandler : IRequestHandler<IndexByScanPr
         // Assign all extra data.
         foreach (var item in items)
         {
-            item.LastScannedAt = scan.ScannedItems.First(si => si.PropertyItemId == item.Id).ScannedAt;
+            var scanItem = scan.ScannedItems.First(si => si.PropertyItemId == item.Id);
+            item.LastScannedAt = scanItem.ScannedAt;
+            item.IsScannedWithCode = scanItem.IsScannedWithCode;
 
             if (item.EmployeeId is null) continue;
             item.Employee = await _repositories.Employees.GetAsync(new QueryOptions<Employee, EmployeeDto>

@@ -1,11 +1,11 @@
 using System.IO.Compression;
-using InvenireServer.Domain.Exceptions.Http;
-using InvenireServer.Domain.Entities.Properties;
-using InvenireServer.Application.Interfaces.Common;
-using InvenireServer.Domain.Entities.Common.Queries;
-using InvenireServer.Application.Interfaces.Managers;
 using System.Linq.Expressions;
 using InvenireServer.Application.Dtos.Properties;
+using InvenireServer.Application.Interfaces.Common;
+using InvenireServer.Application.Interfaces.Managers;
+using InvenireServer.Domain.Entities.Common.Queries;
+using InvenireServer.Domain.Entities.Properties;
+using InvenireServer.Domain.Exceptions.Http;
 
 namespace InvenireServer.Application.Core.Properties.Items.Commands.GenerateCodes;
 
@@ -54,7 +54,7 @@ public class GenerateCodesPropertyItemsCommandHandler : IRequestHandler<Generate
             foreach (var item in items.OrderBy(i => i.Location.Building).ThenBy(i => i.Location.Room))
             {
                 var labels = new List<string> { item.InventoryNumber, item.Name[..Math.Min(item.Name.Length, MAX_LABEL_NAME_LENGTH)] };
-                var code = _generator.GenerateCodeWithLabels(content: $"api/properties/items/{item.Id}/scan", labels: labels, size: request.Size);
+                var code = _generator.GenerateCodeWithLabels(content: $"api/properties/items/{item.Id}/scan?scannedWithCode=true", labels: labels, size: request.Size);
 
                 using var entry = archive.CreateEntry($"{item.InventoryNumber.Replace("/", "_")}____{item.Location.Building}_{item.Location.Room}.png", CompressionLevel.Fastest).Open();
                 await entry.WriteAsync(code, ct);

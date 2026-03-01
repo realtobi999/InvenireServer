@@ -1,7 +1,7 @@
 using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
-using InvenireServer.Domain.Entities.Properties;
 using InvenireServer.Application.Interfaces.Repositories.Properties;
+using InvenireServer.Domain.Entities.Properties;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvenireServer.Infrastructure.Persistence.Repositories.Properties;
 
@@ -25,6 +25,7 @@ public class PropertyScanRepository : RepositoryBase<PropertyScan>, IPropertySca
         {
             Id = Guid.NewGuid(),
             IsScanned = false,
+            IsScannedWithCode = null,
             CreatedAt = DateTimeOffset.UtcNow,
             ScannedAt = null,
             PropertyScanId = scan.Id,

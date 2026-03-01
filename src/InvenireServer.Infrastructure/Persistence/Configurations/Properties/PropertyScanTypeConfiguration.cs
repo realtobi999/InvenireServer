@@ -72,6 +72,9 @@ public class PropertyScanPropertyItemTypeConfiguration : IEntityTypeConfiguratio
             .HasColumnName("is_scanned")
             .IsRequired();
 
+        builder.Property(si => si.IsScannedWithCode)
+            .HasColumnName("is_scanned_with_code");
+
         builder.Property(si => si.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

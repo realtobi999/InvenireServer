@@ -12,7 +12,16 @@ public class NotFound404Exception : Exception, IHttpException
     {
     }
 
+    public NotFound404Exception(Exception inner) : base("The requested resource was not found in the system.", inner)
+    {
+    }
+
     public NotFound404Exception(string message) : base(message)
+    {
+    }
+
+    public NotFound404Exception(string message, Exception inner)
+    : base(message, inner)
     {
     }
 

@@ -45,6 +45,8 @@ public class PropertyScanPropertyItem
 
     public required bool IsScanned { get; set; }
 
+    public required bool? IsScannedWithCode { get; set; }
+
     public required DateTimeOffset CreatedAt { get; init; }
 
     public required DateTimeOffset? ScannedAt { get; set; }
