@@ -3,7 +3,7 @@
 Tento repozitář obsahuje serverovou část aplikace zodpovědnou za autentizaci, autorizaci, business logiku a persistenci.
 
 - hlavní dokumentační rozcestník projektu je v repozitáři frontendu [Invenire](https://github.com/realtobi999/Invenire)
-- oficiální technická práce v repozitáři frontendu `seminarka.md`
+- oficiální technická práce v repozitáři frontendu
 
 ## Obsah
 
@@ -11,13 +11,11 @@ Tento repozitář obsahuje serverovou část aplikace zodpovědnou za autentizac
 - [Oficiální technická práce](#oficiální-technická-práce)
 - [Technologický stack a runtime požadavky](#technologický-stack-a-runtime-požadavky)
 - [Rychlý start](#rychlý-start)
-- [Proměnné prostředí a konfigurace](#proměnné-prostředí-a-konfigurace)
+- [Přehled promměných prostředí](#Přehled-promměných-prostředí)
 - [Přehled API](#přehled-api)
 - [Nastavení databáze a migrace](#nastavení-databáze-a-migrace)
 - [Struktura složek](#struktura-složek)
 - [Testování](#testování)
-- [Poznámky k nasazení](#poznámky-k-nasazení)
-- [Odkazy na frontend dokumentaci](#odkazy-na-frontend-dokumentaci)
 - [Licence](#licence)
 
 ## Rozsah projektu
@@ -89,7 +87,7 @@ dotnet user-secrets init --project src/InvenireServer.Presentation/InvenireServe
 2. Spuštění API:
 
 ```bash
-ASPNETCORE_ENVIRONMENT=Development dotnet run --project src/InvenireServer.Presentation/InvenireServer.Presentation.csproj --urls http://127.0.0.1:5071
+dotnet run --project src/InvenireServer.Presentation/InvenireServer.Presentation.csproj
 ```
 
 Volitelné pomocné příkazy přes Makefile:
@@ -99,18 +97,7 @@ make run
 make watch
 ```
 
-## Proměnné prostředí a konfigurace
-
-Zdroje konfigurace (v pořadí):
-
-1. `appsettings.json`
-2. `appsettings.{Environment}.json`
-3. User Secrets (Development)
-4. proměnné prostředí
-
-Potvrzeno v: `backend/src/InvenireServer.Presentation/Extensions/HostExtensions.cs`.
-
-### Přehled proměnných prostředí
+## Přehled promměných prostředí
 
 | Proměnná | Povinná | Použití | Popis | Příklad |
 |---|---|---|---|---|
@@ -133,7 +120,7 @@ Potvrzeno v: `backend/src/InvenireServer.Presentation/Extensions/HostExtensions.
 | `CORS__AllowedOrigins__0` | Ano | CORS policy | Povolený frontend origin #1 | `http://127.0.0.1:5170` |
 | `CORS__AllowedOrigins__1` | Doporučeno | CORS policy | Povolený frontend origin #2 | `http://localhost:5170` |
 
-> Širší konfigurační kontext najdete v `frontend/doc/config.md`.
+> Širší konfigurační kontext najdete v repozitáři [Invenire]([Invenire](https://github.com/realtobi999/Invenire)) v `doc/config.md`.
 
 ## Přehled API
 
@@ -248,16 +235,10 @@ make add_migration name=YourMigrationName
 make drop_database
 ```
 
-Ekvivalent přímého příkazu:
-
-```bash
-dotnet ef database update --project ./src/InvenireServer.Infrastructure/InvenireServer.Infrastructure.csproj --startup-project ./src/InvenireServer.Presentation/InvenireServer.Presentation.csproj
-```
-
 ### Chování při startu aplikace
 
 - v **non-production** prostředí se pending migrace aplikují automaticky při startu
-- v **production** je automatická migrace vypnutá (`if (!builder.Environment.IsProduction()) app.RunMigrations();`)
+- v **production** je automatická migrace vypnutá
 
 ## Struktura složek
 
@@ -305,28 +286,6 @@ Nebo přímo:
 ```bash
 dotnet test ./tests/InvenireServer.Tests/InvenireServer.Tests.csproj
 ```
-
-Projekt obsahuje:
-
-- integrační endpoint testy,
-- unit testy command handlerů a doménového/aplikačního chování.
-
-## Poznámky k nasazení
-
-- v produkci používejte `ASPNETCORE_ENVIRONMENT=Production`
-- nastavte všechny požadované secrety (`ConnectionStrings__Connection`, `Jwt__*`, `SMTP__*`)
-- zajistěte, aby backend CORS originy odpovídaly nasazeným frontend URL
-- používejte HTTPS; auth cookies jsou nastavené s `Secure=true` a `SameSite=None`
-- při deploymentu spouštějte migrace explicitně (produkční start je nespouští automaticky)
-- správně nastavte reverse proxy hlavičky (`X-Forwarded-For`, `X-Forwarded-Proto` jsou zapnuté)
-
-<!-- TODO: doplnit konkrétní deployment manifesty / pipeline kroky pro cílovou platformu -->
-
-## Odkazy na frontend dokumentaci
-
-- hlavní dokumentační hub: `frontend/readme.md`
-- konfigurace frontendu: `frontend/doc/config.md`
-- oficiální technická práce: `frontend/seminarka.md`
 
 ## Licence
 
