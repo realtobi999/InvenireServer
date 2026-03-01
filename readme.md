@@ -10,7 +10,7 @@ Tento repozitář obsahuje serverovou část aplikace zodpovědnou za autentizac
 - [Rozsah projektu](#rozsah-projektu)
 - [Technologický stack a runtime požadavky](#technologický-stack-a-runtime-požadavky)
 - [Rychlý start](#rychlý-start)
-- [Přehled promměných prostředí](#Přehled-promměných-prostředí)
+- [Přehled promměných prostředí](#přehled-promměných-prostředí)
 - [Přehled API](#přehled-api)
 - [Nastavení databáze a migrace](#nastavení-databáze-a-migrace)
 - [Struktura složek](#struktura-složek)
